@@ -1,58 +1,75 @@
 import {MeasureValuePolarContainer} from "./MeasureValuePolarContainer";
 import {IMeasureValue} from "./IMeasureValue";
+import {PolarValues} from "./tools/PolarValues";
+import {PolarValue} from "./PolarValue";
 
 export class RainMeasureValue implements IMeasureValue {
 
-    private polars: MeasureValuePolarContainer[];
+    private polars: PolarValues;
 
     constructor(
         polars: any | MeasureValuePolarContainer[]
     ) {
         if (!polars) {
-            throw 'Need a valid Object';
+            throw 'RainMeasureValue needs a valid Object';
         }
         if (polars.polars) {
-            this.setPolarsAsContainer(polars.polars);
+            if (typeof polars.polars === 'string') {
+                this.setPolarsAsString(polars.polars);
+            } else {
+                this.setPolarsAsContainer(polars.polars);
+            }
             return;
         }
-        this.setPolarsAsContainer(polars);
+
+        if (typeof polars === 'string') {
+            this.setPolarsAsString(polars);
+        } else {
+            this.setPolarsAsContainer(polars);
+        }
     }
 
     getPolarsStringified(): string {
-        return JSON.stringify(this.getPolars());
+        return this.polars.getPolarsStringified();
     }
 
     getPolars(): MeasureValuePolarContainer[] {
-        let converted: any = this.polars;
-        try {
-            converted = JSON.parse(converted);
-        } catch (e) {
-        }
-        return converted;
+        return this.polars.getPolars();
     }
 
     setPolarsAsString(s: string): void {
-        this.polars = JSON.parse(s);
+        this.polars = new PolarValues(s);
     }
 
     setPolarsAsContainer(s: MeasureValuePolarContainer[]): void {
-        let parsed: any = s;
-        try {
-            parsed = JSON.parse(parsed);
-        } catch (e) {
+        this.polars = new PolarValues(s);
+    }
+
+    getPolarValue(azimuthIndex: number, edgeIndex: number): PolarValue {
+        return this.polars.getPolarValue(azimuthIndex, edgeIndex);
+    }
+
+    setPolarValue(azimuthIndex: number, edgeIndex: number, value: number): void {
+        return this.polars.setPolarValue(azimuthIndex, edgeIndex, value);
+    }
+
+    getAzimuthsCount(): number {
+        return this.polars.getPolars().length;
+    }
+
+    getPolarEdgesCount(): number {
+        const polars = this.polars.getPolars();
+        if (polars.length > 0) {
+            return polars[0].polarEdges.length;
         }
-        this.polars = parsed;
+        return 0;
     }
 
     public toJSON(): Object {
-        return {
-            "polars": this.polars
-        };
+        return this.polars.toJSON();
     }
 
     public toJSONWithPolarStringified(): Object {
-        return {
-            "polars": this.getPolarsStringified()
-        };
+        return this.polars.toJSONWithPolarStringified();
     }
 }

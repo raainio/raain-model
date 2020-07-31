@@ -1,65 +1,73 @@
 import {MeasureValuePolarContainer} from "./MeasureValuePolarContainer";
 import {IMeasureValue} from "./IMeasureValue";
+import {PolarValues} from "./tools/PolarValues";
+import {PolarValue} from "./PolarValue";
 
 export class RadarMeasureValue implements IMeasureValue {
 
     public angle: number;
-    private polars: MeasureValuePolarContainer[];
+    private polars: PolarValues;
 
     constructor(
         angleOrObject: any | number,
-        polars?: MeasureValuePolarContainer[]
+        polars?: string | MeasureValuePolarContainer[]
     ) {
         if (!angleOrObject) {
-            throw 'Need a valid Object or ID';
+            throw 'RadarMeasureValue needs a valid Object or ID';
         }
 
         if (typeof (angleOrObject.angle) !== 'undefined') {
             this.angle = angleOrObject.angle;
-            this.setPolarsAsContainer(angleOrObject.polars);
+
+            if (typeof angleOrObject.polars === 'string') {
+                this.setPolarsAsString(angleOrObject.polars);
+            } else {
+                this.setPolarsAsContainer(angleOrObject.polars);
+            }
             return;
         }
         this.angle = angleOrObject;
-        this.setPolarsAsContainer(polars);
+
+        if (typeof polars === 'string') {
+            this.setPolarsAsString(polars);
+        } else {
+            this.setPolarsAsContainer(polars);
+        }
     }
 
     getPolarsStringified(): string {
-        return JSON.stringify(this.getPolars());
+        return this.polars.getPolarsStringified();
     }
 
     getPolars(): MeasureValuePolarContainer[] {
-        let converted: any = this.polars;
-        try {
-            converted = JSON.parse(converted);
-        } catch (e) {
-        }
-        return converted;
+        return this.polars.getPolars();
     }
 
     setPolarsAsString(s: string): void {
-        this.polars = JSON.parse(s);
+        this.polars = new PolarValues(s);
     }
 
     setPolarsAsContainer(s: MeasureValuePolarContainer[]): void {
-        let parsed: any = s;
-        try {
-            parsed = JSON.parse(parsed);
-        } catch (e) {
-        }
-        this.polars = parsed;
+        this.polars = new PolarValues(s);
+    }
+
+    getPolarValue(azimuthIndex: number, edgeIndex: number): PolarValue {
+        return this.polars.getPolarValue(azimuthIndex, edgeIndex);
+    }
+
+    setPolarValue(azimuthIndex: number, edgeIndex: number, value: number): void {
+        return this.polars.setPolarValue(azimuthIndex, edgeIndex, value);
     }
 
     public toJSON(): Object {
-        return {
-            "angle": this.angle,
-            "polars": this.polars
-        };
+        let json: any = this.polars.toJSON();
+        json.angle = this.angle;
+        return json;
     }
 
     public toJSONWithPolarStringified(): Object {
-        return {
-            "angle": this.angle,
-            "polars": this.getPolarsStringified()
-        };
+        let json: any = this.polars.toJSONWithPolarStringified();
+        json.angle = this.angle;
+        return json;
     }
 }

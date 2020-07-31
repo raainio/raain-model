@@ -11,15 +11,14 @@ export class GaugeNode extends RaainNode {
     public longitude: number;
 
     constructor(
-        idOrObjectToCopy: any | string,
+        idOrObjectToCopy: string |  { id?: string, name?: string, links?: Link[], latitude?: number, longitude?: number },
         name?: string,
         links?: Link[] | any[],
         latitude?: number,
         longitude?: number
     ) {
         super(idOrObjectToCopy, links);
-
-        if (typeof(idOrObjectToCopy) === 'object') {
+        if (typeof idOrObjectToCopy !== "string") {
             this.name = idOrObjectToCopy.name;
             this.latitude = idOrObjectToCopy.latitude;
             this.longitude = idOrObjectToCopy.longitude;

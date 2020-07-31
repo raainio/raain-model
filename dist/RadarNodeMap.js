@@ -4,9 +4,6 @@ var __extends = (this && this.__extends) || function (d, b) {
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
 var RadarNode_1 = require("./RadarNode");
-/**
- * api/radars/:id?format=map&...
-  */
 var RadarNodeMap = (function (_super) {
     __extends(RadarNodeMap, _super);
     function RadarNodeMap(idOrObjectToCopy, name, links, latitude, longitude) {

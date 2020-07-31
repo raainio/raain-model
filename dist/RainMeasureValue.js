@@ -1,47 +1,58 @@
+var PolarValues_1 = require("./tools/PolarValues");
 var RainMeasureValue = (function () {
     function RainMeasureValue(polars) {
         if (!polars) {
-            throw 'Need a valid Object';
+            throw 'RainMeasureValue needs a valid Object';
         }
         if (polars.polars) {
-            this.setPolarsAsContainer(polars.polars);
+            if (typeof polars.polars === 'string') {
+                this.setPolarsAsString(polars.polars);
+            }
+            else {
+                this.setPolarsAsContainer(polars.polars);
+            }
             return;
         }
-        this.setPolarsAsContainer(polars);
+        if (typeof polars === 'string') {
+            this.setPolarsAsString(polars);
+        }
+        else {
+            this.setPolarsAsContainer(polars);
+        }
     }
     RainMeasureValue.prototype.getPolarsStringified = function () {
-        return JSON.stringify(this.getPolars());
+        return this.polars.getPolarsStringified();
     };
     RainMeasureValue.prototype.getPolars = function () {
-        var converted = this.polars;
-        try {
-            converted = JSON.parse(converted);
-        }
-        catch (e) {
-        }
-        return converted;
+        return this.polars.getPolars();
     };
     RainMeasureValue.prototype.setPolarsAsString = function (s) {
-        this.polars = JSON.parse(s);
+        this.polars = new PolarValues_1.PolarValues(s);
     };
     RainMeasureValue.prototype.setPolarsAsContainer = function (s) {
-        var parsed = s;
-        try {
-            parsed = JSON.parse(parsed);
+        this.polars = new PolarValues_1.PolarValues(s);
+    };
+    RainMeasureValue.prototype.getPolarValue = function (azimuthIndex, edgeIndex) {
+        return this.polars.getPolarValue(azimuthIndex, edgeIndex);
+    };
+    RainMeasureValue.prototype.setPolarValue = function (azimuthIndex, edgeIndex, value) {
+        return this.polars.setPolarValue(azimuthIndex, edgeIndex, value);
+    };
+    RainMeasureValue.prototype.getAzimuthsCount = function () {
+        return this.polars.getPolars().length;
+    };
+    RainMeasureValue.prototype.getPolarEdgesCount = function () {
+        var polars = this.polars.getPolars();
+        if (polars.length > 0) {
+            return polars[0].polarEdges.length;
         }
-        catch (e) {
-        }
-        this.polars = parsed;
+        return 0;
     };
     RainMeasureValue.prototype.toJSON = function () {
-        return {
-            "polars": this.polars
-        };
+        return this.polars.toJSON();
     };
     RainMeasureValue.prototype.toJSONWithPolarStringified = function () {
-        return {
-            "polars": this.getPolarsStringified()
-        };
+        return this.polars.toJSONWithPolarStringified();
     };
     return RainMeasureValue;
 })();

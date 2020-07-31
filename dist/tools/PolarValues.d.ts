@@ -1,10 +1,9 @@
-import { MeasureValuePolarContainer } from "./MeasureValuePolarContainer";
-import { IMeasureValue } from "./IMeasureValue";
-import { PolarValue } from "./PolarValue";
-export declare class RadarMeasureValue implements IMeasureValue {
-    angle: number;
+import { MeasureValuePolarContainer } from "../MeasureValuePolarContainer";
+import { IMeasureValue } from "../IMeasureValue";
+import { PolarValue } from "../PolarValue";
+export declare class PolarValues implements IMeasureValue {
     private polars;
-    constructor(angleOrObject: any | number, polars?: string | MeasureValuePolarContainer[]);
+    constructor(polars: MeasureValuePolarContainer[] | any);
     getPolarsStringified(): string;
     getPolars(): MeasureValuePolarContainer[];
     setPolarsAsString(s: string): void;
@@ -13,4 +12,5 @@ export declare class RadarMeasureValue implements IMeasureValue {
     setPolarValue(azimuthIndex: number, edgeIndex: number, value: number): void;
     toJSON(): Object;
     toJSONWithPolarStringified(): Object;
+    protected updateIndex(array: Array<any>, index: number): number;
 }

@@ -15,3 +15,5 @@ export * from './GaugeMeasure';
 export * from './RadarNodeMap';
 export * from './RainComputationNode';
 export * from './RainComputationMap';
+export * from './GaugeNodeMap';
+export * from './PolarValue';

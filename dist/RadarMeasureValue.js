@@ -1,51 +1,54 @@
+var PolarValues_1 = require("./tools/PolarValues");
 var RadarMeasureValue = (function () {
     function RadarMeasureValue(angleOrObject, polars) {
         if (!angleOrObject) {
-            throw 'Need a valid Object or ID';
+            throw 'RadarMeasureValue needs a valid Object or ID';
         }
         if (typeof (angleOrObject.angle) !== 'undefined') {
             this.angle = angleOrObject.angle;
-            this.setPolarsAsContainer(angleOrObject.polars);
+            if (typeof angleOrObject.polars === 'string') {
+                this.setPolarsAsString(angleOrObject.polars);
+            }
+            else {
+                this.setPolarsAsContainer(angleOrObject.polars);
+            }
             return;
         }
         this.angle = angleOrObject;
-        this.setPolarsAsContainer(polars);
+        if (typeof polars === 'string') {
+            this.setPolarsAsString(polars);
+        }
+        else {
+            this.setPolarsAsContainer(polars);
+        }
     }
     RadarMeasureValue.prototype.getPolarsStringified = function () {
-        return JSON.stringify(this.getPolars());
+        return this.polars.getPolarsStringified();
     };
     RadarMeasureValue.prototype.getPolars = function () {
-        var converted = this.polars;
-        try {
-            converted = JSON.parse(converted);
-        }
-        catch (e) {
-        }
-        return converted;
+        return this.polars.getPolars();
     };
     RadarMeasureValue.prototype.setPolarsAsString = function (s) {
-        this.polars = JSON.parse(s);
+        this.polars = new PolarValues_1.PolarValues(s);
     };
     RadarMeasureValue.prototype.setPolarsAsContainer = function (s) {
-        var parsed = s;
-        try {
-            parsed = JSON.parse(parsed);
-        }
-        catch (e) {
-        }
-        this.polars = parsed;
+        this.polars = new PolarValues_1.PolarValues(s);
+    };
+    RadarMeasureValue.prototype.getPolarValue = function (azimuthIndex, edgeIndex) {
+        return this.polars.getPolarValue(azimuthIndex, edgeIndex);
+    };
+    RadarMeasureValue.prototype.setPolarValue = function (azimuthIndex, edgeIndex, value) {
+        return this.polars.setPolarValue(azimuthIndex, edgeIndex, value);
     };
     RadarMeasureValue.prototype.toJSON = function () {
-        return {
-            "angle": this.angle,
-            "polars": this.polars
-        };
+        var json = this.polars.toJSON();
+        json.angle = this.angle;
+        return json;
     };
     RadarMeasureValue.prototype.toJSONWithPolarStringified = function () {
-        return {
-            "angle": this.angle,
-            "polars": this.getPolarsStringified()
-        };
+        var json = this.polars.toJSONWithPolarStringified();
+        json.angle = this.angle;
+        return json;
     };
     return RadarMeasureValue;
 })();

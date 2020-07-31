@@ -5,7 +5,6 @@ import {RainNode} from "./RainNode";
 import {RadarMeasure} from "./RadarMeasure";
 import {RainMeasureValue} from "./RainMeasureValue";
 
-// api/rains/:id/computations/:id
 export class RainComputationNode extends RaainNode {
 
     public quality: number;
@@ -19,10 +18,25 @@ export class RainComputationNode extends RaainNode {
     public isDoneDate: Date;
     public launchedBy: String;
 
-    public results: RainMeasureValue[];
+    public results: RainMeasureValue[]; // why array ? because you can have different angle for Radar (same as Measure)
 
     constructor(
-        idOrObjectToCopy: any | string,
+        idOrObjectToCopy: string | {
+            id?: string,
+            periodBegin?: Date,
+            periodEnd?: Date,
+            links?: Link[] | any[],
+            quality?: number,
+            progressIngest?: number,
+            progressComputing?: number,
+            timeSpentInMs?: number,
+            isReady?: Boolean,
+            isDoneDate?: Date,
+            results?: RainMeasureValue[],
+            launchedBy?: string,
+            rain?: Link[],
+            radars?: Link[]
+        },
         periodBegin?: Date,
         periodEnd?: Date,
         links?: Link[] | any[],
@@ -36,8 +50,7 @@ export class RainComputationNode extends RaainNode {
         launchedBy?: string
     ) {
         super(idOrObjectToCopy, links);
-
-        if (typeof (idOrObjectToCopy.id) !== 'undefined') {
+        if (typeof idOrObjectToCopy !== 'string') {
             this.periodBegin = idOrObjectToCopy.periodBegin;
             this.periodEnd = idOrObjectToCopy.periodEnd;
             this.quality = idOrObjectToCopy.quality;
@@ -54,7 +67,6 @@ export class RainComputationNode extends RaainNode {
             this.addRadarLinks(idOrObjectToCopy.radars);
             return;
         }
-
         this.periodBegin = periodBegin;
         this.periodEnd = periodEnd;
         this.quality = quality;

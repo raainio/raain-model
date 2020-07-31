@@ -1,4 +1,5 @@
 import {MeasureValuePolarContainer} from "./MeasureValuePolarContainer";
+import {PolarValue} from "./PolarValue";
 
 export interface IMeasureValue {
 
@@ -13,4 +14,8 @@ export interface IMeasureValue {
     toJSON(): Object;
 
     toJSONWithPolarStringified(): Object;
+
+    getPolarValue(azimuthIndex: number, edgeIndex: number) : PolarValue;
+
+    setPolarValue(azimuthIndex: number, edgeIndex: number, value : number) : void;
 }

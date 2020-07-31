@@ -12,7 +12,22 @@ export declare class RainComputationNode extends RaainNode {
     isDoneDate: Date;
     launchedBy: String;
     results: RainMeasureValue[];
-    constructor(idOrObjectToCopy: any | string, periodBegin?: Date, periodEnd?: Date, links?: Link[] | any[], quality?: number, progressIngest?: number, progressComputing?: number, timeSpentInMs?: number, isReady?: Boolean, isDoneDate?: Date, results?: RainMeasureValue[], launchedBy?: string);
+    constructor(idOrObjectToCopy: string | {
+        id?: string;
+        periodBegin?: Date;
+        periodEnd?: Date;
+        links?: Link[] | any[];
+        quality?: number;
+        progressIngest?: number;
+        progressComputing?: number;
+        timeSpentInMs?: number;
+        isReady?: Boolean;
+        isDoneDate?: Date;
+        results?: RainMeasureValue[];
+        launchedBy?: string;
+        rain?: Link[];
+        radars?: Link[];
+    }, periodBegin?: Date, periodEnd?: Date, links?: Link[] | any[], quality?: number, progressIngest?: number, progressComputing?: number, timeSpentInMs?: number, isReady?: Boolean, isDoneDate?: Date, results?: RainMeasureValue[], launchedBy?: string);
     toJSON(): Object;
     protected getLinkType(): string;
     addRadarLinks(linksToAdd: Link[] | any[]): void;

@@ -11,7 +11,7 @@ var GaugeNode = (function (_super) {
     __extends(GaugeNode, _super);
     function GaugeNode(idOrObjectToCopy, name, links, latitude, longitude) {
         _super.call(this, idOrObjectToCopy, links);
-        if (typeof (idOrObjectToCopy) === 'object') {
+        if (typeof idOrObjectToCopy !== "string") {
             this.name = idOrObjectToCopy.name;
             this.latitude = idOrObjectToCopy.latitude;
             this.longitude = idOrObjectToCopy.longitude;

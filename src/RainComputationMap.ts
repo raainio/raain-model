@@ -35,6 +35,7 @@ export class RainComputationMap extends RainComputationNode {
         let json = super.toJSON();
         if (this.map) {
             json['map'] = this.map;
+            delete json['results'];
         }
         return json;
     }

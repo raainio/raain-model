@@ -2,14 +2,18 @@ var Link_1 = require("./Link");
 var RaainNode = (function () {
     function RaainNode(idOrObjectToCopy, links) {
         if (!idOrObjectToCopy) {
-            throw 'Need a valid Object or ID';
+            throw 'RaainNode needs a valid Object or ID';
         }
-        if (typeof (idOrObjectToCopy) === 'object' && (idOrObjectToCopy.id || idOrObjectToCopy.links)) {
-            this.id = idOrObjectToCopy.id;
-            this.setLinks(idOrObjectToCopy.links);
-            return;
+        if (typeof (idOrObjectToCopy) === 'object') {
+            if ((typeof idOrObjectToCopy.id === 'string' || idOrObjectToCopy.links)) {
+                this.id = idOrObjectToCopy.id;
+                this.setLinks(idOrObjectToCopy.links);
+                return;
+            }
         }
-        this.id = idOrObjectToCopy;
+        if (typeof idOrObjectToCopy === 'string') {
+            this.id = idOrObjectToCopy;
+        }
         this.setLinks(links);
     }
     RaainNode.prototype.toJSON = function () {

@@ -9,6 +9,9 @@ var RainMeasure = (function (_super) {
     function RainMeasure() {
         _super.apply(this, arguments);
     }
+    RainMeasure.prototype.getLinkType = function () {
+        return 'rain-measure';
+    };
     return RainMeasure;
 })(Measure_1.Measure);
 exports.RainMeasure = RainMeasure;

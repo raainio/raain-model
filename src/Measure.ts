@@ -1,20 +1,19 @@
-import {RadarMeasureValue} from "./RadarMeasureValue";
 import {IMeasureValue} from "./IMeasureValue";
 import {RaainNode} from "./RaainNode";
 
 export class Measure extends RaainNode {
     public date: Date;
-    public values: IMeasureValue[];
+    public values: IMeasureValue[] | number[]; // why array ? because you can have different angle for Radar
     public validity: number;
 
     constructor(
         idOrObjectToCopy: any | string,
         date?: Date,
-        values?: IMeasureValue[],
+        values?: IMeasureValue[] | number[],
         validity?: number
     ) {
         super(idOrObjectToCopy);
-        if (typeof(idOrObjectToCopy) === 'object') {
+        if (typeof (idOrObjectToCopy) === 'object') {
             this.date = idOrObjectToCopy.date;
             this.values = idOrObjectToCopy.values;
             this.validity = idOrObjectToCopy.validity;
@@ -26,13 +25,12 @@ export class Measure extends RaainNode {
     }
 
     public toJSON(): Object {
-        let json = {
+        return {
             "id": this.id,
             "date": this.date,
             "values": this.values,
-            "validity" : this.validity
-        }
-        return json;
+            "validity": this.validity
+        };
     }
 }
 

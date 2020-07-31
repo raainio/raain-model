@@ -1,26 +1,30 @@
-import {RadarMeasure} from "./RadarMeasure";
-import {RadarNode} from "./RadarNode";
 import {Link} from "./Link";
+import {GaugeNode} from "./GaugeNode";
+import {GaugeMeasure} from "./GaugeMeasure";
 
-export class RadarNodeMap extends RadarNode {
+/**
+ * api/gauges/:id?format=map&begin=...
+ */
+export class GaugeNodeMap extends GaugeNode {
 
     // potential result format (stored as stringified json)
     private map: string;
 
     constructor(
-        idOrObjectToCopy: any | string,
+        idOrObjectToCopy: string | { id?: string, name?: string, links?: Link[], latitude?: number, longitude?: number, map?: string, getMapData?: any },
         name?: string,
         links?: Link[] | any[],
         latitude?: number,
         longitude?: number
     ) {
         super(idOrObjectToCopy, name, links, latitude, longitude);
-
-        if (idOrObjectToCopy.map) {
-            this.map = idOrObjectToCopy.map;
-        }
-        if (!this.map && idOrObjectToCopy.getMapData) {
-            this.map = JSON.stringify(idOrObjectToCopy.getMapData());
+        if (typeof idOrObjectToCopy !== "string") {
+            if (idOrObjectToCopy.map) {
+                this.map = idOrObjectToCopy.map;
+            }
+            if (!this.map && idOrObjectToCopy.getMapData) {
+                this.map = JSON.stringify(idOrObjectToCopy.getMapData());
+            }
         }
     }
 
@@ -32,7 +36,7 @@ export class RadarNodeMap extends RadarNode {
         return json;
     }
 
-    public setMapData(mapData: RadarMeasure[] | string) {
+    public setMapData(mapData: GaugeMeasure[] | string) {
         let map = mapData;
         try {
             if (typeof (mapData) !== 'string') {
@@ -43,7 +47,7 @@ export class RadarNodeMap extends RadarNode {
         this.map = map.toString();
     }
 
-    public getMapData(): RadarMeasure[] {
+    public getMapData(): GaugeMeasure[] {
         if (!this.map) {
             return [];
         }

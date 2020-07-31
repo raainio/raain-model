@@ -18,4 +18,6 @@ __export(require('./GaugeMeasure'));
 __export(require('./RadarNodeMap'));
 __export(require('./RainComputationNode'));
 __export(require('./RainComputationMap'));
+__export(require('./GaugeNodeMap'));
+__export(require('./PolarValue'));
 //# sourceMappingURL=index.js.map

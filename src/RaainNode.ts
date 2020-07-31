@@ -12,15 +12,19 @@ export class RaainNode {
     ) {
 
         if (!idOrObjectToCopy) {
-            throw 'Need a valid Object or ID';
+            throw 'RaainNode needs a valid Object or ID';
         }
 
-        if (typeof(idOrObjectToCopy) === 'object' && (idOrObjectToCopy.id || idOrObjectToCopy.links)) {
-            this.id = idOrObjectToCopy.id;
-            this.setLinks(idOrObjectToCopy.links);
-            return;
+        if (typeof (idOrObjectToCopy) === 'object') {
+            if ((typeof idOrObjectToCopy.id === 'string' || idOrObjectToCopy.links)) {
+                this.id = idOrObjectToCopy.id;
+                this.setLinks(idOrObjectToCopy.links);
+                return;
+            }
         }
-        this.id = idOrObjectToCopy;
+        if (typeof idOrObjectToCopy === 'string') {
+            this.id = idOrObjectToCopy;
+        }
         this.setLinks(links);
     }
 
@@ -32,16 +36,14 @@ export class RaainNode {
     }
 
     public setLinks(linksToSet: Link[] | any[]) {
-        let purified: Link[] = RaainNode._getPurifiedLinks(linksToSet);
-        this.links = purified;
+        this.links = RaainNode._getPurifiedLinks(linksToSet);
     }
 
     public addLinks(linksToAdd: Link[] | any[]) {
         if (!this.links) {
             this.links = [];
         }
-        let purified: Link[] = this.links.concat(RaainNode._getPurifiedLinks(linksToAdd));
-        this.links = purified;
+        this.links = this.links.concat(RaainNode._getPurifiedLinks(linksToAdd));
     }
 
     private static _getPurifiedLinks(linksToPurify: any[]): Link[] {

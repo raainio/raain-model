@@ -1,7 +1,7 @@
 var MeasureValuePolarContainer = (function () {
     function MeasureValuePolarContainer(azimuthOrObjectToCopy, distance, polarEdges) {
         if (!azimuthOrObjectToCopy && azimuthOrObjectToCopy !== 0) {
-            throw 'Need a valid Object or ID';
+            throw 'MeasureValuePolarContainer needs a valid Object or ID';
         }
         if (typeof (azimuthOrObjectToCopy.azimuth) !== 'undefined') {
             this.azimuth = azimuthOrObjectToCopy.azimuth;

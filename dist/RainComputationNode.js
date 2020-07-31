@@ -8,12 +8,11 @@ var Link_1 = require("./Link");
 var RadarNode_1 = require("./RadarNode");
 var RainNode_1 = require("./RainNode");
 var RadarMeasure_1 = require("./RadarMeasure");
-// api/rains/:id/computations/:id
 var RainComputationNode = (function (_super) {
     __extends(RainComputationNode, _super);
     function RainComputationNode(idOrObjectToCopy, periodBegin, periodEnd, links, quality, progressIngest, progressComputing, timeSpentInMs, isReady, isDoneDate, results, launchedBy) {
         _super.call(this, idOrObjectToCopy, links);
-        if (typeof (idOrObjectToCopy.id) !== 'undefined') {
+        if (typeof idOrObjectToCopy !== 'string') {
             this.periodBegin = idOrObjectToCopy.periodBegin;
             this.periodEnd = idOrObjectToCopy.periodEnd;
             this.quality = idOrObjectToCopy.quality;

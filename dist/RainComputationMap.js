@@ -21,6 +21,7 @@ var RainComputationMap = (function (_super) {
         var json = _super.prototype.toJSON.call(this);
         if (this.map) {
             json['map'] = this.map;
+            delete json['results'];
         }
         return json;
     };

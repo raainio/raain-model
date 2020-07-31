@@ -19,6 +19,7 @@ const RainMeasureValue = _helper.RainMeasureValue;
 const MeasureValuePolarContainer = _helper.MeasureValuePolarContainer;
 const RainMeasure = _helper.RainMeasure;
 const GaugeMeasure = _helper.GaugeMeasure;
+const GaugeNodeMap = _helper.GaugeNodeMap;
 
 // TODO API Usage examples ( publish as OpenAPI) : https://todo.here  (ask for a demo customer credential to sales@raain.io)
 describe('as Customer with all roles', function () {
@@ -262,16 +263,33 @@ describe('as Customer with all roles', function () {
                 .expect('Content-Type', /application\/json/)
                 .expect(200);
 
-            const receivedRadar = res.body;
-            receivedRadar.should.not.be.undefined;
-            receivedRadar.id.should.not.be.undefined;
-            receivedRadar.name.should.equal('asCustomer.testPut');
-            receivedRadar.latitude.should.equal(9.2);
-            receivedRadar.longitude.should.equal(7.2);
+            const receivedGauge = new GaugeNode(res.body);
+            receivedGauge.should.not.be.undefined;
+            receivedGauge.id.should.not.be.undefined;
+            receivedGauge.name.should.equal('asCustomer.testPut');
+            receivedGauge.latitude.should.equal(9.2);
+            receivedGauge.longitude.should.equal(7.2);
+        });
+
+        it('should get the all gauges information', async () => {
+            const res = await _request(await _$app)
+                .get('/v1/gauges')
+                .expect('Content-Type', /application\/json/)
+                .expect(200);
+
+            const receivedGauges = res.body.gauges;
+            receivedGauges.length.should.be.equal(1);
+            receivedGauges.forEach(rg => {
+                const gauge = new GaugeNode(rg);
+                gauge.id.should.not.be.undefined;
+                gauge.name.should.equal('asCustomer.testPut');
+                gauge.latitude.should.equal(9.2);
+                gauge.longitude.should.equal(7.2);
+            });
         });
 
         it('should post gauge measures', async () => {
-            const value = _buildGaugeMeasure();
+            const value = 0.765; // _buildGaugeMeasure();
             const res = await _request(await _$app)
                 .post('/v1/gauges/' + _created.createdGauge.id + '/measures')
                 // .set('Authorization', 'Basic ' + btoa('' + _mocks.userAdmin.email + ':' + _mocks.userAdmin.password))
@@ -286,9 +304,20 @@ describe('as Customer with all roles', function () {
             measure.should.be.not.undefined;
             measure.id.should.be.not.undefined;
             measure.date.should.be.equal('2018-06-01T11:05:00.000Z');
-            measure.values.should.be.not.undefined;
-            _created.createdGaugeMeasures = [];
-            _created.createdGaugeMeasures.push(measure);
+        });
+
+        it('should get gauge measures', async () => {
+            const res = await _request(await _$app)
+                .get('/v1/gauges/' + _created.createdGauge.id + '?format=map&begin=2018-06-01 12:05:06&end=2018-06-01 13:05:06')
+                .expect('Content-Type', /application\/json/)
+                .expect(200);
+
+            const receivedGaugeMap = new GaugeNodeMap(res.body);
+            receivedGaugeMap.id.should.be.equal(_created.createdGauge.id);
+            receivedGaugeMap.getMapData().length.should.be.equal(1);
+            const gaugeMeasuresMap = receivedGaugeMap.getMapData();
+            gaugeMeasuresMap[0].values[0].should.be.equal(0.765);
+
         });
 
     });
@@ -309,27 +338,24 @@ describe('as Customer with all roles', function () {
             _created.createdRain.id.should.be.equal(rainId);
             _created.createdRain.status.should.equal(0);
             _created.createdRain.quality.should.equal(-1);
-            _created.createdRain.getLinkId('radar', 0).should.equal(_created.createdRadar.id);
+            _created.createdRain.getLinkId('radar').should.equal(_created.createdRadar.id);
         });
 
-        it('should not modify rain zone (ask to your sales@raain.io)', async () => {
+        it('should not modify rain zone and wait for rain validation by raain team (ask to your sales@raain.io)', async () => {
             const rainId = _created.createdRadar.getLinkId('rain');
-
-            // Wait for building the rain zone something like 0.5 sec
-            await sleep(100);
-
             await _request(await _$app)
                 .put('/v1/rains/' + rainId)
-                .send({step: 'prepare'})
-                .expect('Content-Type', /application\/json/)
-                .expect(401);
+                .send({
+                    step: 'prepare',
+                    radarMeasureToIdentifyEchoes: _created.createdRadarMeasures[0].id,
+                    inputValidation: 1
+                })
+                .expect('Content-Type', /application\/json/);
         });
 
         it('should get before any computation what is the status of the zone (prepared/ready or not)', async () => {
             const rainId = _created.createdRadar.getLinkId('rain');
-
-            // Wait for building the rain zone something like 0.5 sec
-            await sleep(1000);
+            await sleep(1800);
 
             let res = await _request(await _$app)
                 .get('/v1/rains/' + rainId)
@@ -337,16 +363,26 @@ describe('as Customer with all roles', function () {
                 .expect(200);
 
             const rainNode = new RainNode(res.body);
-            rainNode.status.should.equal(0.5);
-            rainNode.quality.should.equal(1);
+            rainNode.status.should.be.gte(0.2);
+            // rainNode.quality.should.equal(-0.5); // === system still doesn't know
+        });
+
+        it('should keep calm and carry on ;)', async () => {
+            const rainId = _created.createdRadar.getLinkId('rain');
+            await sleep(1800);
+
+            let res = await _request(await _$app)
+                .get('/v1/rains/' + rainId)
+                .expect('Content-Type', /application\/json/)
+                .expect(200);
+
+            const rainNode = new RainNode(res.body);
+            rainNode.status.should.equal(1);
+            // rainNode.quality.should.equal(1);
         });
 
         it('should ask (post) for rain computation', async () => {
             const rainId = _created.createdRadar.getLinkId('rain');
-
-            // Wait for computation something like 0.5 sec
-            await sleep(1000);
-
             let res = await _request(await _$app)
                 .post('/v1/rains/' + rainId + '/computations')
                 .send({
@@ -366,7 +402,8 @@ describe('as Customer with all roles', function () {
                 rc.id.should.be.not.undefined;
                 rc.periodBegin.should.equal(begin.toISOString());
                 rc.periodEnd.should.equal(end.toISOString());
-                rc.progressIngest.should.equal(1);
+                // rc.progressIngest.should.equal(1);
+                rc.progressComputing.should.equal(0.5);
                 rc.launchedBy.should.equal('demo');
                 rc.getLinkId('radar', 0).should.equal(_created.createdRadar.id);
                 rc.getLinkId('rain').should.equal(rainId);
@@ -376,11 +413,9 @@ describe('as Customer with all roles', function () {
         });
 
         it('should get the rain computation progress', async () => {
-
-            // Wait for computation something like 0.5 sec
-            await sleep(1000);
-
             const rainId = _created.createdRadar.getLinkId('rain');
+            await sleep(60000);
+
             let res = await _request(await _$app)
                 .get('/v1/rains/' + rainId + '/computations/' + _created.createdRainComputation.id)
                 .expect('Content-Type', /application\/json/)
@@ -390,7 +425,7 @@ describe('as Customer with all roles', function () {
             rainComputation.should.be.not.undefined;
             rainComputation.progressIngest.should.equal(1);
             rainComputation.progressComputing.should.be.greaterThan(0);
-        });
+        }).timeout(80000);
 
         it('should get the rain computation result (direct or with map format)', async () => {
             const rainId = _created.createdRadar.getLinkId('rain');
@@ -403,7 +438,8 @@ describe('as Customer with all roles', function () {
             rainComputation.should.be.not.undefined;
             rainComputation.progressIngest.should.equal(1);
             rainComputation.progressComputing.should.equal(1);
-            rainComputation.timeSpentInMs.should.be.greaterThan(0);
+            rainComputation.timeSpentInMs.should.be.greaterThan(10000);
+            rainComputation.timeSpentInMs.should.be.lessThan(60000);
             rainComputation.getLinkId('radar', 0).should.equal(_created.createdRadar.id);
             rainComputation.getLinkId('rain', 0).should.equal(rainId);
 

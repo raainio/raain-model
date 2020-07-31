@@ -10,7 +10,7 @@ export class MeasureValuePolarContainer {
     ) {
 
         if (!azimuthOrObjectToCopy && azimuthOrObjectToCopy !== 0) {
-            throw 'Need a valid Object or ID';
+            throw 'MeasureValuePolarContainer needs a valid Object or ID';
         }
 
         if (typeof (azimuthOrObjectToCopy.azimuth) !== 'undefined') {

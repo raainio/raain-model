@@ -14,9 +14,8 @@ var Link = (function () {
     }
     Link.prototype.getId = function () {
         var urls = this.href.split('/');
-        var id = urls[urls.length - 1];
         // can be enforce : verify rel in -2 urls ?...
-        return id;
+        return urls[urls.length - 1];
     };
     Link.isClonable = function (object) {
         return object && object.rel && object.href;
