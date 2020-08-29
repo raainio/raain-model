@@ -12,6 +12,7 @@ export * from './RadarMeasureValue';
 export * from './RainMeasureValue';
 export * from './MeasureValuePolarContainer';
 export * from './GaugeMeasure';
+export * from './GaugeMeasureValue';
 export * from './RadarNodeMap';
 export * from './RainComputationNode';
 export * from './RainComputationMap';

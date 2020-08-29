@@ -65,6 +65,14 @@ export class RainMeasureValue implements IMeasureValue {
         return 0;
     }
 
+    getDistance() : number {
+        const polars = this.polars.getPolars();
+        if (polars.length > 0) {
+            return polars[0].distance;
+        }
+        return 1;
+    }
+
     public toJSON(): Object {
         return this.polars.toJSON();
     }
