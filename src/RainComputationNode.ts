@@ -59,7 +59,7 @@ export class RainComputationNode extends RaainNode {
             this.timeSpentInMs = idOrObjectToCopy.timeSpentInMs;
             this.isReady = idOrObjectToCopy.isReady;
             this.isDoneDate = idOrObjectToCopy.isDoneDate;
-            this.results = idOrObjectToCopy.results;
+            this.setResults(idOrObjectToCopy.results);
             this.launchedBy = idOrObjectToCopy.launchedBy;
             this.replaceRainLink(idOrObjectToCopy.links);
             this.replaceRainLink(idOrObjectToCopy.rain);
@@ -75,7 +75,7 @@ export class RainComputationNode extends RaainNode {
         this.timeSpentInMs = timeSpentInMs;
         this.isReady = isReady;
         this.isDoneDate = isDoneDate;
-        this.results = results;
+        this.setResults(results);
         this.launchedBy = launchedBy;
         this.replaceRainLink(links);
         this.addRadarLinks(links);
@@ -91,7 +91,7 @@ export class RainComputationNode extends RaainNode {
         json['timeSpentInMs'] = this.timeSpentInMs;
         json['isReady'] = this.isReady;
         json['isDoneDate'] = this.isDoneDate;
-        json['results'] = this.results;
+        json['results'] = JSON.stringify(this.results.map(r => r.toJSON()));
         json['launchedBy'] = this.launchedBy;
         return json;
     }
@@ -110,6 +110,29 @@ export class RainComputationNode extends RaainNode {
 
     public addRadarMeasureLinks(linksToAdd: Link[] | any[]): void {
         this.addLinks(RainComputationNode._getRadarMeasureLinks(linksToAdd));
+    }
+
+    private setResults(results) {
+        if (typeof results === 'string') {
+            results = JSON.parse(results);
+        }
+
+        if (!results || results.length === 0) {
+            this.results = [];
+            return;
+        }
+
+        this.results = results.map(r => {
+            if (typeof r === 'string') {
+                return new RainMeasureValue(r);
+            } else if (r.getPolarsStringified) {
+                return new RainMeasureValue(r.getPolarsStringified());
+            } else if (r.polars) {
+                return new RainMeasureValue(r);
+            } else {
+                return r;
+            }
+        });
     }
 
     private static _getRadarLinks(linksToPurify: any[]): any[] {
