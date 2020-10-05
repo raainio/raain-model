@@ -9,7 +9,7 @@
   "types": "dist/index.d.ts",
   "scripts": {
     "build": "rm -rf dist/ && tsc",
-    "test": "npm run test-mocha",
+    "test": "",
     "test-example": "ts-node examples/creation.example.ts",
     "test-mocha": "mocha examples/**/*.spec.js --exit"
   },
