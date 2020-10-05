@@ -48,8 +48,8 @@ push_git() {
     #git commit -m "[ci skip] travis is OK: v${PACKAGE_VERSION} - ${REVISION}"
     #git tag -a "v${PACKAGE_VERSION}" -m "v${PACKAGE_VERSION}"
     #git push -q upstream HEAD:master --tags
-    git push
-    git push --tags
+    git push origin HEAD:master --force
+    git push origin HEAD:master --force --tags
 
 }
 
