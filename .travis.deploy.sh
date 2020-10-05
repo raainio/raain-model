@@ -37,7 +37,7 @@ build_version() {
             \"main\": \"index.js\",
             \"types\": \"index.d.ts\",
             \"dependencies\": {}
-  }"
+  }" > dist/package.json
     npm patch
 }
 
