@@ -5,6 +5,9 @@ cache:
   bundler: true
   directories:
     - node_modules
+branches:
+  only:
+    - master
 script:
   - npm test
 after_success:
