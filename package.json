@@ -1,6 +1,6 @@
 {
   "name": "@raain/model",
-  "version": "0.0.1",
+  "version": "0.2.1",
   "author": "contact@raain.io",
   "homepage": "https://raain.io",
   "description": "raain api model",
@@ -9,7 +9,9 @@
   "types": "dist/index.d.ts",
   "scripts": {
     "build": "rm -rf dist/ && tsc",
-    "test": "ts-node examples/creation.example.ts && mocha examples/**/*.spec.js --exit"
+    "test": "npm run test",
+    "test-example": "ts-node examples/creation.example.ts",
+    "test-mocha": "mocha examples/**/*.spec.js --exit"
   },
   "dependencies": {},
   "devDependencies": {
