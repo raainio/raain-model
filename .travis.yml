@@ -11,7 +11,7 @@ branches:
 script:
 - npm test
 after_success:
-- npm version patch
+# - npm version patch -m "[skip ci] version updated"
 - bash .travis.deploy.sh
 before_deploy:
 - ls -al dist/
