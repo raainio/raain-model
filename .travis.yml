@@ -1,18 +1,17 @@
-language:
-- node_js
+language: node_js
 node_js:
-- 10
+  - 10
 cache:
   bundler: true
   directories:
-  - node_modules
+    - node_modules
 script:
-- npm test
+  - npm test
 after_success:
-- bash .travis.deploy.sh
+  - bash .travis.deploy.sh
 before_deploy:
-- ls -al
-- cd dist
+  - ls -al
+  - cd dist
 deploy:
   provider: npm
   email: mat@mlefree.com
