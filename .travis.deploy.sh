@@ -27,6 +27,17 @@ setup_git() {
 build_version() {
     echo "Build + Docs + Bump."
     npm run build
+    echo "{
+            \"name\": \"@raain/model\",
+            \"version\": \"$PACKAGE_VERSION\",
+            \"author\": \"contact@raain.io\",
+            \"homepage\": \"https://raain.io\",
+            \"description\": \"raain api model\",
+            \"private\": false,
+            \"main\": \"index.js\",
+            \"types\": \"index.d.ts\",
+            \"dependencies\": {}
+  }"
     npm patch
 }
 
