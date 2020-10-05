@@ -8,7 +8,7 @@
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
-    "build": "rm -rf dist/ && tsc",
+    "build": "rm -rf dist/ && npx tsc",
     "test": "",
     "test-example": "ts-node examples/creation.example.ts",
     "test-mocha": "mocha examples/**/*.spec.js --exit"
