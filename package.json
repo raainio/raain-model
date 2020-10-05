@@ -1,0 +1,28 @@
+{
+  "name": "@raain/model",
+  "version": "0.0.1",
+  "author": "contact@raain.io",
+  "homepage": "https://raain.io",
+  "description": "raain api model",
+  "private": false,
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "rm -rf dist/ && tsc",
+    "test": "ts-node examples/creation.example.ts && mocha examples/**/*.spec.js --exit"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "@types/leaflet": "^1.5.12",
+    "@types/mocha": "^5.2.7",
+    "@types/node": "^12.12.14",
+    "@types/pixi.js": "^5.0.0",
+    "chai": "^4.2.0",
+    "chai-as-promised": "^7.1.1",
+    "chai-spies": "^1.0.0",
+    "mocha": "^7.1.2",
+    "ts-node": "~8.3.0",
+    "tslint": "~5.17.0",
+    "typescript": "~3.1.6"
+  }
+}
