@@ -27,7 +27,6 @@ setup_git() {
 build_version() {
     echo "Build + Docs + Bump."
     npm run build
-    # TODO npm run docs
     npm patch
 }
 
