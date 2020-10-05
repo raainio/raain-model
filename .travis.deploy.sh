@@ -38,7 +38,7 @@ build_version() {
         \"types\": \"index.d.ts\",
         \"dependencies\": {}
   }" > ./dist/package.json
-    npm patch
+    npm version patch
 }
 
 push_git() {
