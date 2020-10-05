@@ -1,5 +1,5 @@
 {
-  "name": "@raain/model",
+  "name": "raain-model",
   "version": "0.2.1",
   "author": "contact@raain.io",
   "homepage": "https://raain.io",
@@ -15,10 +15,6 @@
   },
   "dependencies": {},
   "devDependencies": {
-    "@types/leaflet": "^1.5.17",
-    "@types/mocha": "^5.2.7",
-    "@types/node": "^12.12.62",
-    "@types/pixi.js": "^5.0.0",
     "chai": "^4.2.0",
     "chai-as-promised": "^7.1.1",
     "chai-spies": "^1.0.0",

@@ -28,7 +28,7 @@ build_version() {
     echo "Build + Docs + Bump."
     npm run build
     echo "{
-        \"name\": \"@raain/model\",
+        \"name\": \"raain-model\",
         \"version\": \"$PACKAGE_VERSION\",
         \"author\": \"contact@raain.io\",
         \"homepage\": \"https://raain.io\",
@@ -37,7 +37,7 @@ build_version() {
         \"main\": \"index.js\",
         \"types\": \"index.d.ts\",
         \"dependencies\": {}
-  }" > dist/package.json
+  }" > ./dist/package.json
     npm patch
 }
 
