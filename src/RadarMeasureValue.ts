@@ -59,6 +59,26 @@ export class RadarMeasureValue implements IMeasureValue {
         return this.polars.setPolarValue(azimuthIndex, edgeIndex, value);
     }
 
+    getAzimuthsCount(): number {
+        return this.polars.getPolars().length;
+    }
+
+    getPolarEdgesCount(): number {
+        const polars = this.polars.getPolars();
+        if (polars.length > 0) {
+            return polars[0].polarEdges.length;
+        }
+        return 0;
+    }
+
+    getDistance() : number {
+        const polars = this.polars.getPolars();
+        if (polars.length > 0) {
+            return polars[0].distance;
+        }
+        return 1;
+    }
+
     public toJSON(): Object {
         let json: any = this.polars.toJSON();
         json.angle = this.angle;
