@@ -1,25 +1,25 @@
 language: node_js
 node_js:
-  - 10
+- 10
 cache:
   bundler: true
   directories:
-    - node_modules
+  - node_modules
 branches:
   only:
-    - master
+  - master
 script:
-  - npm test
+- npm test
 after_success:
-  - bash .travis.deploy.sh
+- bash .travis.deploy.sh
 before_deploy:
-  - ls -al
-  - cd dist
+- ls -al
+- cd dist
 deploy:
   provider: npm
   email: mat@mlefree.com
   skip_cleanup: true
   api_key:
-    secure: oreftRymgLTLDEFoEpuD13+2EsPTXuBvTSOkBAiQUdpWbzTfqDlxw+aF8A1AMwR7Cq1dKlMTDGTZN9AtomuHB2DeD5jalfgb9ROINQPAYh+hgC2ZGFVCqUGJ55251Qwredwk4UBqZQ02aHQJ5iJ3gVkADoz7DwLV2YimpvOvsipd7oO80CTj6FWowYRlj8EQE6W7elrl/RxJfqTakysiDV3DKyix4tNczIFo3m68fj70hsDx4dlweEybP91gGVCGzHwU6U1hBQI2HEZgriUm1bNk1qGiO2LOQK9yZ33CkQ6Z/RiOu9AdcHxZ4lp/MwkG4eRq2M8wylIe15Js3ZNvrE0QGfUIDEh3r2X9StTIilfWU6WrTXjQe97LUS4fqYMHssneCssmcnlVustLI+aePDlPHrLex7iPlQhBVClBVGWKRri6roCq4BTRzxOMyCuxFRHvXaLxniKbjw67mrzINkx2Sr3pmdixg5hqLCgQ5er0EqFRIpMr4RqehnDoxWVHb3tdS4LrafuY5fYpVC3gywb/riJHo1iav9y+1MXhYOObaQO2PJeMS4FPG3sUss7MjFnhELwYn4vSN3bXHQKBfDBpOFTgvunmTttpJzRzGt1DT2yy9zma9VB4oyDXwuyO2nFYXbx2VtsbzD6wQ2M/VSfqx/0/kLwUHQFE3CoJLAE=
+    secure: GX+oWYwm870W/8AefIcmTFnEltW8oGItoSZNV3jP+ubpJ0TeX3PSKA4z2Mu0CguRZ4VPKZXiqYwgZbfWAaWML4xEBXcmGQnrbnd2poScgpwJXhulGajrNNmeOv2YUvoyXmiwRCcJIAaBe9FQb/VWbLC6kDQOU8J22+9LoxAvUmCnRyDlujKB7NcWEKqpMVrKkwlibD3x55RoS56H7JCBq3s7WHze7DizOZnXkSpqoSNFOrYjL8WypEU+K8A7z5junNFgIFtjPgqVEjogwMDmak7I83M02kCz2HSF9JKCbGmNzqN+vNx0bIFbJsQBNbg/5Nc3Rmbqu4M3g6PA59eTjPU6UqQOZzkCcJclCX3PKxyUI8IDSZGdLYooiXarO9kGfkkxUgNlaLCgnlFwuO/ZOF3XTmZWnki+yg/s9IQiHnyj9yq8pnYa6ZmBWBvWfAjX67zhMdZHSC5clhjiRnN7WRSK9Rqmo2YtJPlCJIXjCiSzrRVEaD6ExdMijFlH5W3TDAGnY2nT1kfxe+mo9tn2pg+nT7a1ifkT4E3NkfvdKu9bZs+B6tH1ulM7FF3FBaLyWYvJq9FQnyEdpZSjorVy9WGCsUa63NUcz6Lkd2s+NCF+kS5Oyo1BMjDCm5B4qXZr8i30hysrwA+kfECMWetptGW4ZhQ/mhzfwrfUU4BI90o=
   on:
     branch: master
