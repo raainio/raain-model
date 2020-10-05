@@ -13,13 +13,10 @@ script:
 after_success:
 - bash .travis.deploy.sh
 before_deploy:
-- ls -al
+- ls -al dist/
 - cd dist
 deploy:
   provider: npm
   email: mat@mlefree.com
   skip_cleanup: true
-  api_key:
-    secure: GX+oWYwm870W/8AefIcmTFnEltW8oGItoSZNV3jP+ubpJ0TeX3PSKA4z2Mu0CguRZ4VPKZXiqYwgZbfWAaWML4xEBXcmGQnrbnd2poScgpwJXhulGajrNNmeOv2YUvoyXmiwRCcJIAaBe9FQb/VWbLC6kDQOU8J22+9LoxAvUmCnRyDlujKB7NcWEKqpMVrKkwlibD3x55RoS56H7JCBq3s7WHze7DizOZnXkSpqoSNFOrYjL8WypEU+K8A7z5junNFgIFtjPgqVEjogwMDmak7I83M02kCz2HSF9JKCbGmNzqN+vNx0bIFbJsQBNbg/5Nc3Rmbqu4M3g6PA59eTjPU6UqQOZzkCcJclCX3PKxyUI8IDSZGdLYooiXarO9kGfkkxUgNlaLCgnlFwuO/ZOF3XTmZWnki+yg/s9IQiHnyj9yq8pnYa6ZmBWBvWfAjX67zhMdZHSC5clhjiRnN7WRSK9Rqmo2YtJPlCJIXjCiSzrRVEaD6ExdMijFlH5W3TDAGnY2nT1kfxe+mo9tn2pg+nT7a1ifkT4E3NkfvdKu9bZs+B6tH1ulM7FF3FBaLyWYvJq9FQnyEdpZSjorVy9WGCsUa63NUcz6Lkd2s+NCF+kS5Oyo1BMjDCm5B4qXZr8i30hysrwA+kfECMWetptGW4ZhQ/mhzfwrfUU4BI90o=
-  on:
-    branch: master
+  api_key: $NPM_TOKEN
