@@ -27,7 +27,7 @@ setup_git() {
 build_version() {
     echo "Build + Docs + Bump."
     npm run build
-    npm version patch -m "[skip ci] travis is OK: v${PACKAGE_VERSION} - ${REVISION}"
+    #npm version patch -m "[skip ci] travis is OK: v${PACKAGE_VERSION} - ${REVISION}"
     echo "{
         \"name\": \"raain-model\",
         \"version\": \"$PACKAGE_VERSION\",
@@ -48,8 +48,8 @@ push_git() {
     #git commit -m "[ci skip] travis is OK: v${PACKAGE_VERSION} - ${REVISION}"
     #git tag -a "v${PACKAGE_VERSION}" -m "v${PACKAGE_VERSION}"
     #git push -q upstream HEAD:master --tags
-    git push origin HEAD:master --force
-    git push origin HEAD:master --force --tags
+    #git push origin HEAD:master --force
+    #git push origin HEAD:master --force --tags
 
 }
 

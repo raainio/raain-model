@@ -11,7 +11,8 @@
     "build": "rm -rf dist/ && npx tsc",
     "test": "",
     "test-example": "ts-node examples/creation.example.ts",
-    "test-mocha": "mocha examples/**/*.spec.js --exit"
+    "test-mocha": "mocha examples/**/*.spec.js --exit",
+    "postversion": "git push && git push --tags"
   },
   "dependencies": {},
   "devDependencies": {
