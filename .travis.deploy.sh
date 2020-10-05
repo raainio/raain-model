@@ -43,10 +43,12 @@ build_version() {
 
 push_git() {
     echo "Commit, tag and push on master."
-    git add -A .
+    #git add -A .
+    git add .
     git commit -m "[ci skip] travis is OK: v${PACKAGE_VERSION} - ${REVISION}"
     git tag -a "v${PACKAGE_VERSION}" -m "v${PACKAGE_VERSION}"
-    git push -q upstream HEAD:master --tags
+    #git push -q upstream HEAD:master --tags
+    git push --tags
 
 }
 
