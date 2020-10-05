@@ -27,6 +27,7 @@ setup_git() {
 build_version() {
     echo "Build + Docs + Bump."
     npm run build
+    npm version patch
     echo "{
         \"name\": \"raain-model\",
         \"version\": \"$PACKAGE_VERSION\",
@@ -38,7 +39,6 @@ build_version() {
         \"types\": \"index.d.ts\",
         \"dependencies\": {}
   }" > ./dist/package.json
-    npm version patch
 }
 
 push_git() {
