@@ -9,7 +9,7 @@ then
 fi
 
 setup_git() {
-    echo "Setup Git."
+    echo "> Setup Git."
     git init
     git config --global user.email "travis@travis-ci.org"
     git config --global user.name "Travis CI"
@@ -24,10 +24,9 @@ setup_git() {
     | sed 's/[", ]//g')
 }
 
-build_version() {
-    echo "Build + Docs + Bump."
-    npm run build
-    #npm version patch -m "[skip ci] travis is OK: v${PACKAGE_VERSION} - ${REVISION}"
+update_version() {
+    echo "> Update Build & Docs"
+    # npm run build
     echo "{
         \"name\": \"raain-model\",
         \"version\": \"$PACKAGE_VERSION\",
@@ -44,9 +43,8 @@ build_version() {
 }
 
 push_git() {
-    echo "Commit, tag and push on master."
+    echo "> Commit, tag and push on master."
     NEXT_VERSION=$(npm version patch -m "[skip ci] travis is OK: v${PACKAGE_VERSION} - ${REVISION}")
-    #NEXT_VERSION=$PACKAGE_VERSION
     echo " - ${NEXT_VERSION} : In progress... " >> RELEASE.md
     git add .
     git commit -m "[skip ci] ${NEXT_VERSION} : In progress..."
@@ -59,5 +57,5 @@ push_git() {
 ###########
 
 setup_git
-build_version
+update_version
 push_git

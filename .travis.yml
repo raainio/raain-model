@@ -1,21 +1,21 @@
 language: node_js
 node_js:
-- 12
+  - 12
 cache:
   bundler: true
   directories:
-  - node_modules
+    - node_modules
 branches:
   only:
-  - master
+    - master
 script:
-- npm test
+  - npm run build
+  - npm test
 after_success:
-# - npm version patch -m "[skip ci] version updated"
-- bash .travis.deploy.sh
+  - bash .travis.deploy.sh
 before_deploy:
-- ls -al dist/
-- cd dist
+  - ls -al dist/
+  - cd dist
 deploy:
   provider: npm
   email: mat@mlefree.com
