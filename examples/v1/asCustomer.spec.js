@@ -129,7 +129,7 @@ describe('as Customer with all roles', function () {
                 .post('/v1/radars/' + _created.createdRadar.id + '/measures')
                 // .set('Authorization', 'Basic ' + btoa('' + _mocks.userAdmin.email + ':' + _mocks.userAdmin.password))
                 .send({
-                    date: date1,
+                    date: date1.toISOString(),
                     values: values
                 })
                 .expect('Content-Type', /application\/json/)
@@ -149,7 +149,7 @@ describe('as Customer with all roles', function () {
                 res = await _request(await _$app)
                     .post('/v1/radars/' + _created.createdRadar.id + '/measures')
                     .send({
-                        date: otherDate,
+                        date: otherDate.toISOString(),
                         values: values
                     })
                     .expect('Content-Type', /application\/json/)
