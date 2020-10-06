@@ -41,7 +41,7 @@ describe('as Customer with all roles', function () {
 
     });
 
-    describe('during radars setup', () => {
+    xdescribe('during radars setup', () => {
 
         xit('should 401 from not authorized user', async () => {
             const res = await _request(await _$app)
