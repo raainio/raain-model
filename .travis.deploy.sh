@@ -26,8 +26,8 @@ setup_git() {
 update_version() {
   echo "> Update Build & Docs"
   # npm run build
-  cp package.json ./dist/package.json
-  cp *.md ./dist/.
+  #cp package.json ./dist/package.json
+  #cp *.md ./dist/.
 }
 
 push_git() {
