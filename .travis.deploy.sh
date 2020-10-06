@@ -39,20 +39,18 @@ build_version() {
         \"types\": \"index.d.ts\",
         \"dependencies\": {}
   }" > ./dist/package.json
+
+   cp *.md .dist/
 }
 
 push_git() {
     echo "Commit, tag and push on master."
-    #git add -A .
-    git add .
     NEXT_VERSION=$(npm version patch -m "[skip ci] travis is OK: v${PACKAGE_VERSION} - ${REVISION}")
+    git add -A .
     echo " - ${NEXT_VERSION} : In progress... " >> RELEASE.md
     git commit -m "[skip ci] ${NEXT_VERSION} : In progress..."
-    #git tag -a "v${PACKAGE_VERSION}" -m "v${PACKAGE_VERSION}"
+    # git tag -a "v${PACKAGE_VERSION}" -m "v${PACKAGE_VERSION}"
     git push -q upstream HEAD:master --tags
-    #git push origin HEAD:master --force
-    #git push origin HEAD:master --force --tags
-
 }
 
 ###########
