@@ -40,7 +40,7 @@ build_version() {
         \"dependencies\": {}
   }" > ./dist/package.json
 
-   cp *.md .dist/
+   cp *.md ./dist/.
 }
 
 push_git() {
