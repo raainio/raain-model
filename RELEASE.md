@@ -4,3 +4,4 @@
  - v0.2.1 : Add customers team, radar
  - v0.2.6 : Fix some bugs
  - v0.2.7 : Fix @types
+ - v0.2.8 : In progress... 
