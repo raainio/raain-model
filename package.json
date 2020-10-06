@@ -10,8 +10,8 @@
   ],
   "private": false,
   "license": "MIT",
-  "main": "./dist/index.js",
-  "types": "./dist/index.d.ts",
+  "main": "index.js",
+  "types": "index.d.ts",
   "dependencies": {},
   "devDependencies": {
     "assert": "^2.0.0",

@@ -13,6 +13,8 @@ script:
   - npm test
 after_success:
   - bash .travis.deploy.sh
+before_deploy:
+  - cd dist
 deploy:
   provider: npm
   email: mat@mlefree.com
