@@ -14,7 +14,7 @@ setup_git() {
     git config --global user.email "travis@travis-ci.org"
     git config --global user.name "Travis CI"
     git remote -v
-    git remote add upstream "https://${GH_TOKEN}@github.com/raain/raain-model.git"
+    git remote add upstream "https://${GH_TOKEN}@github.com/raainio/raain-model.git"
 
     REVISION=$(git rev-parse --short HEAD)
     PACKAGE_VERSION=$(cat package.json \
@@ -27,7 +27,7 @@ setup_git() {
 build_version() {
     echo "Build + Docs + Bump."
     npm run build
-    npm version patch -m "[skip ci] travis is OK: v${PACKAGE_VERSION} - ${REVISION}"
+    #npm version patch -m "[skip ci] travis is OK: v${PACKAGE_VERSION} - ${REVISION}"
     echo "{
         \"name\": \"raain-model\",
         \"version\": \"$PACKAGE_VERSION\",
@@ -46,7 +46,7 @@ push_git() {
     #git add -A .
     echo "$PACKAGE_VERSION : " >> RELEASE.md
     git add .
-    git commit -m "[ci skip] travis is OK: v${PACKAGE_VERSION} - ${REVISION}"
+    git commit -m "[skip ci] travis is OK: v${PACKAGE_VERSION} - ${REVISION}"
     git tag -a "v${PACKAGE_VERSION}" -m "v${PACKAGE_VERSION}"
     git push -q upstream HEAD:master --tags
     #git push origin HEAD:master --force
