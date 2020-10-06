@@ -4,6 +4,7 @@
   "author": "contact@raain.io",
   "homepage": "https://github.com/raainio/raain-model",
   "description": "raain.io api model",
+  "keywords": ["raain.io", "api"],
   "private": false,
   "license": "MIT",
   "main": "index.js",
