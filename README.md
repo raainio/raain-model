@@ -1,7 +1,7 @@
 # raain-model
 
 [![Build Status](https://travis-ci.org/raainio/raain-model.svg?branch=master)](https://travis-ci.org/raainio/raain-model)
-[![npm version](https://badge.fury.io/js/raain-model.svg)](https://badge.fury.io/js/raain-model)
+[![npm version](https://nodei.co/npm/raain-model.png?downloads=true)](https://www.npmjs.com/package/raain-model)
 
 RAAIN model used by services.
 

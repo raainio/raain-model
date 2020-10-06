@@ -45,10 +45,10 @@ build_version() {
 
 push_git() {
     echo "Commit, tag and push on master."
-    #NEXT_VERSION=$(npm version patch -m "[skip ci] travis is OK: v${PACKAGE_VERSION} - ${REVISION}")
-    NEXT_VERSION=$PACKAGE_VERSION
-    git add -A .
+    NEXT_VERSION=$(npm version patch -m "[skip ci] travis is OK: v${PACKAGE_VERSION} - ${REVISION}")
+    #NEXT_VERSION=$PACKAGE_VERSION
     echo " - ${NEXT_VERSION} : In progress... " >> RELEASE.md
+    # git add -A .
     git commit -m "[skip ci] ${NEXT_VERSION} : In progress..."
     # git tag -a "v${PACKAGE_VERSION}" -m "v${PACKAGE_VERSION}"
     git push -q upstream HEAD:master --tags
