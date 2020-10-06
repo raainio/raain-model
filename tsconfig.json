@@ -4,7 +4,8 @@
     "module": "commonjs",
     "declaration": true,
     "sourceMap": true,
-    "outDir": "dist"
+    "outDir": "dist",
+    "lib": [ "dom", "es2015", "es2016", "es2017" ]
   },
   "exclude": [
     "node_modules",

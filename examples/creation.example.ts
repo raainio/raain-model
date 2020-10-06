@@ -1,5 +1,4 @@
 import {MeasureValuePolarContainer, RadarNode, RainNode} from '../dist';
-// import {RadarNode, RainNode} from '../src';
 import * as assert from 'assert';
 
 console.log('### Basic model examples... ');

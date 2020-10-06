@@ -10,7 +10,6 @@
   "types": "index.d.ts",
   "dependencies": {},
   "devDependencies": {
-    "@types/node": "^14.11.5",
     "chai": "^4.2.0",
     "chai-as-promised": "^7.1.1",
     "chai-spies": "^1.0.0",
