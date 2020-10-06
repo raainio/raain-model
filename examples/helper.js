@@ -58,9 +58,9 @@ const expectation2 = {
 
         links: [{rel: 'rain', href: 'mockId'}, {rel: 'radar', href: 'mockId'}],
 
-        progressIngest : 1,
-        progressComputing : 1,
-        timeSpentInMs : 100,
+        progressIngest: 1,
+        progressComputing: 1,
+        timeSpentInMs: 100,
 
         periodBegin: '2018-06-01T11:05:00.000Z',
         periodEnd: '2018-06-01T11:10:00.000Z',
@@ -105,6 +105,7 @@ exports.RainMeasure = require('../dist').RainMeasure;
 exports.RadarMeasureValue = require('../dist').RadarMeasureValue;
 exports.RainMeasureValue = require('../dist').RainMeasureValue;
 exports.GaugeMeasure = require('../dist').GaugeMeasure;
+exports.GaugeNodeMap = require('../dist').GaugeNodeMap;
 
 
 exports.cleanup = async () => {

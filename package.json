@@ -2,19 +2,15 @@
   "name": "raain-model",
   "version": "0.2.5",
   "author": "contact@raain.io",
-  "homepage": "https://raain.io",
-  "description": "raain api model",
+  "homepage": "https://github.com/raainio/raain-model",
+  "description": "raain.io api model",
   "private": false,
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
-  "scripts": {
-    "build": "rm -rf dist/ && npx tsc",
-    "test": "npm run test-mocha",
-    "test-example": "ts-node examples/creation.example.ts",
-    "test-mocha": "mocha examples/**/*.spec.js --exit"
-  },
+  "license": "MIT",
+  "main": "index.js",
+  "types": "index.d.ts",
   "dependencies": {},
   "devDependencies": {
+    "@types/node": "^14.11.5",
     "chai": "^4.2.0",
     "chai-as-promised": "^7.1.1",
     "chai-spies": "^1.0.0",
@@ -22,5 +18,11 @@
     "ts-node": "~8.3.0",
     "tslint": "~5.17.0",
     "typescript": "~3.1.6"
+  },
+  "scripts": {
+    "build": "rm -rf dist/ && npx tsc",
+    "test": "npm run test-example && npm run test-mocha",
+    "test-example": "ts-node examples/creation.example.ts",
+    "test-mocha": "mocha examples/**/*.spec.js --exit"
   }
 }

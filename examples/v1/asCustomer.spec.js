@@ -21,7 +21,7 @@ const RainMeasure = _helper.RainMeasure;
 const GaugeMeasure = _helper.GaugeMeasure;
 const GaugeNodeMap = _helper.GaugeNodeMap;
 
-xdescribe('as Customer with all roles', function () {
+describe('as Customer with all roles', function () {
 
     const _created = {};
 
@@ -173,7 +173,7 @@ xdescribe('as Customer with all roles', function () {
             radarMeasure.values.length.should.equal(_created.createdRadarMeasures[0].values.length);
         });
 
-        it('should get the radar information as a map format', async () => {
+        xit('should get the radar information as a map format', async () => {
             const res = await _request(await _$app)
                 .get('/v1/radars/' + _created.createdRadar.id + '?format=map&begin=2018-06-01 12:05:06&end=2018-06-01 13:05:06')
                 .expect('Content-Type', /application\/json/)
@@ -208,7 +208,7 @@ xdescribe('as Customer with all roles', function () {
 
     });
 
-    describe('during gauges setup', () => {
+    xdescribe('during gauges setup', () => {
 
         xit('should 401 from not authorized user', async () => {
             const res = await _request(await _$app)
@@ -340,7 +340,7 @@ xdescribe('as Customer with all roles', function () {
 
     });
 
-    describe('expecting rains computations', () => {
+    xdescribe('expecting rains computations', () => {
 
         it('should get the created radar linked rains zones', async () => {
             const rainId = _created.createdRadar.getLinkId('rain');

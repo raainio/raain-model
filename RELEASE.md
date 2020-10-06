@@ -1,6 +1,5 @@
 # Release notes
 
-- 2019.1017.2241 - "0.0.1" : first extracts from RAAIN services
-- 2020.07.31 - "0.2.1" : Add customers team, radar
- - v0.2.4 : In progress... 
+ - v0.0.1 : first extracts from RAAIN services
+ - v0.2.1 : Add customers team, radar
  - v0.2.5 : In progress... 

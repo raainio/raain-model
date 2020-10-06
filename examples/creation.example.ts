@@ -1,6 +1,6 @@
 import {MeasureValuePolarContainer, RadarNode, RainNode} from '../dist';
 // import {RadarNode, RainNode} from '../src';
-import assert = require('assert');
+import * as assert from 'assert';
 
 console.log('### Basic model examples... ');
 
