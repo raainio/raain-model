@@ -21,6 +21,7 @@ const RainMeasure = _helper.RainMeasure;
 const GaugeMeasure = _helper.GaugeMeasure;
 const GaugeNodeMap = _helper.GaugeNodeMap;
 
+// TODO API Usage examples ( publish as OpenAPI) : https://todo.here  (ask for a demo customer credential to sales@raain.io)
 describe('as Customer with all roles', function () {
 
     const _created = {};
@@ -41,12 +42,12 @@ describe('as Customer with all roles', function () {
 
     });
 
-    xdescribe('during radars setup', () => {
+    describe('during radars setup', () => {
 
         xit('should 401 from not authorized user', async () => {
             const res = await _request(await _$app)
                 .get('/v1/radars')
-                //  .auth('username', 'password')
+                // TODO .auth('username', 'password')
                 //      .set('Accept', 'application/json')
                 .expect('Content-Type', /application\/json/)
                 .expect(401)
@@ -122,14 +123,14 @@ describe('as Customer with all roles', function () {
         });
 
         it('should post radar measures', async () => {
-            let values = _buildRadarMeasures(8);
+            const values = _buildRadarMeasures();
             _created.createdRadarMeasures = [];
             const date1 = new Date('2018-06-01 13:05:00') // 2018-06-01T11:05:00.000Z
             let res = await _request(await _$app)
                 .post('/v1/radars/' + _created.createdRadar.id + '/measures')
-                // .set('Authorization', 'Basic ' + btoa('' + _mocks.userAdmin.email + ':' + _mocks.userAdmin.password))
+                // TODO .set('Authorization', 'Basic ' + btoa('' + _mocks.userAdmin.email + ':' + _mocks.userAdmin.password))
                 .send({
-                    date: date1.toISOString(),
+                    date: date1,
                     values: values
                 })
                 .expect('Content-Type', /application\/json/)
@@ -142,23 +143,19 @@ describe('as Customer with all roles', function () {
             measure.values.length.should.equal(values.length);
             _created.createdRadarMeasures.push(measure);
 
-            // Post other ones, for fun :)
-            for (let i = 0; i < 20; i++) {
-                values = _buildRadarMeasures(i + 5);
-                const otherDate = new Date(new Date('2018-06-01 13:12:34').getTime() + (i * 5 * 60000)); // 2018-06-01T11:12:34.000Z + (i * 5min)
-                res = await _request(await _$app)
-                    .post('/v1/radars/' + _created.createdRadar.id + '/measures')
-                    .send({
-                        date: otherDate.toISOString(),
-                        values: values
-                    })
-                    .expect('Content-Type', /application\/json/)
-                    .expect(201);
+            // Post another one, for fun :)
+            const date2 = new Date('2018-06-01 13:12:34'); // 2018-06-01T11:12:34.000Z
+            res = await _request(await _$app)
+                .post('/v1/radars/' + _created.createdRadar.id + '/measures')
+                .send({
+                    date: date2,
+                    values: values
+                })
+                .expect('Content-Type', /application\/json/)
+                .expect(201);
 
-                _created.createdRadarMeasures.push(new RadarMeasure(res.body));
-            }
-
-        }).timeout(60000);
+            _created.createdRadarMeasures.push(new RadarMeasure(res.body));
+        });
 
         it('should get the radar measures information', async () => {
             const res = await _request(await _$app)
@@ -173,7 +170,7 @@ describe('as Customer with all roles', function () {
             radarMeasure.values.length.should.equal(_created.createdRadarMeasures[0].values.length);
         });
 
-        xit('should get the radar information as a map format', async () => {
+        it('should get the radar information as a map format', async () => {
             const res = await _request(await _$app)
                 .get('/v1/radars/' + _created.createdRadar.id + '?format=map&begin=2018-06-01 12:05:06&end=2018-06-01 13:05:06')
                 .expect('Content-Type', /application\/json/)
@@ -195,20 +192,20 @@ describe('as Customer with all roles', function () {
             measure0.angle.should.equal(0.4);
             measure0.getPolars().length.should.equal(720);
             new MeasureValuePolarContainer(measure0.getPolars()[200]).azimuth.should.equal(100);
-            new MeasureValuePolarContainer(measure0.getPolars()[200]).distance.should.equal(1000);
+            new MeasureValuePolarContainer(measure0.getPolars()[200]).distance.should.equal(1);
             new MeasureValuePolarContainer(measure0.getPolars()[200]).polarEdges.length.should.equal(250);
 
             const measure1 = new RadarMeasureValue(radarMeasure0.values[1]);
             measure1.angle.should.equal(1.4);
             measure1.getPolars().length.should.equal(720);
             new MeasureValuePolarContainer(measure1.getPolars()[200]).azimuth.should.equal(100);
-            new MeasureValuePolarContainer(measure1.getPolars()[200]).distance.should.equal(1000);
+            new MeasureValuePolarContainer(measure1.getPolars()[200]).distance.should.equal(1);
             new MeasureValuePolarContainer(measure1.getPolars()[200]).polarEdges.length.should.equal(250);
         });
 
     });
 
-    xdescribe('during gauges setup', () => {
+    describe('during gauges setup', () => {
 
         xit('should 401 from not authorized user', async () => {
             const res = await _request(await _$app)
@@ -246,8 +243,8 @@ describe('as Customer with all roles', function () {
                 .put('/v1/gauges/' + _created.createdGauge.id)
                 .send({
                     name: 'asCustomer.testPut',
-                    latitude: 9.3,
-                    longitude: 7.3
+                    latitude: 9.2,
+                    longitude: 7.2
                 })
                 .expect('Content-Type', /application\/json/)
                 .expect(200);
@@ -256,8 +253,8 @@ describe('as Customer with all roles', function () {
             modifiedGauge.should.not.be.undefined;
             modifiedGauge.id.should.not.be.undefined;
             modifiedGauge.name.should.equal('asCustomer.testPut');
-            modifiedGauge.latitude.should.equal(9.3);
-            modifiedGauge.longitude.should.equal(7.3);
+            modifiedGauge.latitude.should.equal(9.2);
+            modifiedGauge.longitude.should.equal(7.2);
         });
 
         it('should get the gauge information', async () => {
@@ -270,8 +267,8 @@ describe('as Customer with all roles', function () {
             receivedGauge.should.not.be.undefined;
             receivedGauge.id.should.not.be.undefined;
             receivedGauge.name.should.equal('asCustomer.testPut');
-            receivedGauge.latitude.should.equal(9.3);
-            receivedGauge.longitude.should.equal(7.3);
+            receivedGauge.latitude.should.equal(9.2);
+            receivedGauge.longitude.should.equal(7.2);
         });
 
         it('should get the all gauges information', async () => {
@@ -286,14 +283,14 @@ describe('as Customer with all roles', function () {
                 const gauge = new GaugeNode(rg);
                 gauge.id.should.not.be.undefined;
                 gauge.name.should.equal('asCustomer.testPut');
-                gauge.latitude.should.equal(9.3);
-                gauge.longitude.should.equal(7.3);
+                gauge.latitude.should.equal(9.2);
+                gauge.longitude.should.equal(7.2);
             });
         });
 
         it('should post gauge measures', async () => {
-            let value = 7.65; // _buildGaugeMeasure();
-            let res = await _request(await _$app)
+            const value = 0.765; // _buildGaugeMeasure();
+            const res = await _request(await _$app)
                 .post('/v1/gauges/' + _created.createdGauge.id + '/measures')
                 // .set('Authorization', 'Basic ' + btoa('' + _mocks.userAdmin.email + ':' + _mocks.userAdmin.password))
                 .send({
@@ -307,21 +304,6 @@ describe('as Customer with all roles', function () {
             measure.should.be.not.undefined;
             measure.id.should.be.not.undefined;
             measure.date.should.be.equal('2018-06-01T11:05:00.000Z');
-
-            // Post other ones, for fun :)
-            for (let i = 0; i < 100; i++) {
-                value = Math.random() * 10;
-                const otherDate = new Date(new Date('2018-06-01T11:05:07.000Z').getTime() + (i * 5 * 60000)); // +(i * 5min)
-                res = await _request(await _$app)
-                    .post('/v1/gauges/' + _created.createdGauge.id + '/measures')
-                    .send({
-                        date: otherDate,
-                        values: [value]
-                    })
-                    .expect('Content-Type', /application\/json/)
-                    .expect(201);
-            }
-
         });
 
         it('should get gauge measures', async () => {
@@ -334,13 +316,13 @@ describe('as Customer with all roles', function () {
             receivedGaugeMap.id.should.be.equal(_created.createdGauge.id);
             receivedGaugeMap.getMapData().length.should.be.equal(1);
             const gaugeMeasuresMap = receivedGaugeMap.getMapData();
-            gaugeMeasuresMap[0].values[0].should.be.equal(7.65);
+            gaugeMeasuresMap[0].values[0].should.be.equal(0.765);
 
         });
 
     });
 
-    xdescribe('expecting rains computations', () => {
+    describe('expecting rains computations', () => {
 
         it('should get the created radar linked rains zones', async () => {
             const rainId = _created.createdRadar.getLinkId('rain');
@@ -374,30 +356,31 @@ describe('as Customer with all roles', function () {
 
         it('should get before any computation what is the status of the zone (prepared/ready or not)', async () => {
             const rainId = _created.createdRadar.getLinkId('rain');
-            let res = {body: {}};
-            let rainNode = new RainNode(res.body);
+            await sleep(1800);
 
-            for (let i = 0; rainNode.status !== 1 && i < 20; i++) {
-                await sleep(10000);
-                res = await _request(await _$app)
-                    .get('/v1/rains/' + rainId)
-                    .expect('Content-Type', /application\/json/);
+            let res = await _request(await _$app)
+                .get('/v1/rains/' + rainId)
+                .expect('Content-Type', /application\/json/)
+                .expect(200);
 
-                rainNode = new RainNode(res.body);
-                rainNode.status.should.be.gte(0.2); // rainNode in progress
-                // rainNode.quality.should.equal(1); // === system still doesn't know rainNode quality
-            }
+            const rainNode = new RainNode(res.body);
+            rainNode.status.should.be.gte(0.2);
+            // rainNode.quality.should.equal(-0.5); // === system still doesn't know
+        });
 
-            console.log(res.status, rainNode);
-            if (rainNode.status !== 1) {
-                process.exit(1); // we can't move forward
-            }
+        it('should keep calm and carry on ;)', async () => {
+            const rainId = _created.createdRadar.getLinkId('rain');
+            await sleep(10000);
 
-            res.status.should.equal(200);
+            let res = await _request(await _$app)
+                .get('/v1/rains/' + rainId)
+                .expect('Content-Type', /application\/json/)
+                .expect(200);
+
+            const rainNode = new RainNode(res.body);
             rainNode.status.should.equal(1);
-            rainNode.quality.should.equal(1);
-
-        }).timeout(240000);
+            // rainNode.quality.should.equal(1);
+        }).timeout(12000);
 
         it('should ask (post) for rain computation', async () => {
             const rainId = _created.createdRadar.getLinkId('rain');
@@ -412,11 +395,8 @@ describe('as Customer with all roles', function () {
                 .expect(202);
 
             const computations = res.body.computations;
-            computations.length.should.equal(10);
-            _created.createdRainComputation = new RainComputationNode(computations[0]);
-
-            for (let index = 0; index < computations.length; index++) {
-                const c = computations[index];
+            computations.length.should.equal(2);
+            computations.forEach((c, index) => {
                 const rc = new RainComputationNode(c);
                 const begin = new Date(_created.createdRadarMeasures[index].date);
                 const end = new Date(begin.getTime() + 5 * 60000);
@@ -429,10 +409,11 @@ describe('as Customer with all roles', function () {
                 rc.getLinkId('radar', 0).should.equal(_created.createdRadar.id);
                 rc.getLinkId('rain').should.equal(rainId);
                 rc.getLinkId('radar-measure').should.equal(_created.createdRadarMeasures[index].id);
-            }
-        }).timeout(100000);
+            });
+            _created.createdRainComputation = new RainComputationNode(computations[0]);
+        });
 
-        xit('should get the rain computation in progress status', async () => {
+        it('should get the rain computation in progress status', async () => {
             const rainId = _created.createdRadar.getLinkId('rain');
 
             let res = await _request(await _$app)
@@ -442,7 +423,7 @@ describe('as Customer with all roles', function () {
 
             const rainComputation = new RainComputationNode(res.body);
             rainComputation.progressComputing.should.be.greaterThan(0);
-        });
+        })
 
         it('should get the rain computation final status', async () => {
             const rainId = _created.createdRadar.getLinkId('rain');
@@ -471,7 +452,7 @@ describe('as Customer with all roles', function () {
             rainComputation.progressIngest.should.equal(1);
             rainComputation.progressComputing.should.equal(1);
             rainComputation.timeSpentInMs.should.be.greaterThan(10);
-            rainComputation.timeSpentInMs.should.be.lessThan(5000);
+            rainComputation.timeSpentInMs.should.be.lessThan(200);
             rainComputation.getLinkId('radar', 0).should.equal(_created.createdRadar.id);
             rainComputation.getLinkId('rain', 0).should.equal(rainId);
 
@@ -492,7 +473,7 @@ describe('as Customer with all roles', function () {
             const measure0 = new RainMeasureValue(rainMeasure0.values[0]);
             measure0.getPolars().length.should.equal(720);
             new MeasureValuePolarContainer(measure0.getPolars()[200]).azimuth.should.equal(100);
-            new MeasureValuePolarContainer(measure0.getPolars()[200]).distance.should.equal(1000);
+            new MeasureValuePolarContainer(measure0.getPolars()[200]).distance.should.equal(1);
             new MeasureValuePolarContainer(measure0.getPolars()[200]).polarEdges.length.should.equal(250);
         });
 
@@ -545,24 +526,20 @@ describe('as Customer with all roles', function () {
 
     });
 
-    const _buildRadarMeasures = (moduloOption) => {
+    const _buildRadarMeasures = () => {
         const values = [];
-        const modulo = moduloOption ? moduloOption : Math.round(Math.random() * 10);
         for (let angle = 0.4; angle < 3; angle++) {
             let value = {angle: angle};
             const polars = [];
             for (let azimuth = 0; azimuth < 360; azimuth += 0.5) {
                 let data = [];
                 for (let distance = 0; distance < 250; distance++) {
-                    if (azimuth % modulo) {
-                        data.push(Math.round(Math.random() * 56));
-                    } else {
-                        data.push(0);
-                    }
+                    const num = Math.floor(Math.random() * Math.floor(56));
+                    data.push(num);
                 }
                 const polar = {
                     azimuth: azimuth,
-                    distance: 1000,
+                    distance: 1,
                     polarEdges: data
                 };
                 polars.push(polar);
