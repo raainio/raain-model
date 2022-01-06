@@ -20,6 +20,5 @@ Used in :
 
 See [Release notes](https://github.com/raainio/raain-model/blob/master/RELEASE.md).
 
-
 ## License
 MIT

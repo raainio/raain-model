@@ -55,7 +55,7 @@ export class RaainNode {
             if (l instanceof Link || Link.isClonable(l)) {
                 return Link.clone(l);
             } else if (l && l.getLinkType && l.id) {
-                return new Link(l.getLinkType(), l.getLinkType() + 's/' + l.id);
+                return new Link(l.getLinkType(), '../' + l.getLinkType() + 's/' + l.id);
             }
             return;
         })
