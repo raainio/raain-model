@@ -57,7 +57,6 @@ export class RaainNode {
             } else if (l && l.getLinkType && l.id) {
                 return new Link(l.getLinkType(), '../' + l.getLinkType() + 's/' + l.id);
             }
-            return;
         })
     }
 

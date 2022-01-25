@@ -3,23 +3,24 @@ chai.use(require('chai-as-promised'));
 const should = chai.should();
 const {promisify} = require('util');
 const sleep = promisify(setTimeout);
-const _helper = require('../helper');
-const _$app = _helper.$app;
-const _request = _helper.request;
-
-const RadarNode = _helper.RadarNode;
-const RadarNodeMap = _helper.RadarNodeMap;
-const RainNode = _helper.RainNode;
-const GaugeNode = _helper.GaugeNode;
-const RadarMeasure = _helper.RadarMeasure;
-const RainComputationNode = _helper.RainComputationNode;
-const RainComputationMap = _helper.RainComputationMap;
-const RadarMeasureValue = _helper.RadarMeasureValue;
-const RainMeasureValue = _helper.RainMeasureValue;
-const MeasureValuePolarContainer = _helper.MeasureValuePolarContainer;
-const RainMeasure = _helper.RainMeasure;
-const GaugeMeasure = _helper.GaugeMeasure;
-const GaugeNodeMap = _helper.GaugeNodeMap;
+const {
+    $app,
+    request,
+    cleanup,
+    RadarNode,
+    RadarNodeMap,
+    RainNode,
+    GaugeNode,
+    RadarMeasure,
+    RainComputationNode,
+    RainComputationMap,
+    RadarMeasureValue,
+    RainMeasureValue,
+    MeasureValuePolarContainer,
+    RainMeasure,
+    GaugeMeasure,
+    GaugeNodeMap
+} = require('../helper');
 
 // TODO API Usage examples ( publish as OpenAPI) : https://todo.here  (ask for a demo customer credential to sales@raain.io)
 describe('as Customer with all roles', function () {
@@ -27,11 +28,11 @@ describe('as Customer with all roles', function () {
     const _created = {};
 
     before(async () => {
-        await _helper.cleanup();
+        await cleanup();
     });
 
     after(async () => {
-        // await _helper.cleanup();
+        // await cleanup();
     });
 
     xdescribe('during team setup', () => {
@@ -45,7 +46,7 @@ describe('as Customer with all roles', function () {
     describe('during radars setup', () => {
 
         xit('should 401 from not authorized user', async () => {
-            const res = await _request(await _$app)
+            const res = await request(await $app)
                 .get('/v1/radars')
                 // TODO .auth('username', 'password')
                 //      .set('Accept', 'application/json')
@@ -57,7 +58,7 @@ describe('as Customer with all roles', function () {
         });
 
         it('should create a new radar', async () => {
-            const res = await _request(await _$app)
+            const res = await request(await $app)
                 .post('/v1/radars')
                 .send({
                     name: 'asCustomer.testPost',
@@ -78,7 +79,7 @@ describe('as Customer with all roles', function () {
         });
 
         it('should modify the created radar', async () => {
-            const res = await _request(await _$app)
+            const res = await request(await $app)
                 .put('/v1/radars/' + _created.createdRadar.id)
                 .send({
                     name: 'asCustomer.testPut',
@@ -97,7 +98,7 @@ describe('as Customer with all roles', function () {
         });
 
         it('should get the radar information', async () => {
-            const res = await _request(await _$app)
+            const res = await request(await $app)
                 .get('/v1/radars/' + _created.createdRadar.id)
                 .expect('Content-Type', /application\/json/)
                 .expect(200);
@@ -111,7 +112,7 @@ describe('as Customer with all roles', function () {
         });
 
         xit('should not create another radar', async () => {
-            await _request(await _$app)
+            await request(await $app)
                 .post('/v1/radars')
                 .send({
                     name: 'asCustomer.anotherTest',
@@ -126,13 +127,14 @@ describe('as Customer with all roles', function () {
             const values = _buildRadarMeasures();
             _created.createdRadarMeasures = [];
             const date1 = new Date('2018-06-01 13:05:00') // 2018-06-01T11:05:00.000Z
-            let res = await _request(await _$app)
+            const data = {
+                date: date1,
+                values: values
+            };
+            let res = await request(await $app)
                 .post('/v1/radars/' + _created.createdRadar.id + '/measures')
                 // TODO .set('Authorization', 'Basic ' + btoa('' + _mocks.userAdmin.email + ':' + _mocks.userAdmin.password))
-                .send({
-                    date: date1,
-                    values: values
-                })
+                .send(data)
                 .expect('Content-Type', /application\/json/)
                 .expect(201);
 
@@ -145,7 +147,7 @@ describe('as Customer with all roles', function () {
 
             // Post another one, for fun :)
             const date2 = new Date('2018-06-01 13:12:34'); // 2018-06-01T11:12:34.000Z
-            res = await _request(await _$app)
+            res = await request(await $app)
                 .post('/v1/radars/' + _created.createdRadar.id + '/measures')
                 .send({
                     date: date2,
@@ -158,7 +160,7 @@ describe('as Customer with all roles', function () {
         });
 
         it('should get the radar measures information', async () => {
-            const res = await _request(await _$app)
+            const res = await request(await $app)
                 .get('/v1/radars/' + _created.createdRadar.id + '/measures/' + _created.createdRadarMeasures[0].id)
                 //.set('Authorization', 'Basic ' + btoa('' + _mocks.userAdmin.email + ':' + _mocks.userAdmin.password))
                 .expect('Content-Type', /application\/json/)
@@ -171,7 +173,7 @@ describe('as Customer with all roles', function () {
         });
 
         it('should get the radar information as a map format', async () => {
-            const res = await _request(await _$app)
+            const res = await request(await $app)
                 .get('/v1/radars/' + _created.createdRadar.id + '?format=map&begin=2018-06-01 12:05:06&end=2018-06-01 13:05:06')
                 .expect('Content-Type', /application\/json/)
                 .expect(200);
@@ -208,7 +210,7 @@ describe('as Customer with all roles', function () {
     describe('during gauges setup', () => {
 
         xit('should 401 from not authorized user', async () => {
-            const res = await _request(await _$app)
+            const res = await request(await $app)
                 .get('/v1/gauges')
                 // .auth('username', 'password')
                 //      .set('Accept', 'application/json')
@@ -220,7 +222,7 @@ describe('as Customer with all roles', function () {
         });
 
         it('should create a new gauge', async () => {
-            const res = await _request(await _$app)
+            const res = await request(await $app)
                 .post('/v1/gauges')
                 .send({
                     name: 'asCustomer.testPost',
@@ -239,7 +241,7 @@ describe('as Customer with all roles', function () {
         });
 
         it('should modify the created gauge', async () => {
-            const res = await _request(await _$app)
+            const res = await request(await $app)
                 .put('/v1/gauges/' + _created.createdGauge.id)
                 .send({
                     name: 'asCustomer.testPut',
@@ -258,7 +260,7 @@ describe('as Customer with all roles', function () {
         });
 
         it('should get the gauge information', async () => {
-            const res = await _request(await _$app)
+            const res = await request(await $app)
                 .get('/v1/gauges/' + _created.createdGauge.id)
                 .expect('Content-Type', /application\/json/)
                 .expect(200);
@@ -272,7 +274,7 @@ describe('as Customer with all roles', function () {
         });
 
         it('should get the all gauges information', async () => {
-            const res = await _request(await _$app)
+            const res = await request(await $app)
                 .get('/v1/gauges')
                 .expect('Content-Type', /application\/json/)
                 .expect(200);
@@ -290,7 +292,7 @@ describe('as Customer with all roles', function () {
 
         it('should post gauge measures', async () => {
             const value = 0.765; // _buildGaugeMeasure();
-            const res = await _request(await _$app)
+            const res = await request(await $app)
                 .post('/v1/gauges/' + _created.createdGauge.id + '/measures')
                 // .set('Authorization', 'Basic ' + btoa('' + _mocks.userAdmin.email + ':' + _mocks.userAdmin.password))
                 .send({
@@ -307,7 +309,7 @@ describe('as Customer with all roles', function () {
         });
 
         it('should get gauge measures', async () => {
-            const res = await _request(await _$app)
+            const res = await request(await $app)
                 .get('/v1/gauges/' + _created.createdGauge.id + '?format=map&begin=2018-06-01 12:05:06&end=2018-06-01 13:05:06')
                 .expect('Content-Type', /application\/json/)
                 .expect(200);
@@ -328,7 +330,7 @@ describe('as Customer with all roles', function () {
             const rainId = _created.createdRadar.getLinkId('rain');
             rainId.should.be.not.undefined;
 
-            let res = await _request(await _$app)
+            let res = await request(await $app)
                 .get('/v1/rains/' + rainId)
                 .expect('Content-Type', /application\/json/)
                 .expect(200);
@@ -343,7 +345,7 @@ describe('as Customer with all roles', function () {
 
         it('should not modify rain zone and wait for rain validation by raain team (ask to your sales@raain.io)', async () => {
             const rainId = _created.createdRadar.getLinkId('rain');
-            await _request(await _$app)
+            await request(await $app)
                 .put('/v1/rains/' + rainId)
                 .send({
                     step: 'prepare',
@@ -354,11 +356,11 @@ describe('as Customer with all roles', function () {
                 .expect(403);
         });
 
-        it('should get before any computation what is the status of the zone (prepared/ready or not)', async () => {
+        it('should get (before any computation) the status of the zone : prepared/ready or not', async () => {
             const rainId = _created.createdRadar.getLinkId('rain');
             await sleep(1800);
 
-            let res = await _request(await _$app)
+            let res = await request(await $app)
                 .get('/v1/rains/' + rainId)
                 .expect('Content-Type', /application\/json/)
                 .expect(200);
@@ -372,7 +374,7 @@ describe('as Customer with all roles', function () {
             const rainId = _created.createdRadar.getLinkId('rain');
             await sleep(10000);
 
-            let res = await _request(await _$app)
+            let res = await request(await $app)
                 .get('/v1/rains/' + rainId)
                 .expect('Content-Type', /application\/json/)
                 .expect(200);
@@ -384,7 +386,7 @@ describe('as Customer with all roles', function () {
 
         it('should ask (post) for rain computation', async () => {
             const rainId = _created.createdRadar.getLinkId('rain');
-            let res = await _request(await _$app)
+            let res = await request(await $app)
                 .post('/v1/rains/' + rainId + '/computations')
                 .send({
                     periodBegin: new Date('2018-06-01 13:05:00'),
@@ -416,7 +418,7 @@ describe('as Customer with all roles', function () {
         it('should get the rain computation in progress status', async () => {
             const rainId = _created.createdRadar.getLinkId('rain');
 
-            let res = await _request(await _$app)
+            let res = await request(await $app)
                 .get('/v1/rains/' + rainId + '/computations/' + _created.createdRainComputation.id)
                 .expect('Content-Type', /application\/json/)
                 .expect(202);
@@ -429,7 +431,7 @@ describe('as Customer with all roles', function () {
             const rainId = _created.createdRadar.getLinkId('rain');
             await sleep(2000);
 
-            let res = await _request(await _$app)
+            let res = await request(await $app)
                 .get('/v1/rains/' + rainId + '/computations/' + _created.createdRainComputation.id)
                 .expect('Content-Type', /application\/json/)
                 .expect(200);
@@ -438,11 +440,11 @@ describe('as Customer with all roles', function () {
             rainComputation.should.be.not.undefined;
             rainComputation.progressIngest.should.equal(1);
             rainComputation.progressComputing.should.be.greaterThan(0);
-        }).timeout(3000);
+        }).timeout(4000);
 
         it('should get the rain computation result (direct or with map format)', async () => {
             const rainId = _created.createdRadar.getLinkId('rain');
-            let res = await _request(await _$app)
+            let res = await request(await $app)
                 .get('/v1/rains/' + rainId + '/computations/' + _created.createdRainComputation.id)
                 .expect('Content-Type', /application\/json/)
                 .expect(200);
@@ -456,7 +458,7 @@ describe('as Customer with all roles', function () {
             rainComputation.getLinkId('radar', 0).should.equal(_created.createdRadar.id);
             rainComputation.getLinkId('rain', 0).should.equal(rainId);
 
-            res = await _request(await _$app)
+            res = await request(await $app)
                 .get('/v1/rains/' + rainId + '/computations/' + _created.createdRainComputation.id + '?format=map')
                 .expect('Content-Type', /application\/json/)
                 .expect(200);
@@ -479,7 +481,7 @@ describe('as Customer with all roles', function () {
 
         it('should (as shorcut) get the last computations in rain zone', async () => {
             const rainId = _created.createdRadar.getLinkId('rain');
-            let res = await _request(await _$app)
+            let res = await request(await $app)
                 .get('/v1/rains/' + rainId)
                 .expect('Content-Type', /application\/json/)
                 .expect(200);
@@ -491,7 +493,7 @@ describe('as Customer with all roles', function () {
 
         it('should (as awesome shortcut) get the rain computation result directly from a radar measure post (or put)', async () => {
             // const rainId = _created.createdRadar.getLinkId('rain');
-            // let res = await _request(await _$app)
+            // let res = await request(await $app)
             //     // .post('/v1/radars/' + _created.createdRadar.id + '/measures')
             //     // or
             //     .put('/v1/radars/' + _created.createdRadar.id + '/measures/' + _created.createdRadarMeasures[0].id)
@@ -504,7 +506,7 @@ describe('as Customer with all roles', function () {
             // measure.links.computations.should.be.not.undefined;
             // measure.links.computations.length.should.equal(1);
             //
-            // res = await _request(await _$app)
+            // res = await request(await $app)
             //     .get('/v1/rains/' + rainId + '/computations/' + measure.links.computations[0])
             //     .expect('Content-Type', /application\/json/)
             //     .expect(200);
@@ -515,7 +517,7 @@ describe('as Customer with all roles', function () {
             // rainComputation.progressComputing.should.equal(1);
             // rainComputation.timeSpentInMs.should.greaterThan(0);
             //
-            // res = await _request(await _$app)
+            // res = await request(await $app)
             //     .get('/v1/rains/' + rainId + '/computations/' + _created.createdRainComputation.id + '?format=map')
             //     .expect('Content-Type', /application\/json/)
             //     .expect(200);
@@ -526,6 +528,7 @@ describe('as Customer with all roles', function () {
 
     });
 
+    // TODO refactor using raain-model
     const _buildRadarMeasures = () => {
         const values = [];
         for (let angle = 0.4; angle < 3; angle++) {
