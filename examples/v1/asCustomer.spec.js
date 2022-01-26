@@ -343,7 +343,7 @@ describe('as Customer with all roles', function () {
             _created.createdRain.getLinkId('radar').should.equal(_created.createdRadar.id);
         });
 
-        it('should not modify rain zone and wait for rain validation by raain team (ask to your sales@raain.io)', async () => {
+        it('should not modify rain zone and wait for rain validation by raain team (ask to your contact@raain.io)', async () => {
             const rainId = _created.createdRadar.getLinkId('rain');
             await request(await $app)
                 .put('/v1/rains/' + rainId)
@@ -379,6 +379,8 @@ describe('as Customer with all roles', function () {
                 .expect('Content-Type', /application\/json/)
                 .expect(200);
 
+            await sleep(1000);
+
             const rainNode = new RainNode(res.body);
             rainNode.status.should.equal(1);
             // rainNode.quality.should.equal(1);
@@ -395,6 +397,8 @@ describe('as Customer with all roles', function () {
                 })
                 .expect('Content-Type', /application\/json/)
                 .expect(202);
+
+            await sleep(10000);
 
             const computations = res.body.computations;
             computations.length.should.equal(2);
@@ -413,7 +417,7 @@ describe('as Customer with all roles', function () {
                 rc.getLinkId('radar-measure').should.equal(_created.createdRadarMeasures[index].id);
             });
             _created.createdRainComputation = new RainComputationNode(computations[0]);
-        });
+        }).timeout(11000);
 
         it('should get the rain computation in progress status', async () => {
             const rainId = _created.createdRadar.getLinkId('rain');
@@ -479,7 +483,7 @@ describe('as Customer with all roles', function () {
             new MeasureValuePolarContainer(measure0.getPolars()[200]).polarEdges.length.should.equal(250);
         });
 
-        it('should (as shorcut) get the last computations in rain zone', async () => {
+        it('should (as shortcut) get the last computations in rain zone', async () => {
             const rainId = _created.createdRadar.getLinkId('rain');
             let res = await request(await $app)
                 .get('/v1/rains/' + rainId)
