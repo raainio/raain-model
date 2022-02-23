@@ -1,6 +1,7 @@
 import {RainComputationNode} from "./RainComputationNode";
 import {Link} from "./Link";
 import {RainMeasure} from "./RainMeasure";
+import {RaainNode} from "./RaainNode";
 
 
 // api/rains/:id/computations/:id?format=map&...
@@ -15,13 +16,15 @@ export class RainComputationMap extends RainComputationNode {
         idOrObjectToCopy: any | string,
         periodBegin?: Date,
         periodEnd?: Date,
-        links?: Link[] | any[],
+        links?: Link[] | RaainNode[],
         quality?: number,
         progressIngest?: number,
         progressComputing?: number,
-        timeSpentInMs?: number
+        timeSpentInMs?: number,
+        version?: string,
     ) {
-        super(idOrObjectToCopy, periodBegin, periodEnd, links, quality, progressIngest, progressComputing, timeSpentInMs);
+        super(idOrObjectToCopy, periodBegin, periodEnd, links, quality, progressIngest, progressComputing, timeSpentInMs,
+            undefined, undefined, undefined, undefined, version);
 
         if (idOrObjectToCopy.map) {
             this.setMapData(idOrObjectToCopy.map);

@@ -10,7 +10,7 @@ export class GaugeMeasureValue implements IMeasureValue {
         polarOrObjectToCopy: string | MeasureValuePolarContainer
     ) {
         if (!polarOrObjectToCopy) {
-            throw 'GaugeMeasureValue needs a valid Object or Polar';
+            throw new Error('GaugeMeasureValue needs a valid Object or Polar');
         }
 
         if (typeof polarOrObjectToCopy === 'string') {

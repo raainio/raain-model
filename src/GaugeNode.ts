@@ -13,7 +13,7 @@ export class GaugeNode extends RaainNode {
     constructor(
         idOrObjectToCopy: string |  { id?: string, name?: string, links?: Link[], latitude?: number, longitude?: number },
         name?: string,
-        links?: Link[] | any[],
+        links?: Link[] | RaainNode[],
         latitude?: number,
         longitude?: number
     ) {

@@ -2,16 +2,19 @@ import {MeasureValuePolarContainer} from "./MeasureValuePolarContainer";
 import {IMeasureValue} from "./IMeasureValue";
 import {PolarValues} from "./tools/PolarValues";
 import {PolarValue} from "./PolarValue";
+import {IVersion} from "./IVersion";
 
-export class RainMeasureValue implements IMeasureValue {
+export class RainMeasureValue implements IMeasureValue, IVersion {
 
     private polars: PolarValues;
+    private readonly version: string;
 
     constructor(
-        polars: any | MeasureValuePolarContainer[]
+        polars: any | MeasureValuePolarContainer[],
+        version?: string,
     ) {
         if (!polars) {
-            throw 'RainMeasureValue needs a valid Object';
+            throw new Error('RainMeasureValue needs a valid Object');
         }
         if (polars.polars) {
             if (typeof polars.polars === 'string') {
@@ -19,6 +22,7 @@ export class RainMeasureValue implements IMeasureValue {
             } else {
                 this.setPolarsAsContainer(polars.polars);
             }
+            this.version = polars.version ? polars.version : undefined;
             return;
         }
 
@@ -27,6 +31,7 @@ export class RainMeasureValue implements IMeasureValue {
         } else {
             this.setPolarsAsContainer(polars);
         }
+        this.version = version ? version : undefined;
     }
 
     getPolarsStringified(): string {
@@ -79,5 +84,9 @@ export class RainMeasureValue implements IMeasureValue {
 
     public toJSONWithPolarStringified(): Object {
         return this.polars.toJSONWithPolarStringified();
+    }
+
+    public getVersion(): string {
+        return this.version;
     }
 }

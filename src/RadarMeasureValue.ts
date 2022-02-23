@@ -13,7 +13,7 @@ export class RadarMeasureValue implements IMeasureValue {
         polars?: string | MeasureValuePolarContainer[]
     ) {
         if (!angleOrObject) {
-            throw 'RadarMeasureValue needs a valid Object or ID';
+            throw new Error('RadarMeasureValue needs a valid Object or ID');
         }
 
         if (typeof (angleOrObject.angle) !== 'undefined') {

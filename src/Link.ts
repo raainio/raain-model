@@ -18,7 +18,13 @@ export class Link {
         return urls[urls.length - 1];
     }
 
-    public static isClonable(object : any): boolean {
+    public getLinkType(): string {
+        const urls = this.href.split('/');
+        // can be enforce : verify rel in -2 urls ?...
+        return urls[0];
+    }
+
+    public static isCloneable(object : any): boolean {
         return object && object.rel && object.href;
     }
 

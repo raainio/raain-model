@@ -7,6 +7,7 @@ import {RainMeasureValue} from "./RainMeasureValue";
 
 export class RainComputationNode extends RaainNode {
 
+    public static TYPE = 'rain-computation';
     public quality: number;
     public progressIngest: number;
     public progressComputing: number;
@@ -14,9 +15,9 @@ export class RainComputationNode extends RaainNode {
 
     public periodBegin: Date;
     public periodEnd: Date;
-    public isReady: Boolean;
+    public isReady: boolean;
     public isDoneDate: Date;
-    public launchedBy: String;
+    public launchedBy: string;
 
     public results: RainMeasureValue[]; // why array ? because you can have different angle for Radar (same as Measure)
 
@@ -25,31 +26,33 @@ export class RainComputationNode extends RaainNode {
             id?: string,
             periodBegin?: Date,
             periodEnd?: Date,
-            links?: Link[] | any[],
+            links?: Link[] | RaainNode[],
             quality?: number,
             progressIngest?: number,
             progressComputing?: number,
             timeSpentInMs?: number,
-            isReady?: Boolean,
+            isReady?: boolean,
             isDoneDate?: Date,
             results?: RainMeasureValue[],
             launchedBy?: string,
-            rain?: Link[],
-            radars?: Link[]
+            version?: string,
+            rain?: RaainNode[],
+            radars?: Link[] | RaainNode[],
         },
         periodBegin?: Date,
         periodEnd?: Date,
-        links?: Link[] | any[],
+        links?: Link[] | RaainNode[],
         quality?: number,
         progressIngest?: number,
         progressComputing?: number,
         timeSpentInMs?: number,
-        isReady?: Boolean,
+        isReady?: boolean,
         isDoneDate?: Date,
         results?: RainMeasureValue[],
-        launchedBy?: string
+        launchedBy?: string,
+        version?: string,
     ) {
-        super(idOrObjectToCopy, links);
+        super(idOrObjectToCopy, links, version);
         if (typeof idOrObjectToCopy !== 'string') {
             this.periodBegin = idOrObjectToCopy.periodBegin;
             this.periodEnd = idOrObjectToCopy.periodEnd;
@@ -61,6 +64,7 @@ export class RainComputationNode extends RaainNode {
             this.isDoneDate = idOrObjectToCopy.isDoneDate;
             this.setResults(idOrObjectToCopy.results);
             this.launchedBy = idOrObjectToCopy.launchedBy;
+
             this.replaceRainLink(idOrObjectToCopy.links);
             this.replaceRainLink(idOrObjectToCopy.rain);
             this.addRadarLinks(idOrObjectToCopy.links);
@@ -77,6 +81,7 @@ export class RainComputationNode extends RaainNode {
         this.isDoneDate = isDoneDate;
         this.setResults(results);
         this.launchedBy = launchedBy;
+
         this.replaceRainLink(links);
         this.addRadarLinks(links);
     }
@@ -97,14 +102,14 @@ export class RainComputationNode extends RaainNode {
     }
 
     protected getLinkType(): string {
-        return 'rain-computation';
+        return RainComputationNode.TYPE;
     }
 
-    public addRadarLinks(linksToAdd: Link[] | any[]): void {
+    public addRadarLinks(linksToAdd: Link[] | RaainNode[]): void {
         this.addLinks(RainComputationNode._getRadarLinks(linksToAdd));
     }
 
-    public replaceRainLink(linksToAdd: Link[] | any[] | any): void {
+    public replaceRainLink(linksToAdd: Link | RaainNode | any): void {
         this.addLinks([RainComputationNode._getRainLink(linksToAdd)]);
     }
 
@@ -143,8 +148,10 @@ export class RainComputationNode extends RaainNode {
         return linksToPurify.map(l => {
             if (l instanceof Link) {
                 return l;
+            } else if (l && l._id) {
+                return new RadarNode(l._id.toString());
             } else if (l && l.id) {
-                return new RadarNode(l.id.toString('hex'));
+                return new RadarNode(l.id.toString()); // 'hex'
             }
         });
     }
@@ -157,18 +164,20 @@ export class RainComputationNode extends RaainNode {
         return linksToPurify.map(l => {
             if (l instanceof Link) {
                 return l;
+            } else if (l && l._id) {
+                return new RadarNode(l._id.toString());
             } else if (l && l.id) {
-                return new RadarMeasure(l.id.toString('hex'));
+                return new RadarMeasure(l.id.toString()); // 'hex'
             }
         });
     }
 
-    private static _getRainLink(linkToPurify: any): RainNode {
+    private static _getRainLink(linkToPurify: RaainNode): RainNode {
         if (!linkToPurify || !linkToPurify.id) {
             return null;
         }
 
-        return new RainNode(linkToPurify.id.toString('hex'));
+        return new RainNode(linkToPurify.id.toString()); // 'hex'
     }
 
 }

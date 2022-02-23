@@ -1,6 +1,6 @@
 const chai = require('chai');
 chai.use(require('chai-as-promised'));
-const should = chai.should();
+chai.should();
 const {promisify} = require('util');
 const sleep = promisify(setTimeout);
 const {
@@ -22,7 +22,6 @@ const {
     GaugeNodeMap
 } = require('../helper');
 
-// TODO API Usage examples ( publish as OpenAPI) : https://todo.here  (ask for a demo customer credential to sales@raain.io)
 describe('as Customer with all roles', function () {
 
     const _created = {};
@@ -35,10 +34,17 @@ describe('as Customer with all roles', function () {
         // await cleanup();
     });
 
-    xdescribe('during team setup', () => {
+    describe('during team check', () => {
 
-        it('should get my team', () => {
-            'todo'.should.equal('todo?', 'alors moi je dis...');
+        it('should get customerTeam', async () => {
+            const res = (await request(await $app).get('/v1/teams?name=customerTeam'))
+                .expect('Content-Type', /application\/json/)
+                .expect(200);
+
+            res.body.toString().should.equal({
+                "name": "customerTeam",
+                "contract": "basic"
+            }.toString());
         });
 
     });
@@ -46,8 +52,7 @@ describe('as Customer with all roles', function () {
     describe('during radars setup', () => {
 
         xit('should 401 from not authorized user', async () => {
-            const res = await request(await $app)
-                .get('/v1/radars')
+            const res = (await request(await $app).get('/v1/radars'))
                 // TODO .auth('username', 'password')
                 //      .set('Accept', 'application/json')
                 .expect('Content-Type', /application\/json/)
@@ -58,12 +63,12 @@ describe('as Customer with all roles', function () {
         });
 
         it('should create a new radar', async () => {
-            const res = await request(await $app)
-                .post('/v1/radars')
+            const res = (await request(await $app).post('/v1/radars'))
                 .send({
                     name: 'asCustomer.testPost',
                     latitude: 5.6,
-                    longitude: -4.2
+                    longitude: -4.2,
+                    team: 'customerTeam',
                 })
                 .expect('Content-Type', /application\/json/)
                 .expect(201);
@@ -79,8 +84,7 @@ describe('as Customer with all roles', function () {
         });
 
         it('should modify the created radar', async () => {
-            const res = await request(await $app)
-                .put('/v1/radars/' + _created.createdRadar.id)
+            const res = (await request(await $app).put('/v1/radars/' + _created.createdRadar.id))
                 .send({
                     name: 'asCustomer.testPut',
                     latitude: 9.2,
@@ -227,7 +231,8 @@ describe('as Customer with all roles', function () {
                 .send({
                     name: 'asCustomer.testPost',
                     latitude: 5.6,
-                    longitude: -4.2
+                    longitude: -4.2,
+                    team: 'customerTeam',
                 })
                 .expect('Content-Type', /application\/json/)
                 .expect(201);
@@ -245,8 +250,8 @@ describe('as Customer with all roles', function () {
                 .put('/v1/gauges/' + _created.createdGauge.id)
                 .send({
                     name: 'asCustomer.testPut',
-                    latitude: 9.2,
-                    longitude: 7.2
+                    latitude: 9.198,  // 9.2
+                    longitude: 7.201  // 7.2
                 })
                 .expect('Content-Type', /application\/json/)
                 .expect(200);
@@ -255,8 +260,8 @@ describe('as Customer with all roles', function () {
             modifiedGauge.should.not.be.undefined;
             modifiedGauge.id.should.not.be.undefined;
             modifiedGauge.name.should.equal('asCustomer.testPut');
-            modifiedGauge.latitude.should.equal(9.2);
-            modifiedGauge.longitude.should.equal(7.2);
+            modifiedGauge.latitude.should.equal(9.198);
+            modifiedGauge.longitude.should.equal(7.201);
         });
 
         it('should get the gauge information', async () => {
@@ -269,8 +274,8 @@ describe('as Customer with all roles', function () {
             receivedGauge.should.not.be.undefined;
             receivedGauge.id.should.not.be.undefined;
             receivedGauge.name.should.equal('asCustomer.testPut');
-            receivedGauge.latitude.should.equal(9.2);
-            receivedGauge.longitude.should.equal(7.2);
+            receivedGauge.latitude.should.equal(9.198);
+            receivedGauge.longitude.should.equal(7.201);
         });
 
         it('should get the all gauges information', async () => {
@@ -285,8 +290,8 @@ describe('as Customer with all roles', function () {
                 const gauge = new GaugeNode(rg);
                 gauge.id.should.not.be.undefined;
                 gauge.name.should.equal('asCustomer.testPut');
-                gauge.latitude.should.equal(9.2);
-                gauge.longitude.should.equal(7.2);
+                gauge.latitude.should.equal(9.198);
+                gauge.longitude.should.equal(7.201);
             });
         });
 
@@ -383,7 +388,7 @@ describe('as Customer with all roles', function () {
 
             const rainNode = new RainNode(res.body);
             rainNode.status.should.equal(1);
-            // rainNode.quality.should.equal(1);
+            rainNode.quality.should.equal(1);
         }).timeout(12000);
 
         it('should ask (post) for rain computation', async () => {
@@ -409,9 +414,9 @@ describe('as Customer with all roles', function () {
                 rc.id.should.be.not.undefined;
                 rc.periodBegin.should.equal(begin.toISOString());
                 rc.periodEnd.should.equal(end.toISOString());
-                // rc.progressIngest.should.equal(1);
-                rc.progressComputing.should.equal(0.5);
-                rc.launchedBy.should.equal('demo');
+                rc.progressIngest.should.equal(1);
+                rc.progressComputing.should.equal(0.4);
+                rc.launchedBy.email.should.equal('asCustomer@test.com');
                 rc.getLinkId('radar', 0).should.equal(_created.createdRadar.id);
                 rc.getLinkId('rain').should.equal(rainId);
                 rc.getLinkId('radar-measure').should.equal(_created.createdRadarMeasures[index].id);
@@ -424,9 +429,10 @@ describe('as Customer with all roles', function () {
 
             let res = await request(await $app)
                 .get('/v1/rains/' + rainId + '/computations/' + _created.createdRainComputation.id)
-                .expect('Content-Type', /application\/json/)
-                .expect(202);
+                .expect('Content-Type', /application\/json/);
+            //.expect(202);
 
+            (res.status === 202 || res.status === 200).should.be.true;
             const rainComputation = new RainComputationNode(res.body);
             rainComputation.progressComputing.should.be.greaterThan(0);
         })
@@ -446,21 +452,19 @@ describe('as Customer with all roles', function () {
             rainComputation.progressComputing.should.be.greaterThan(0);
         }).timeout(4000);
 
-        it('should get the rain computation result (direct or with map format)', async () => {
+        it('should get the rain computation result : formatted by id, map or compare', async () => {
             const rainId = _created.createdRadar.getLinkId('rain');
+
             let res = await request(await $app)
-                .get('/v1/rains/' + rainId + '/computations/' + _created.createdRainComputation.id)
+                .get('/v1/rains/' + rainId + '/computations?format=id&begin=2018-06-01T11:00:00.000Z&end=2018-06-01T14:00:00.000Z')
                 .expect('Content-Type', /application\/json/)
                 .expect(200);
-
-            const rainComputation = new RainComputationNode(res.body);
-            rainComputation.should.be.not.undefined;
-            rainComputation.progressIngest.should.equal(1);
-            rainComputation.progressComputing.should.equal(1);
-            rainComputation.timeSpentInMs.should.be.greaterThan(10);
-            rainComputation.timeSpentInMs.should.be.lessThan(200);
-            rainComputation.getLinkId('radar', 0).should.equal(_created.createdRadar.id);
-            rainComputation.getLinkId('rain', 0).should.equal(rainId);
+            res.body.computations.length.should.equal(2);
+            res.body.computations[0].id.should.equal(_created.createdRainComputation.id);
+            res.body.computations[0].links[0].rel.should.equal('rain');
+            res.body.computations[0].links[0].href.should.equal('rains/' + rainId);
+            res.body.computations[0].links[1].rel.should.equal('radar-measure');
+            res.body.computations[0].links[1].href.should.equal('radar-measures/' + _created.createdRadarMeasures[0].id);
 
             res = await request(await $app)
                 .get('/v1/rains/' + rainId + '/computations/' + _created.createdRainComputation.id + '?format=map')
@@ -472,6 +476,12 @@ describe('as Customer with all roles', function () {
             rainComputationMap.periodEnd.should.equal("2018-06-01T11:10:00.000Z");
             rainComputationMap.id.should.not.be.undefined;
             rainComputationMap.getMapData().length.should.equal(1);
+            rainComputationMap.getLinkId('radar', 0).should.equal(_created.createdRadar.id);
+            rainComputationMap.getLinkId('rain', 0).should.equal(rainId);
+            rainComputationMap.progressIngest.should.equal(1);
+            rainComputationMap.progressComputing.should.equal(1);
+            rainComputationMap.timeSpentInMs.should.be.greaterThan(10);
+            rainComputationMap.timeSpentInMs.should.be.lessThan(200);
 
             const rainMeasure0 = new RainMeasure(rainComputationMap.getMapData()[0]);
             rainMeasure0.id.should.be.not.undefined;
@@ -481,6 +491,19 @@ describe('as Customer with all roles', function () {
             new MeasureValuePolarContainer(measure0.getPolars()[200]).azimuth.should.equal(100);
             new MeasureValuePolarContainer(measure0.getPolars()[200]).distance.should.equal(1);
             new MeasureValuePolarContainer(measure0.getPolars()[200]).polarEdges.length.should.equal(250);
+
+            res = await request(await $app)
+                .get('/v1/rains/' + rainId + '/computations?format=compare&begin=2018-06-01T11:00:00.000Z&end=2018-06-01T14:00:00.000Z')
+                .expect('Content-Type', /application\/json/)
+                .expect(200);
+            res.body.points.length.should.equal(1);
+            res.body.points[0].x.should.equal(23.686755555555557);
+            res.body.points[0].y.should.equal(0.765);
+            res.body.max.x.should.equal(23.686755555555557);
+            res.body.max.y.should.equal(0.765);
+            res.body.vector.speedMetersPerSec.should.equal(1);
+            res.body.vector.angleDegrees.should.equal(153.5);
+            res.body.indicator.should.equal(22.921755555555556);
         });
 
         it('should (as shortcut) get the last computations in rain zone', async () => {
@@ -541,7 +564,7 @@ describe('as Customer with all roles', function () {
             for (let azimuth = 0; azimuth < 360; azimuth += 0.5) {
                 let data = [];
                 for (let distance = 0; distance < 250; distance++) {
-                    const num = Math.floor(Math.random() * Math.floor(56));
+                    const num = azimuth * distance * (56 / (360 * 250));
                     data.push(num);
                 }
                 const polar = {

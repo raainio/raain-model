@@ -1,3 +1,28 @@
+let polarValues = [];
+for (let i = 0; i < 720; i++) {
+    const polarEdges = [];
+    for (let j = 0; j < 250; j++) {
+        polarEdges.push(250 - j);
+    }
+    let container = {azimuth: i / 2, distance: 1, polarEdges: polarEdges};
+    polarValues.push(container);
+}
+
+const value = {
+    angle: 0.4,
+    polars: polarValues,
+};
+const value2 = {
+    angle: 1.4,
+    polars: polarValues,
+};
+const value3 = {
+    angle: 2.4,
+    polars: polarValues,
+};
+
+const values = [value, value2, value3];
+
 const expectation1 = {
     expect: () => {
         return expectation1;
@@ -12,22 +37,27 @@ const expectation1 = {
         longitude: -4.2,
         links: [{rel: 'rain', href: 'mockId'}, {rel: 'radar', href: 'mockId'}],
         date: '2018-06-01T11:05:00.000Z',
-        values: new Array(3),
-
+        values: values,
         computations: [{
             id: 'mockId',
             periodBegin: '2018-06-01T11:05:00.000Z',
             periodEnd: '2018-06-01T11:10:00.000Z',
             progressIngest: 1,
             launchedBy: 'demo',
-            links: [{rel: 'rain', href: 'mockId'}, {rel: 'radar', href: 'mockId'}, {rel: 'radar-measure', href: 'mockId'}],
+            links: [{rel: 'rain', href: 'mockId'}, {rel: 'radar', href: 'mockId'}, {
+                rel: 'radar-measure',
+                href: 'mockId'
+            }],
         }, {
             id: 'mockId',
             periodBegin: '2018-06-01T11:05:00.000Z',
             periodEnd: '2018-06-01T11:10:00.000Z',
             progressIngest: 1,
             launchedBy: 'demo',
-            links: [{rel: 'rain', href: 'mockId'}, {rel: 'radar', href: 'mockId'}, {rel: 'radar-measure', href: 'mockId'}],
+            links: [{rel: 'rain', href: 'mockId'}, {rel: 'radar', href: 'mockId'}, {
+                rel: 'radar-measure',
+                href: 'mockId'
+            }],
         }],
 
     }
@@ -46,11 +76,11 @@ const expectation2 = {
         latitude: 9.2,
         longitude: 7.2,
         date: '2018-06-01T11:05:00.000Z',
-        values: new Array(3),
+        values: values,
         map: JSON.stringify([{
             id: 'mockId',
             date: '2018-06-01T11:05:00.000Z',
-            values: new Array(3),
+            values: values,
         }]),
 
         status: 0,
@@ -67,16 +97,32 @@ const expectation2 = {
     }
 };
 
-class mock {
-    static _request() {
+const expectationGauge = {
+    expect: () => {
+        return expectationGauge;
+    },
+    send: () => {
+        return expectationGauge;
+    },
+    id: 'mockId',
+    name: 'asCustomer.testPut',
+    latitude: 9.198,
+    longitude: 7.201,
+};
+
+class Mock {
+    static   _request(mockedApp) {
         return {
-            post: () => {
+            post: async () => {
                 return expectation1;
             },
-            put: () => {
+            put: async () => {
                 return expectation2;
             },
-            get: () => {
+            get: async (url) => {
+                if (url.indexOf('gauge') > 0) {
+                    return expectationGauge;
+                }
                 return expectation2;
             },
         };
@@ -88,10 +134,10 @@ class mock {
 }
 
 exports.$app = new Promise((resolve) => {
-    resolve(new mock())
+    resolve(new Mock());
 });
-exports.request = mock._request;
-exports.logger = new mock();
+exports.request = Mock._request;
+exports.logger = new Mock();
 
 exports.RainNode = require('../dist').RainNode;
 exports.GaugeNode = require('../dist').GaugeNode;

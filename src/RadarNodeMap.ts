@@ -1,6 +1,7 @@
 import {RadarMeasure} from "./RadarMeasure";
 import {RadarNode} from "./RadarNode";
 import {Link} from "./Link";
+import {RaainNode} from "./RaainNode";
 
 export class RadarNodeMap extends RadarNode {
 
@@ -10,7 +11,7 @@ export class RadarNodeMap extends RadarNode {
     constructor(
         idOrObjectToCopy: any | string,
         name?: string,
-        links?: Link[] | any[],
+        links?: Link[] | RaainNode[],
         latitude?: number,
         longitude?: number
     ) {
