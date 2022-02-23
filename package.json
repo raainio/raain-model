@@ -25,8 +25,7 @@
   },
   "scripts": {
     "build": "rm -rf dist/ && npx tsc && cp package.json dist/ && cp *.md dist/",
-    "test": "npm run test-example && npm run test-mocha",
-    "test-example": "ts-node examples/creation.example.ts",
-    "test-mocha": "mocha examples/**/*.spec.js --exit"
+    "test": "npm run test-example",
+    "test-example": "ts-node examples/creation.example.ts"
   }
 }
