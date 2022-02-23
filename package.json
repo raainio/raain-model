@@ -1,6 +1,6 @@
 {
   "name": "raain-model",
-  "version": "0.2.13",
+  "version": "0.3.1",
   "author": "contact@raain.io",
   "homepage": "https://github.com/raainio/raain-model",
   "description": "raain.io api model",
@@ -24,9 +24,8 @@
     "typescript": "~3.1.6"
   },
   "scripts": {
-    "build": "rm -rf dist/ && npx tsc",
-    "test": "npm run test-example && npm run test-mocha",
-    "test-example": "ts-node examples/creation.example.ts",
-    "test-mocha": "mocha examples/**/*.spec.js --exit"
+    "build": "rm -rf dist/ && npx tsc && cp package.json dist/ && cp *.md dist/",
+    "test": "npm run test-example",
+    "test-example": "ts-node examples/creation.example.ts"
   }
 }

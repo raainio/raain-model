@@ -1,6 +1,7 @@
 import {Link} from "./Link";
 import {GaugeNode} from "./GaugeNode";
 import {GaugeMeasure} from "./GaugeMeasure";
+import {RaainNode} from "./RaainNode";
 
 /**
  * api/gauges/:id?format=map&begin=...
@@ -13,7 +14,7 @@ export class GaugeNodeMap extends GaugeNode {
     constructor(
         idOrObjectToCopy: string | { id?: string, name?: string, links?: Link[], latitude?: number, longitude?: number, map?: string, getMapData?: any },
         name?: string,
-        links?: Link[] | any[],
+        links?: Link[] | RaainNode[],
         latitude?: number,
         longitude?: number
     ) {

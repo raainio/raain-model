@@ -8,6 +8,7 @@ import {RainComputationNode} from "./RainComputationNode";
  */
 export class RainNode extends RaainNode {
 
+    public static TYPE = 'rain';
     public name: string;
     public status: number;
     public quality: number;
@@ -18,7 +19,7 @@ export class RainNode extends RaainNode {
     constructor(
         idOrObjectToCopy: any | string,
         name?: string,
-        links?: Link[] | any[],
+        links?: Link[] | RaainNode[],
         status?: number,
         quality?: number,
         latitude?: number,
@@ -27,7 +28,7 @@ export class RainNode extends RaainNode {
     ) {
         super(idOrObjectToCopy, links);
 
-        if (typeof(idOrObjectToCopy) === 'object') {
+        if (typeof (idOrObjectToCopy) === 'object') {
             this.name = idOrObjectToCopy.name;
             this.status = idOrObjectToCopy.status;
             this.quality = idOrObjectToCopy.quality;
@@ -62,7 +63,7 @@ export class RainNode extends RaainNode {
     }
 
     protected getLinkType(): string {
-        return 'rain';
+        return RainNode.TYPE;
     }
 
     public addRadars(linksToAdd: Link[] | any[]): void {
@@ -78,13 +79,17 @@ export class RainNode extends RaainNode {
             return [];
         }
 
-        return linksToPurify.map(l => {
+        const linksPurified = linksToPurify.map(l => {
             if (l instanceof Link) {
                 return l;
-            } else if (l.id) {
-                return new RadarNode(l.id.toString('hex'));
+            } else if (l && l._id) {
+                return new RadarNode(l._id.toString());
+            } else if (l && l.id) {
+                return new RadarNode(l.id.toString()); // 'hex'
             }
         });
+
+        return linksPurified.filter(l => !!l);
     }
 
     private static _getRainComputationLinks(linksToPurify: any[]): any[] {
@@ -92,13 +97,17 @@ export class RainNode extends RaainNode {
             return [];
         }
 
-        return linksToPurify.map(l => {
+        const linksPurified = linksToPurify.map(l => {
             if (l instanceof Link) {
                 return l;
-            } else if (l.id) {
-                return new RainComputationNode(l.id.toString('hex'));
+            } else if (l && l._id) {
+                return new RainComputationNode(l._id.toString());
+            } else if (l && l.id) {
+                return new RainComputationNode(l.id.toString()); // 'hex'
             }
         });
+
+        return linksPurified.filter(l => !!l);
     }
 }
 

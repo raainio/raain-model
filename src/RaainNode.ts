@@ -1,30 +1,35 @@
 import {Link} from "./Link";
+import {IVersion} from "./IVersion";
 
-export class RaainNode {
+export class RaainNode implements IVersion {
 
-    public id: string;
-
+    public readonly id: string;
     private links: Link[];
+    private readonly version: string;
 
     constructor(
         idOrObjectToCopy: any | string,
-        links?: Link[] | any[]
+        links?: Link[] | RaainNode[],
+        version?: string
     ) {
 
         if (!idOrObjectToCopy) {
-            throw 'RaainNode needs a valid Object or ID';
+            throw new Error('RaainNode needs a valid Object or ID');
         }
 
         if (typeof (idOrObjectToCopy) === 'object') {
-            if ((typeof idOrObjectToCopy.id === 'string' || idOrObjectToCopy.links)) {
+            if ((typeof idOrObjectToCopy.id === 'string' || idOrObjectToCopy.links || idOrObjectToCopy.version)) {
                 this.id = idOrObjectToCopy.id;
                 this.setLinks(idOrObjectToCopy.links);
+                this.version = idOrObjectToCopy.version ? idOrObjectToCopy.version : undefined;
                 return;
             }
         }
         if (typeof idOrObjectToCopy === 'string') {
             this.id = idOrObjectToCopy;
         }
+        this.version = version ? version : undefined;
+
         this.setLinks(links);
     }
 
@@ -32,18 +37,24 @@ export class RaainNode {
         return {
             "id": this.id,
             "links": this.links,
+            "version": this.version,
         };
     }
 
-    public setLinks(linksToSet: Link[] | any[]) {
+    public getId(): string {
+        return this.id.toString();
+    }
+
+    public setLinks(linksToSet: Link[] | RaainNode[]) {
         this.links = RaainNode._getPurifiedLinks(linksToSet);
     }
 
-    public addLinks(linksToAdd: Link[] | any[]) {
+    public addLinks(linksToAdd: Link[] | RaainNode[]) {
         if (!this.links) {
             this.links = [];
         }
-        this.links = this.links.concat(RaainNode._getPurifiedLinks(linksToAdd));
+        const concatLinks = this.links.concat((linksToAdd as Link[]));
+        this.links = RaainNode._getPurifiedLinks(concatLinks);
     }
 
     private static _getPurifiedLinks(linksToPurify: any[]): Link[] {
@@ -51,14 +62,29 @@ export class RaainNode {
             return [];
         }
 
-        return linksToPurify.map(l => {
-            if (l instanceof Link || Link.isClonable(l)) {
+        const linksPurified = linksToPurify.map(l => {
+            if (l instanceof Link || Link.isCloneable(l)) {
                 return Link.clone(l);
             } else if (l && l.getLinkType && l.id) {
                 return new Link(l.getLinkType(), '../' + l.getLinkType() + 's/' + l.id);
             }
-            return;
-        })
+        });
+
+        function uniqBy(a, key) {
+            const seen = {};
+            return a.filter(function (item) {
+                if (!item) {
+                    return false;
+                }
+
+                const k = key(item);
+                return seen.hasOwnProperty(k) ? false : (seen[k] = true);
+            })
+        }
+
+        const finalLinks = uniqBy(linksPurified, JSON.stringify);
+
+        return finalLinks;
     }
 
     public getLink(linkType: string, index?: number): Link {
@@ -67,11 +93,10 @@ export class RaainNode {
         }
         index = !index ? 0 : index;
         const linksFound = this.links.filter(l => l && l.rel && linkType.indexOf(l.rel) > -1);
-        const purified: Link[] = linksFound.map(l => new Link(l.rel, l.href));
-        if (purified.length <= index) {
+        if (linksFound.length <= index) {
             return null;
         }
-        return purified[index];
+        return linksFound[index];
     }
 
     public getLinkId(linkType: string, index?: number): string {
@@ -83,8 +108,21 @@ export class RaainNode {
         return null;
     }
 
+    public getLinksCount(linkType?: string): number {
+        if (!linkType) {
+            return this.links.length;
+        }
+
+        const linksFound = this.links.filter(l => l && l.rel && linkType.indexOf(l.rel) > -1);
+        return linksFound.length;
+    }
+
     protected getLinkType(): string {
-        throw 'to implement';
+        throw new Error('to implement');
+    }
+
+    public getVersion() {
+        return this.version;
     }
 
 }
