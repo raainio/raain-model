@@ -6,3 +6,4 @@
  - v0.2.7 : Fix @types
  - v0.2.13 : Fix some bugs (links, conversion)
  - v0.3.1 : Reformat Links, add IVersion 
+ - v0.3.2 : In progress... 
