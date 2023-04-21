@@ -20,4 +20,14 @@ export class TeamNode {
             this.contacts = id.contacts;
         }
     }
+
+    public toJSON(): JSON {
+        return {
+            id: this.id,
+            name: this.name,
+            description: this.description,
+            contracts: this.contracts,
+            contacts: this.contacts,
+        } as any;
+    }
 }

@@ -18,4 +18,14 @@ export class PeopleNode {
             this.comments = id.comments;
         }
     }
+
+    public toJSON(): JSON {
+        return {
+            id: this.id,
+            role: this.role,
+            email: this.email,
+            name: this.name,
+            comments: this.comments,
+        } as any;
+    }
 }

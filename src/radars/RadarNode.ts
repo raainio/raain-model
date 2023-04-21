@@ -41,7 +41,7 @@ export class RadarNode extends RaainNode {
         json['name'] = this.name;
         json['latitude'] = this.latitude;
         json['longitude'] = this.longitude;
-        json['team'] = this.team?.name;
+        json['team'] = this.team?.id;
         return json;
     }
 
