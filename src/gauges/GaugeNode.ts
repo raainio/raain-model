@@ -1,5 +1,6 @@
-import {RaainNode} from "./RaainNode";
-import {Link} from "./Link";
+import {RaainNode} from '../organizations/RaainNode';
+import {Link} from '../organizations/Link';
+import {TeamNode} from '../organizations/TeamNode';
 
 /**
  *  api/gauges/:id
@@ -9,38 +10,41 @@ export class GaugeNode extends RaainNode {
     public name: string;
     public latitude: number;
     public longitude: number;
+    public team: TeamNode;
 
     constructor(
-        idOrObjectToCopy: string |  { id?: string, name?: string, links?: Link[], latitude?: number, longitude?: number },
+        idOrObjectToCopy: string | GaugeNode,
         name?: string,
         links?: Link[] | RaainNode[],
         latitude?: number,
-        longitude?: number
+        longitude?: number,
+        team?: TeamNode,
     ) {
         super(idOrObjectToCopy, links);
-        if (typeof idOrObjectToCopy !== "string") {
+        if (typeof idOrObjectToCopy !== 'string') {
             this.name = idOrObjectToCopy.name;
             this.latitude = idOrObjectToCopy.latitude;
             this.longitude = idOrObjectToCopy.longitude;
+            this.team = idOrObjectToCopy.team;
             return;
         }
         this.name = name;
         this.latitude = latitude;
         this.longitude = longitude;
+        this.team = team;
     }
 
-    public toJSON(): Object {
-        let json = super.toJSON();
+    public toJSON(): JSON {
+        const json = super.toJSON();
         json['name'] = this.name;
         json['latitude'] = this.latitude;
         json['longitude'] = this.longitude;
+        json['team'] = this.team?.name;
         return json;
     }
 
-    protected getLinkType() : string {
+    protected getLinkType(): string {
         return 'gauge';
     }
 
 }
-
-

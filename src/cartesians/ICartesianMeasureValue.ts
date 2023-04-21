@@ -1,0 +1,20 @@
+import {CartesianValue} from './CartesianValue';
+
+export interface ICartesianMeasureValue {
+
+    getCartesianValuesStringified(): string;
+
+    getCartesianValues(): CartesianValue[];
+
+    setCartesianValues(cartesianValues: CartesianValue[]): void;
+
+    setCartesianValuesAsString(s: string): void;
+
+    toJSON(): JSON;
+
+    toJSONWithCartesianValuesStringified(): JSON;
+
+    getCartesianValue(lat: number, lng: number): CartesianValue;
+
+    setCartesianValue(lat: number, lng: number, value: number): void;
+}

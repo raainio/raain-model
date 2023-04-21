@@ -20,7 +20,7 @@ export class Link {
 
     public getLinkType(): string {
         const urls = this.href.split('/');
-        // can be enforce : verify rel in -2 urls ?...
+        // can be enforced : verify rel in -2 urls ?...
         return urls[0];
     }
 

@@ -1,6 +1,6 @@
-import {RaainNode} from './RaainNode';
-import {Link} from "./Link";
-import {RadarNode} from "./RadarNode";
+import {RaainNode} from '../organizations/RaainNode';
+import {Link} from "../organizations/Link";
+import {RadarNode} from "../radars/RadarNode";
 import {RainComputationNode} from "./RainComputationNode";
 
 /**
@@ -51,7 +51,7 @@ export class RainNode extends RaainNode {
         this.addCompletedComputations(links);
     }
 
-    public toJSON(): Object {
+    public toJSON(): JSON {
         let json = super.toJSON();
         json['name'] = this.name;
         json['status'] = this.status;

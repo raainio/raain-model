@@ -1,19 +1,22 @@
-import {MeasureValuePolarContainer} from "./MeasureValuePolarContainer";
-import {IMeasureValue} from "./IMeasureValue";
-import {PolarValues} from "./tools/PolarValues";
-import {PolarValue} from "./PolarValue";
+import {MeasureValuePolarContainer} from './MeasureValuePolarContainer';
+import {IPolarMeasureValue} from './IPolarMeasureValue';
+import {PolarMeasureValue} from './PolarMeasureValue';
+import {PolarValue} from './PolarValue';
 
-export class RadarMeasureValue implements IMeasureValue {
+/**
+ * Radar with polar value containers
+ */
+export class RadarPolarMeasureValue implements IPolarMeasureValue {
 
     public angle: number;
-    private polars: PolarValues;
+    private polars: PolarMeasureValue;
 
     constructor(
         angleOrObject: any | number,
         polars?: string | MeasureValuePolarContainer[]
     ) {
         if (!angleOrObject) {
-            throw new Error('RadarMeasureValue needs a valid Object or ID');
+            throw new Error('RadarPolarMeasureValue needs a valid Object or ID');
         }
 
         if (typeof (angleOrObject.angle) !== 'undefined') {
@@ -44,11 +47,11 @@ export class RadarMeasureValue implements IMeasureValue {
     }
 
     setPolarsAsString(s: string): void {
-        this.polars = new PolarValues(s);
+        this.polars = new PolarMeasureValue(s);
     }
 
     setPolarsAsContainer(s: MeasureValuePolarContainer[]): void {
-        this.polars = new PolarValues(s);
+        this.polars = new PolarMeasureValue(s);
     }
 
     getPolarValue(azimuthIndex: number, edgeIndex: number): PolarValue {
@@ -71,7 +74,7 @@ export class RadarMeasureValue implements IMeasureValue {
         return 0;
     }
 
-    getDistance() : number {
+    getDistance(): number {
         const polars = this.polars.getPolars();
         if (polars.length > 0) {
             return polars[0].distance;
@@ -79,14 +82,14 @@ export class RadarMeasureValue implements IMeasureValue {
         return 1;
     }
 
-    public toJSON(): Object {
-        let json: any = this.polars.toJSON();
+    public toJSON(): JSON {
+        const json: any = this.polars.toJSON();
         json.angle = this.angle;
         return json;
     }
 
-    public toJSONWithPolarStringified(): Object {
-        let json: any = this.polars.toJSONWithPolarStringified();
+    public toJSONWithPolarStringified(): JSON {
+        const json: any = this.polars.toJSONWithPolarStringified();
         json.angle = this.angle;
         return json;
     }

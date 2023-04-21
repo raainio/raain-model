@@ -1,8 +1,8 @@
-import {Measure} from './Measure';
+import {Measure} from '../organizations/Measure';
 
 
 /**
- *  // api/radars/:id/measures/:id
+ *  api/radars/:id/measures/:id
  */
 export class RadarMeasure extends Measure {
 

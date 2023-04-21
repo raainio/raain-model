@@ -1,21 +1,24 @@
-import {MeasureValuePolarContainer} from "./MeasureValuePolarContainer";
-import {IMeasureValue} from "./IMeasureValue";
-import {PolarValue} from "./PolarValue";
+import {MeasureValuePolarContainer} from './MeasureValuePolarContainer';
+import {IPolarMeasureValue} from './IPolarMeasureValue';
+import {PolarValue} from './PolarValue';
 
-export class GaugeMeasureValue implements IMeasureValue {
+/**
+ * Gauge with single polar value container
+ */
+export class GaugePolarMeasureValue implements IPolarMeasureValue {
 
-    private polar: MeasureValuePolarContainer;
+    private polar: MeasureValuePolarContainer; // polarEdges is a single point (this.polar.polarEdges[0])
 
     constructor(
         polarOrObjectToCopy: string | MeasureValuePolarContainer
     ) {
         if (!polarOrObjectToCopy) {
-            throw new Error('GaugeMeasureValue needs a valid Object or Polar');
+            throw new Error('GaugePolarMeasureValue needs a valid Object or Polar');
         }
 
         if (typeof polarOrObjectToCopy === 'string') {
             this.setPolarsAsString(polarOrObjectToCopy);
-        } else  if (polarOrObjectToCopy.toJSON) {
+        } else if (polarOrObjectToCopy.toJSON) {
             this.setPolarsAsString(JSON.stringify(polarOrObjectToCopy.toJSON()));
         } else if (polarOrObjectToCopy['polars']) {
             this.setPolarsAsString(JSON.stringify(polarOrObjectToCopy['polars']));
@@ -38,7 +41,7 @@ export class GaugeMeasureValue implements IMeasureValue {
             if (mvpc.length === 1) {
                 mvpc = mvpc[0];
             }
-        } catch(e) {
+        } catch (e) {
 
         }
         this.polar = new MeasureValuePolarContainer(mvpc);
@@ -63,15 +66,15 @@ export class GaugeMeasureValue implements IMeasureValue {
         return new PolarValue(this.polar.polarEdges[0], this.polar.azimuth, this.polar.distance);
     }
 
-    public toJSON(): Object {
+    public toJSON(): JSON {
         return {
-            "polars": this.getPolars()
-        };
+            'polars': this.getPolars()
+        } as any;
     }
 
-    public toJSONWithPolarStringified(): Object {
+    public toJSONWithPolarStringified(): JSON {
         return {
-            "polars": this.getPolarsStringified()
-        };
+            'polars': this.getPolarsStringified()
+        } as any;
     }
 }

@@ -1,12 +1,14 @@
-import {RadarMeasure} from "./RadarMeasure";
-import {RadarNode} from "./RadarNode";
-import {Link} from "./Link";
-import {RaainNode} from "./RaainNode";
+import {RadarMeasure} from './RadarMeasure';
+import {RadarNode} from './RadarNode';
+import {Link} from '../organizations/Link';
+import {RaainNode} from '../organizations/RaainNode';
 
+/**
+ *  api/radars/:radarId?format=map&...
+ */
 export class RadarNodeMap extends RadarNode {
 
-    // potential result format (stored as stringified json)
-    private map: string;
+    private map: string; // RadarMeasure[]; stringified
 
     constructor(
         idOrObjectToCopy: any | string,
@@ -25,8 +27,8 @@ export class RadarNodeMap extends RadarNode {
         }
     }
 
-    public toJSON(): Object {
-        let json = super.toJSON();
+    public toJSON(): JSON {
+        const json = super.toJSON();
         if (this.map) {
             json['map'] = this.map;
         }
@@ -51,4 +53,3 @@ export class RadarNodeMap extends RadarNode {
         return JSON.parse(this.map);
     }
 }
-

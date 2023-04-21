@@ -1,11 +1,7 @@
-import {Link} from "./Link";
-import {IVersion} from "./IVersion";
+import {Link} from './Link';
+import {IVersion} from './IVersion';
 
 export class RaainNode implements IVersion {
-
-    public readonly id: string;
-    private links: Link[];
-    private readonly version: string;
 
     constructor(
         idOrObjectToCopy: any | string,
@@ -33,29 +29,9 @@ export class RaainNode implements IVersion {
         this.setLinks(links);
     }
 
-    public toJSON(): Object {
-        return {
-            "id": this.id,
-            "links": this.links,
-            "version": this.version,
-        };
-    }
-
-    public getId(): string {
-        return this.id.toString();
-    }
-
-    public setLinks(linksToSet: Link[] | RaainNode[]) {
-        this.links = RaainNode._getPurifiedLinks(linksToSet);
-    }
-
-    public addLinks(linksToAdd: Link[] | RaainNode[]) {
-        if (!this.links) {
-            this.links = [];
-        }
-        const concatLinks = this.links.concat((linksToAdd as Link[]));
-        this.links = RaainNode._getPurifiedLinks(concatLinks);
-    }
+    public readonly id: string;
+    private links: Link[];
+    private readonly version: string;
 
     private static _getPurifiedLinks(linksToPurify: any[]): Link[] {
         if (!linksToPurify || linksToPurify.length === 0) {
@@ -72,19 +48,43 @@ export class RaainNode implements IVersion {
 
         function uniqBy(a, key) {
             const seen = {};
-            return a.filter(function (item) {
+            return a.filter(function(item) {
                 if (!item) {
                     return false;
                 }
 
                 const k = key(item);
                 return seen.hasOwnProperty(k) ? false : (seen[k] = true);
-            })
+            });
         }
 
         const finalLinks = uniqBy(linksPurified, JSON.stringify);
 
         return finalLinks;
+    }
+
+    public toJSON(): JSON {
+        return {
+            id: this.id,
+            links: this.links,
+            version: this.version,
+        } as any;
+    }
+
+    public getId(): string {
+        return this.id.toString();
+    }
+
+    public setLinks(linksToSet: Link[] | RaainNode[]) {
+        this.links = RaainNode._getPurifiedLinks(linksToSet);
+    }
+
+    public addLinks(linksToAdd: Link[] | RaainNode[]) {
+        if (!this.links) {
+            this.links = [];
+        }
+        const concatLinks = this.links.concat((linksToAdd as Link[]));
+        this.links = RaainNode._getPurifiedLinks(concatLinks);
     }
 
     public getLink(linkType: string, index?: number): Link {
@@ -126,5 +126,3 @@ export class RaainNode implements IVersion {
     }
 
 }
-
-

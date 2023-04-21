@@ -1,12 +1,15 @@
-import {MeasureValuePolarContainer} from "./MeasureValuePolarContainer";
-import {IMeasureValue} from "./IMeasureValue";
-import {PolarValues} from "./tools/PolarValues";
-import {PolarValue} from "./PolarValue";
-import {IVersion} from "./IVersion";
+import {MeasureValuePolarContainer} from './MeasureValuePolarContainer';
+import {IPolarMeasureValue} from './IPolarMeasureValue';
+import {PolarMeasureValue} from './PolarMeasureValue';
+import {PolarValue} from './PolarValue';
+import {IVersion} from '../organizations/IVersion';
 
-export class RainMeasureValue implements IMeasureValue, IVersion {
+/**
+ * Computed Rain with polar value containers
+ */
+export class RainPolarMeasureValue implements IPolarMeasureValue, IVersion {
 
-    private polars: PolarValues;
+    private polars: PolarMeasureValue;
     private readonly version: string;
 
     constructor(
@@ -14,7 +17,7 @@ export class RainMeasureValue implements IMeasureValue, IVersion {
         version?: string,
     ) {
         if (!polars) {
-            throw new Error('RainMeasureValue needs a valid Object');
+            throw new Error('RainPolarMeasureValue needs a valid Object');
         }
         if (polars.polars) {
             if (typeof polars.polars === 'string') {
@@ -43,11 +46,11 @@ export class RainMeasureValue implements IMeasureValue, IVersion {
     }
 
     setPolarsAsString(s: string): void {
-        this.polars = new PolarValues(s);
+        this.polars = new PolarMeasureValue(s);
     }
 
     setPolarsAsContainer(s: MeasureValuePolarContainer[]): void {
-        this.polars = new PolarValues(s);
+        this.polars = new PolarMeasureValue(s);
     }
 
     getPolarValue(azimuthIndex: number, edgeIndex: number): PolarValue {
@@ -70,7 +73,7 @@ export class RainMeasureValue implements IMeasureValue, IVersion {
         return 0;
     }
 
-    getDistance() : number {
+    getDistance(): number {
         const polars = this.polars.getPolars();
         if (polars.length > 0) {
             return polars[0].distance;
@@ -78,11 +81,11 @@ export class RainMeasureValue implements IMeasureValue, IVersion {
         return 1;
     }
 
-    public toJSON(): Object {
+    public toJSON(): JSON {
         return this.polars.toJSON();
     }
 
-    public toJSONWithPolarStringified(): Object {
+    public toJSONWithPolarStringified(): JSON {
         return this.polars.toJSONWithPolarStringified();
     }
 
