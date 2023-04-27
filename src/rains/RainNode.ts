@@ -1,20 +1,12 @@
 import {RaainNode} from '../organizations/RaainNode';
-import {Link} from "../organizations/Link";
-import {RadarNode} from "../radars/RadarNode";
-import {RainComputationNode} from "./RainComputationNode";
+import {Link} from '../organizations/Link';
+import {RadarNode} from '../radars/RadarNode';
+import {RainComputationNode} from './RainComputationNode';
 
 /**
  * api/rains/:id
  */
 export class RainNode extends RaainNode {
-
-    public static TYPE = 'rain';
-    public name: string;
-    public status: number;
-    public quality: number;
-    public latitude: number;
-    public longitude: number;
-    public radius: number;
 
     constructor(
         idOrObjectToCopy: any | string,
@@ -51,28 +43,13 @@ export class RainNode extends RaainNode {
         this.addCompletedComputations(links);
     }
 
-    public toJSON(): JSON {
-        let json = super.toJSON();
-        json['name'] = this.name;
-        json['status'] = this.status;
-        json['quality'] = this.quality;
-        json['latitude'] = this.latitude;
-        json['longitude'] = this.longitude;
-        json['radius'] = this.radius;
-        return json;
-    }
-
-    protected getLinkType(): string {
-        return RainNode.TYPE;
-    }
-
-    public addRadars(linksToAdd: Link[] | any[]): void {
-        this.addLinks(RainNode._getRadarLinks(linksToAdd));
-    }
-
-    public addCompletedComputations(linksToAdd: Link[] | any[]): void {
-        this.addLinks(RainNode._getRainComputationLinks(linksToAdd));
-    }
+    public static TYPE = 'rain';
+    public name: string;
+    public status: number;
+    public quality: number;
+    public latitude: number;
+    public longitude: number;
+    public radius: number;
 
     private static _getRadarLinks(linksToPurify: any[]): any[] {
         if (!linksToPurify || linksToPurify.length === 0) {
@@ -108,6 +85,29 @@ export class RainNode extends RaainNode {
         });
 
         return linksPurified.filter(l => !!l);
+    }
+
+    public toJSON(): JSON {
+        const json = super.toJSON();
+        json['name'] = this.name;
+        json['status'] = this.status;
+        json['quality'] = this.quality;
+        json['latitude'] = this.latitude;
+        json['longitude'] = this.longitude;
+        json['radius'] = this.radius;
+        return json;
+    }
+
+    protected getLinkType(): string {
+        return RainNode.TYPE;
+    }
+
+    public addRadars(linksToAdd: Link[] | any[]): void {
+        this.addLinks(RainNode._getRadarLinks(linksToAdd));
+    }
+
+    public addCompletedComputations(linksToAdd: Link[] | any[]): void {
+        this.addLinks(RainNode._getRainComputationLinks(linksToAdd));
     }
 }
 

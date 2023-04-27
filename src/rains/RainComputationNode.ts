@@ -11,10 +11,6 @@ import {RainComputation} from './RainComputation';
  */
 export class RainComputationNode extends RainComputation {
 
-    // not "values" (aka Measure.values), but "results" from computation
-    // why array ? because you can have different angle from the Radar
-    public results: RainPolarMeasureValue[] | RainCartesianMeasureValue[];
-
     constructor(
         idOrObjectToCopy: string | {
             id?: string,
@@ -68,6 +64,12 @@ export class RainComputationNode extends RainComputation {
         this.setResults(results);
     }
 
+    public static TYPE = 'rain-computation';
+
+    // not "values" (aka Measure.values), but "results" from computation
+    // why array ? because you can have different angle from the Radar
+    public results: RainPolarMeasureValue[] | RainCartesianMeasureValue[];
+
     public toJSON(): JSON {
         const json = super.toJSON();
         json['results'] = JSON.stringify(this.results.map(r => r.toJSON()));
@@ -102,6 +104,10 @@ export class RainComputationNode extends RainComputation {
                 return r;
             }
         });
+    }
+
+    protected getLinkType(): string {
+        return RainComputationNode.TYPE;
     }
 
 }

@@ -1,4 +1,4 @@
-import {Measure} from "../organizations/Measure";
+import {Measure} from '../organizations/Measure';
 
 /**
  *  // not existing? api/rains/:id/measures/:id
