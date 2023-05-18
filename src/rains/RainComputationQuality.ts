@@ -12,7 +12,6 @@ export class RainComputationQuality extends RainComputation {
     public maximums: { rainMeasureValue: number, gaugeMeasureValue: number };
     public speed: { angleDegrees: number, speedMetersPerSec: number };
     public points: { gaugeId: string, rainCartesianValue: CartesianValue, gaugeCartesianValue: CartesianValue }[];
-    // TODO also including polar values in points ?
     public indicator: number; // be careful not == quality (which is related to the insights quality)
 
     constructor(
@@ -22,7 +21,11 @@ export class RainComputationQuality extends RainComputation {
         links?: Link[] | RaainNode[],
         quality?: number,
         timeSpentInMs?: number,
-        version?: string
+        version?: string,
+        maximums?: { rainMeasureValue: number, gaugeMeasureValue: number },
+        speed?: { angleDegrees: number, speedMetersPerSec: number },
+        points?: { gaugeId: string, rainCartesianValue: CartesianValue, gaugeCartesianValue: CartesianValue }[],
+        indicator?: number
     ) {
         if (typeof idOrObjectToCopy !== 'string') {
             super(idOrObjectToCopy.id,
@@ -35,13 +38,22 @@ export class RainComputationQuality extends RainComputation {
                 idOrObjectToCopy.timeSpentInMs,
                 undefined, undefined, undefined,
                 idOrObjectToCopy.version);
-            this.points = [];
+
+            this.maximums = idOrObjectToCopy.maximums;
+            this.speed = idOrObjectToCopy.speed;
+            this.points = idOrObjectToCopy.points;
+            this.indicator = idOrObjectToCopy.indicator;
+
             return;
         }
 
         super(idOrObjectToCopy, periodBegin, periodEnd, links, quality, undefined, undefined, timeSpentInMs,
             undefined, undefined, undefined, version);
-        this.points = [];
+
+        this.maximums = maximums;
+        this.speed = speed;
+        this.points = points;
+        this.indicator = indicator;
     }
 
     public toJSON(): JSON {

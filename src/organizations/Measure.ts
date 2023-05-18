@@ -27,11 +27,10 @@ export class Measure extends RaainNode {
     }
 
     public toJSON(): JSON {
-        return {
-            id: this.id,
-            date: this.date,
-            values: this.values,
-            validity: this.validity
-        } as any;
+        const json = super.toJSON();
+        json['date'] = this.date;
+        json['values'] = this.values;
+        json['validity'] = this.validity;
+        return json;
     }
 }

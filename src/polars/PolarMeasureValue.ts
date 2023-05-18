@@ -73,13 +73,13 @@ export class PolarMeasureValue implements IPolarMeasureValue {
 
     public toJSON(): JSON {
         return {
-            'polars': this.polars
+            polars: this.polars
         } as any;
     }
 
     public toJSONWithPolarStringified(): JSON {
         return {
-            'polars': this.getPolarsStringified()
+            polars: this.getPolarsStringified()
         } as any;
     }
 

@@ -54,6 +54,10 @@ export class RainComputationMap extends RainComputation {
     }
 
     public setMapData(mapData: RainMeasure[] | string) {
+        if (!mapData) {
+            return;
+        }
+
         let map = mapData;
         try {
             if (typeof (mapData) !== 'string') {

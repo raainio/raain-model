@@ -82,6 +82,7 @@ export class RainComputation extends RaainNode {
     public isReady: boolean;
     public isDoneDate: Date;
     public launchedBy: string;
+    public name: string;
 
     private static _getRadarLinks(linksToPurify: any[]): any[] {
         if (!linksToPurify || linksToPurify.length === 0) {
@@ -134,6 +135,7 @@ export class RainComputation extends RaainNode {
         json['isReady'] = this.isReady;
         json['isDoneDate'] = this.isDoneDate;
         json['launchedBy'] = this.launchedBy;
+        json['name'] = this.name;
         return json;
     }
 

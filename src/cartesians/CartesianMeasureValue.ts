@@ -38,12 +38,12 @@ export class CartesianMeasureValue implements ICartesianMeasureValue {
             this.cartesianValues = [];
             values.forEach(v => {
                 this.cartesianValues.push(new CartesianValue(v.value, v.lat, v.lng));
-            })
+            });
         }
     }
 
     toJSON(): JSON {
-        let json: any = {cartesianValues: this.cartesianValues};
+        const json: any = {cartesianValues: this.cartesianValues};
         return json;
     }
 

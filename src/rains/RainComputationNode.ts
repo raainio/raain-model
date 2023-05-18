@@ -52,7 +52,9 @@ export class RainComputationNode extends RainComputation {
                 idOrObjectToCopy.progressIngest,
                 idOrObjectToCopy.progressComputing,
                 idOrObjectToCopy.timeSpentInMs,
-                undefined, undefined, undefined,
+                idOrObjectToCopy.isReady,
+                idOrObjectToCopy.isDoneDate,
+                idOrObjectToCopy.launchedBy,
                 idOrObjectToCopy.version);
 
             this.setResults(idOrObjectToCopy.results);
@@ -60,7 +62,7 @@ export class RainComputationNode extends RainComputation {
         }
 
         super(idOrObjectToCopy, periodBegin, periodEnd, links, quality, progressIngest, progressComputing, timeSpentInMs,
-            undefined, undefined, undefined, version);
+            isReady, isDoneDate, launchedBy, version);
         this.setResults(results);
     }
 
