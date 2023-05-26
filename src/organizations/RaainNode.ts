@@ -29,9 +29,9 @@ export class RaainNode implements IVersion {
         this.setLinks(links);
     }
 
-    public readonly id: string;
+    public id: string;
     private links: Link[];
-    private readonly version: string;
+    private version: string;
 
     private static _getPurifiedLinks(linksToPurify: any[]): Link[] {
         if (!linksToPurify || linksToPurify.length === 0) {

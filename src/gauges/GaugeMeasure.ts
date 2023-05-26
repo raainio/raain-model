@@ -12,6 +12,7 @@ export class GaugeMeasure extends Measure {
     constructor(
         idOrObjectToCopy: any | string,
         date?: Date,
+        public timeInSec?: number,
         values?: IPolarMeasureValue[] | ICartesianMeasureValue[] | Measure[] | number[],
         validity?: number
     ) {
@@ -20,11 +21,22 @@ export class GaugeMeasure extends Measure {
             if (idOrObjectToCopy.gauge) {
                 this.addLinks([new GaugeNode(idOrObjectToCopy.gauge)]);
             }
+            this.timeInSec = idOrObjectToCopy.timeInSec;
+            return;
         }
+
+        this.timeInSec = timeInSec;
+
     }
 
     protected getLinkType(): string {
         return 'gauge-measure';
+    }
+
+    public toJSON(): JSON {
+        const json = super.toJSON();
+        json['timeInSec'] = this.timeInSec;
+        return json;
     }
 }
 

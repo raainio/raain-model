@@ -1,20 +1,23 @@
 import {
-    PeopleNode,
-    TeamNode,
-    MeasureValuePolarContainer,
-    RadarNode,
-    RainComputationNode,
-    RainPolarMeasureValue,
-    RainNode,
-    RaainNode,
-    PolarMeasureValue,
-    PolarValue,
-    RadarPolarMeasureValue,
     CartesianMeasureValue,
     CartesianValue,
-    EventNode, GaugeMeasure, GaugeNode, RainComputationQuality} from '../dist';
+    EventNode,
+    GaugeMeasure,
+    GaugeNode,
+    MeasureValuePolarContainer,
+    PeopleNode,
+    PolarMeasureValue,
+    PolarValue,
+    RadarCartesianMeasureValue,
+    RadarNode,
+    RainComputationNode,
+    RainComputationQuality,
+    RainNode,
+    RainPolarMeasureValue,
+    TeamNode
+} from '../dist';
 import * as assert from 'assert';
-import {RadarCartesianMeasureValue} from '../src/cartesians/RadarCartesianMeasureValue';
+import {ICartesianMeasureValue} from '../src';
 
 console.log('### Basic model examples... ');
 
@@ -52,7 +55,7 @@ const _buildPolarMeasures = () => {
     return values;
 };
 */
-const polarValue = new PolarValue(12,2,4);
+const polarValue = new PolarValue(12, 2, 4);
 assert(polarValue.value === 12);
 assert(polarValue.polarAzimuthInDegrees === 2);
 assert(polarValue.polarDistanceInMeters === 4);
@@ -62,23 +65,25 @@ assert(measureValuePolarContainer.polarEdges[0] === 33);
 assert(measureValuePolarContainer.polarEdges[1] === 45.5);
 
 const polarMeasureValue = new PolarMeasureValue([measureValuePolarContainer]);
-const polarValueFound = polarMeasureValue.getPolarValue(0,1);
+const polarValueFound = polarMeasureValue.getPolarValue(0, 1);
 assert(polarValueFound.value === 45.5);
 assert(polarValueFound.polarAzimuthInDegrees === 0);
 assert(polarValueFound.polarDistanceInMeters === 1);
 
 // Cartesian values
 
-const cartesianValue = new CartesianValue(123, 10,20);
+const cartesianValue = new CartesianValue(123, 10, 20);
 const cartesianMeasureValue = new CartesianMeasureValue([cartesianValue, cartesianValue]);
-const radarCartesianMeasureValue = new RadarCartesianMeasureValue(4,[cartesianValue, cartesianValue]);
+const radarCartesianMeasureValue = new RadarCartesianMeasureValue(4, [cartesianValue, cartesianValue]);
 assert(radarCartesianMeasureValue.angle === 4);
 assert(radarCartesianMeasureValue.getCartesianValues().length === 2);
 
 // Gauges
 const gaugeNode = new GaugeNode('GaugeNode looks OK.', 'name', [], 1, 1);
 assert(gaugeNode.id === 'GaugeNode looks OK.');
-const gaugeMeasure = new GaugeMeasure('gaugeMeasure', new Date(), [cartesianMeasureValue], 1);
+const gaugeMeasure = new GaugeMeasure('gaugeMeasure', new Date(), 300, [cartesianMeasureValue], 1);
+assert(gaugeMeasure.timeInSec === 300);
+assert((gaugeMeasure.values[0] as ICartesianMeasureValue).getCartesianValue(10, 20).value === 123);
 
 // Radars
 
@@ -114,7 +119,7 @@ const rainComputationQuality = new RainComputationQuality('RainComputationQualit
     1,
     100,
     'v1'
-    );
+);
 assert(rainComputationQuality.id === 'RainComputationQuality looks OK.');
 assert(rainComputationQuality.getVersion() === 'v1');
 

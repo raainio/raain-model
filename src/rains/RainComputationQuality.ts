@@ -5,7 +5,7 @@ import {CartesianValue} from '../cartesians/CartesianValue';
 
 
 /**
- *  api/rains/:id/computations?format=quality&begin=...&gauges=[...]
+ *  api/rains/:id/computations?format=compare&begin=...&gauges=[...]
  */
 export class RainComputationQuality extends RainComputation {
 
