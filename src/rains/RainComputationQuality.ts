@@ -12,6 +12,7 @@ export class RainComputationQuality extends RainComputation {
     public maximums: { rainMeasureValue: number, gaugeMeasureValue: number };
     public speed: { angleDegrees: number, speedMetersPerSec: number };
     public points: { gaugeId: string, rainCartesianValue: CartesianValue, gaugeCartesianValue: CartesianValue }[];
+    public pointsHistory: { gaugeId: string, rainCartesianValue: CartesianValue, gaugeCartesianValue: CartesianValue }[];
     public indicator: number; // be careful not == quality (which is related to the insights quality)
 
     constructor(
@@ -63,6 +64,10 @@ export class RainComputationQuality extends RainComputation {
         json['speed'] = this.speed;
         json['points'] = this.points;
         json['indicator'] = this.indicator;
+        if (this.pointsHistory) {
+            json['pointsHistory'] = this.pointsHistory;
+        }
+
         return json;
     }
 
