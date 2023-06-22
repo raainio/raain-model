@@ -109,7 +109,7 @@ export class RainComputation extends RaainNode {
             if (l instanceof Link) {
                 return l;
             } else if (l && l._id) {
-                return new RadarNode(l._id.toString());
+                return new RadarMeasure(l._id.toString());
             } else if (l && l.id) {
                 return new RadarMeasure(l.id.toString()); // 'hex'
             }

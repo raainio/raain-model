@@ -57,6 +57,32 @@ export class RainComputationQuality extends RainComputation {
         this.indicator = indicator;
     }
 
+    merge(rainComputationQuality: RainComputationQuality) {
+
+        this.periodBegin = this.mergeDateMin(this.periodBegin, rainComputationQuality.periodBegin);
+        this.periodEnd = this.mergeDateMax(this.periodEnd, rainComputationQuality.periodEnd);
+        this.quality = this.mergeAvg(this.quality, rainComputationQuality.quality);
+        this.progressIngest = this.mergeMin(this.progressIngest, rainComputationQuality.progressIngest);
+        this.progressComputing = this.mergeMin(this.progressComputing, rainComputationQuality.progressComputing);
+        this.timeSpentInMs = this.mergeSum(this.timeSpentInMs, rainComputationQuality.timeSpentInMs);
+
+        this.maximums = {
+            gaugeMeasureValue: this.mergeMax(this.maximums?.gaugeMeasureValue, rainComputationQuality.maximums?.gaugeMeasureValue),
+            rainMeasureValue: this.mergeMax(this.maximums?.rainMeasureValue, rainComputationQuality.maximums?.rainMeasureValue)
+        };
+        this.speed = {
+            angleDegrees: this.mergeAvg(this.speed?.angleDegrees, rainComputationQuality.speed?.angleDegrees),
+            speedMetersPerSec: this.mergeAvg(this.speed?.speedMetersPerSec, rainComputationQuality.speed?.speedMetersPerSec)
+        };
+        this.points = this.mergeConcat(this.points, rainComputationQuality.points);
+        this.indicator = this.mergeAvg(this.indicator, rainComputationQuality.indicator);
+
+        if (this.pointsHistory && rainComputationQuality.pointsHistory) {
+            this.pointsHistory = this.mergeConcat(this.pointsHistory, rainComputationQuality.pointsHistory);
+        }
+
+    }
+
     public toJSON(): JSON {
         const json = super.toJSON();
 
@@ -69,6 +95,81 @@ export class RainComputationQuality extends RainComputation {
         }
 
         return json;
+    }
+
+    protected mergeStillComputed(v1: any, v2: any): any {
+        if (!v1 && !v2) {
+            return undefined;
+        }
+        if (!v1) {
+            return v2;
+        }
+        if (!v2) {
+            return v1;
+        }
+        return null;
+    }
+
+    protected mergeDateMin(d1: Date, d2: Date): Date {
+        const stillComputed = this.mergeStillComputed(d1, d2);
+        if (stillComputed === null) {
+            return new Date(Math.min(new Date(d1).getTime(), new Date(d2).getTime()));
+        }
+        if (stillComputed !== undefined) {
+            return new Date(stillComputed);
+        }
+        return stillComputed;
+    }
+
+    protected mergeDateMax(d1: Date, d2: Date): Date {
+        const stillComputed = this.mergeStillComputed(d1, d2);
+        if (stillComputed === null) {
+            return new Date(Math.max(new Date(d1).getTime(), new Date(d2).getTime()));
+        }
+        if (stillComputed !== undefined) {
+            return new Date(stillComputed);
+        }
+        return stillComputed;
+    }
+
+    protected mergeAvg(v1: number, v2: number): number {
+        const stillComputed = this.mergeStillComputed(v1, v2);
+        if (stillComputed === null) {
+            return (v1 + v2) / 2;
+        }
+        return stillComputed;
+    }
+
+    protected mergeMin(v1: number, v2: number): number {
+        const stillComputed = this.mergeStillComputed(v1, v2);
+        if (stillComputed === null) {
+            return Math.min(v1, v2);
+        }
+        return stillComputed;
+    }
+
+    protected mergeMax(v1: number, v2: number): number {
+        const stillComputed = this.mergeStillComputed(v1, v2);
+        if (stillComputed === null) {
+            return Math.max(v1, v2);
+        }
+        return stillComputed;
+    }
+
+    protected mergeSum(v1: number, v2: number): number {
+        const stillComputed = this.mergeStillComputed(v1, v2);
+        if (stillComputed === null) {
+            return v1 + v2;
+        }
+        return stillComputed;
+    }
+
+    protected mergeConcat(a1: Array<any>, a2: Array<any>): Array<any> {
+        const stillComputed = this.mergeStillComputed(a1, a2);
+        if (stillComputed === null) {
+            return a1.concat(a2);
+        }
+        return stillComputed;
     }
 
 }
