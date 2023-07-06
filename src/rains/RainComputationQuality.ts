@@ -11,8 +11,22 @@ export class RainComputationQuality extends RainComputation {
 
     public maximums: { rainMeasureValue: number, gaugeMeasureValue: number };
     public speed: { angleDegrees: number, speedMetersPerSec: number };
-    public points: { gaugeId: string, rainCartesianValue: CartesianValue, gaugeCartesianValue: CartesianValue }[];
-    public pointsHistory: { gaugeId: string, rainCartesianValue: CartesianValue, gaugeCartesianValue: CartesianValue }[];
+    public points: {
+        // see raain-quality > QualityPoint[]
+        gaugeId: string,
+        gaugeDate: Date,
+        rainDate: Date,
+        gaugeCartesianValue: CartesianValue,
+        rainCartesianValue: CartesianValue
+    }[];
+    public pointsHistory: {
+        // see raain-quality > QualityPoint[]
+        gaugeId: string,
+        gaugeDate: Date,
+        rainDate: Date,
+        gaugeCartesianValue: CartesianValue,
+        rainCartesianValue: CartesianValue
+    }[];
     public indicator: number; // be careful not == quality (which is related to the insights quality)
 
     constructor(
@@ -25,7 +39,13 @@ export class RainComputationQuality extends RainComputation {
         version?: string,
         maximums?: { rainMeasureValue: number, gaugeMeasureValue: number },
         speed?: { angleDegrees: number, speedMetersPerSec: number },
-        points?: { gaugeId: string, rainCartesianValue: CartesianValue, gaugeCartesianValue: CartesianValue }[],
+        points?: { // see raain-quality > QualityPoint[]
+            gaugeId: string,
+            gaugeDate: Date,
+            rainDate: Date,
+            gaugeCartesianValue: CartesianValue,
+            rainCartesianValue: CartesianValue
+        }[],
         indicator?: number
     ) {
         if (typeof idOrObjectToCopy !== 'string') {
@@ -43,6 +63,7 @@ export class RainComputationQuality extends RainComputation {
             this.maximums = idOrObjectToCopy.maximums;
             this.speed = idOrObjectToCopy.speed;
             this.points = idOrObjectToCopy.points;
+            this.pointsHistory = idOrObjectToCopy.pointsHistory;
             this.indicator = idOrObjectToCopy.indicator;
 
             return;
