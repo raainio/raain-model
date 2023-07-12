@@ -8,23 +8,38 @@ import {RaainNode} from '../organizations/RaainNode';
  */
 export class RadarNodeMap extends RadarNode {
 
+    public periodBegin: Date;
+    public periodEnd: Date;
     private map: string; // RadarMeasure[]; stringified
 
     constructor(
         idOrObjectToCopy: any | string,
         name?: string,
+        periodBegin?: Date,
+        periodEnd?: Date,
         links?: Link[] | RaainNode[],
         latitude?: number,
-        longitude?: number
+        longitude?: number,
+        map?: RadarMeasure[] | string,
     ) {
-        super(idOrObjectToCopy, name, links, latitude, longitude);
 
-        if (idOrObjectToCopy.map) {
-            this.map = idOrObjectToCopy.map;
+        if (typeof idOrObjectToCopy !== 'string') {
+            super(idOrObjectToCopy.id,
+                idOrObjectToCopy.name,
+                idOrObjectToCopy.links,
+                idOrObjectToCopy.latitude,
+                idOrObjectToCopy.longitude);
+
+            this.setMapData(idOrObjectToCopy.map);
+            this.periodBegin = idOrObjectToCopy.periodBegin;
+            this.periodEnd = idOrObjectToCopy.periodEnd;
+            return;
         }
-        if (!this.map && idOrObjectToCopy.getMapData) {
-            this.map = JSON.stringify(idOrObjectToCopy.getMapData());
-        }
+
+        super(idOrObjectToCopy, name, links, latitude, longitude);
+        this.setMapData(map);
+        this.periodBegin = periodBegin;
+        this.periodEnd = periodEnd;
     }
 
     public toJSON(): JSON {
@@ -36,6 +51,10 @@ export class RadarNodeMap extends RadarNode {
     }
 
     public setMapData(mapData: RadarMeasure[] | string) {
+        if (!mapData) {
+            return;
+        }
+
         let map = mapData;
         try {
             if (typeof (mapData) !== 'string') {

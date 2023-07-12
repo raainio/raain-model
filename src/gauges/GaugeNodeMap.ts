@@ -37,6 +37,10 @@ export class GaugeNodeMap extends GaugeNode {
     }
 
     public setMapData(mapData: GaugeMeasure[] | string) {
+        if (!mapData) {
+            return;
+        }
+
         let map = mapData;
         try {
             if (typeof (mapData) !== 'string') {

@@ -12,7 +12,6 @@ export class RadarNode extends RaainNode {
     public name: string;
     public latitude: number;
     public longitude: number;
-    public team: TeamNode;
 
     constructor(
         idOrObjectToCopy: any | string,
@@ -20,20 +19,17 @@ export class RadarNode extends RaainNode {
         links?: Link[] | RaainNode[],
         latitude?: number,
         longitude?: number,
-        team?: TeamNode,
     ) {
         super(idOrObjectToCopy, links);
         if (typeof (idOrObjectToCopy) === 'object') {
             this.name = idOrObjectToCopy.name;
             this.latitude = idOrObjectToCopy.latitude;
             this.longitude = idOrObjectToCopy.longitude;
-            this.team = idOrObjectToCopy.team;
             return;
         }
         this.name = name;
         this.latitude = latitude;
         this.longitude = longitude;
-        this.team = team;
     }
 
     public toJSON(): JSON {
@@ -41,7 +37,6 @@ export class RadarNode extends RaainNode {
         json['name'] = this.name;
         json['latitude'] = this.latitude;
         json['longitude'] = this.longitude;
-        json['team'] = this.team?.id || this.team;
         return json;
     }
 

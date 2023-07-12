@@ -4,6 +4,7 @@ export * from './organizations/PeopleNode';
 export * from './organizations/Link';
 export * from './organizations/RaainNode';
 export * from './organizations/TeamNode';
+export * from './organizations/QualityPoint';
 
 export * from './gauges/GaugeNode';
 export * from './gauges/GaugeMeasure';

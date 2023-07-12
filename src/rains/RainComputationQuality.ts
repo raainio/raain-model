@@ -2,6 +2,7 @@ import {RainComputation} from './RainComputation';
 import {Link} from '../organizations/Link';
 import {RaainNode} from '../organizations/RaainNode';
 import {CartesianValue} from '../cartesians/CartesianValue';
+import {QualityPoint} from '../organizations/QualityPoint';
 
 
 /**
@@ -11,22 +12,8 @@ export class RainComputationQuality extends RainComputation {
 
     public maximums: { rainMeasureValue: number, gaugeMeasureValue: number };
     public speed: { angleDegrees: number, speedMetersPerSec: number };
-    public points: {
-        // see raain-quality > QualityPoint[]
-        gaugeId: string,
-        gaugeDate: Date,
-        rainDate: Date,
-        gaugeCartesianValue: CartesianValue,
-        rainCartesianValue: CartesianValue
-    }[];
-    public pointsHistory: {
-        // see raain-quality > QualityPoint[]
-        gaugeId: string,
-        gaugeDate: Date,
-        rainDate: Date,
-        gaugeCartesianValue: CartesianValue,
-        rainCartesianValue: CartesianValue
-    }[];
+    public points: QualityPoint[];
+    public pointsHistory: QualityPoint[];
     public indicator: number; // be careful not == quality (which is related to the insights quality)
 
     constructor(

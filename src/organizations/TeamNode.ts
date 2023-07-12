@@ -1,9 +1,10 @@
 import {PeopleNode} from './PeopleNode';
+import {RaainNode} from './RaainNode';
 
 /**
  *  api/teams?name=customerTeam
  */
-export class TeamNode {
+export class TeamNode extends RaainNode{
 
     constructor(
         public id: any | string,
@@ -12,6 +13,7 @@ export class TeamNode {
         public contracts?: string[],
         public contacts?: PeopleNode[]
     ) {
+        super(id);
         if (typeof id === 'object') {
             this.id = id.id;
             this.name = id.name;
@@ -19,6 +21,11 @@ export class TeamNode {
             this.contracts = id.contracts;
             this.contacts = id.contacts;
         }
+    }
+
+
+    protected getLinkType(): string {
+        return 'team';
     }
 
     public toJSON(): JSON {
