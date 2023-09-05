@@ -1,8 +1,6 @@
 import {RainComputation} from './RainComputation';
 import {Link} from '../organizations/Link';
 import {RaainNode} from '../organizations/RaainNode';
-import {CartesianValue} from '../cartesians/CartesianValue';
-import {QualityPoint} from '../organizations/QualityPoint';
 
 
 /**
@@ -11,58 +9,38 @@ import {QualityPoint} from '../organizations/QualityPoint';
 export class RainComputationQuality extends RainComputation {
 
     public maximums: { rainMeasureValue: number, gaugeMeasureValue: number };
-    public speed: { angleDegrees: number, speedMetersPerSec: number };
-    public points: QualityPoint[];
-    public pointsHistory: QualityPoint[];
-    public indicator: number; // be careful not == quality (which is related to the insights quality)
+    public qualitySpeedMatrixContainer: any; // TODO align with raain-quality > SpeedMatrixContainer
 
     constructor(
         idOrObjectToCopy: string | any,
         periodBegin?: Date,
         periodEnd?: Date,
         links?: Link[] | RaainNode[],
-        quality?: number,
         timeSpentInMs?: number,
         version?: string,
-        maximums?: { rainMeasureValue: number, gaugeMeasureValue: number },
-        speed?: { angleDegrees: number, speedMetersPerSec: number },
-        points?: { // see raain-quality > QualityPoint[]
-            gaugeId: string,
-            gaugeDate: Date,
-            rainDate: Date,
-            gaugeCartesianValue: CartesianValue,
-            rainCartesianValue: CartesianValue
-        }[],
-        indicator?: number
+        qualitySpeedMatrixContainer?: any
     ) {
         if (typeof idOrObjectToCopy !== 'string') {
             super(idOrObjectToCopy.id,
                 idOrObjectToCopy.periodBegin,
                 idOrObjectToCopy.periodEnd,
                 idOrObjectToCopy.links,
-                idOrObjectToCopy.quality,
+                undefined,
                 idOrObjectToCopy.progressIngest,
                 idOrObjectToCopy.progressComputing,
                 idOrObjectToCopy.timeSpentInMs,
                 undefined, undefined, undefined,
                 idOrObjectToCopy.version);
 
-            this.maximums = idOrObjectToCopy.maximums;
-            this.speed = idOrObjectToCopy.speed;
-            this.points = idOrObjectToCopy.points;
-            this.pointsHistory = idOrObjectToCopy.pointsHistory;
-            this.indicator = idOrObjectToCopy.indicator;
+            this.qualitySpeedMatrixContainer = idOrObjectToCopy.qualitySpeedMatrixContainer;
 
             return;
         }
 
-        super(idOrObjectToCopy, periodBegin, periodEnd, links, quality, undefined, undefined, timeSpentInMs,
+        super(idOrObjectToCopy, periodBegin, periodEnd, links, undefined, undefined, undefined, timeSpentInMs,
             undefined, undefined, undefined, version);
 
-        this.maximums = maximums;
-        this.speed = speed;
-        this.points = points;
-        this.indicator = indicator;
+        this.qualitySpeedMatrixContainer = qualitySpeedMatrixContainer;
     }
 
     merge(rainComputationQuality: RainComputationQuality) {
@@ -74,32 +52,19 @@ export class RainComputationQuality extends RainComputation {
         this.progressComputing = this.mergeMin(this.progressComputing, rainComputationQuality.progressComputing);
         this.timeSpentInMs = this.mergeSum(this.timeSpentInMs, rainComputationQuality.timeSpentInMs);
 
-        this.maximums = {
-            gaugeMeasureValue: this.mergeMax(this.maximums?.gaugeMeasureValue, rainComputationQuality.maximums?.gaugeMeasureValue),
-            rainMeasureValue: this.mergeMax(this.maximums?.rainMeasureValue, rainComputationQuality.maximums?.rainMeasureValue)
-        };
-        this.speed = {
-            angleDegrees: this.mergeAvg(this.speed?.angleDegrees, rainComputationQuality.speed?.angleDegrees),
-            speedMetersPerSec: this.mergeAvg(this.speed?.speedMetersPerSec, rainComputationQuality.speed?.speedMetersPerSec)
-        };
-        this.points = this.mergeConcat(this.points, rainComputationQuality.points);
-        this.indicator = this.mergeAvg(this.indicator, rainComputationQuality.indicator);
-
-        if (this.pointsHistory && rainComputationQuality.pointsHistory) {
-            this.pointsHistory = this.mergeConcat(this.pointsHistory, rainComputationQuality.pointsHistory);
+        if (this.qualitySpeedMatrixContainer && this.qualitySpeedMatrixContainer.merge) {
+            this.qualitySpeedMatrixContainer = this.qualitySpeedMatrixContainer.merge(rainComputationQuality.qualitySpeedMatrixContainer);
         }
 
     }
 
-    public toJSON(): JSON {
+    public toJSON(arg?): JSON {
         const json = super.toJSON();
 
-        json['maximums'] = this.maximums;
-        json['speed'] = this.speed;
-        json['points'] = this.points;
-        json['indicator'] = this.indicator;
-        if (this.pointsHistory) {
-            json['pointsHistory'] = this.pointsHistory;
+        if (this.qualitySpeedMatrixContainer && this.qualitySpeedMatrixContainer.toJSON) {
+            json['qualitySpeedMatrixContainer'] = this.qualitySpeedMatrixContainer.toJSON(arg);
+        } else if (this.qualitySpeedMatrixContainer) {
+            json['qualitySpeedMatrixContainer'] = this.qualitySpeedMatrixContainer;
         }
 
         return json;

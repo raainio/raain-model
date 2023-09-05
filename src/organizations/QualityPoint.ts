@@ -7,7 +7,8 @@ export class QualityPoint {
         public gaugeDate: Date,
         public rainDate: Date,
         public gaugeCartesianValue: CartesianValue,
-        public rainCartesianValue: CartesianValue
+        public rainCartesianValue: CartesianValue,
+        public speed: { x: number, y: number },
     ) {
     }
 
