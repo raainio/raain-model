@@ -84,6 +84,7 @@ assert(gaugeNode.id === 'GaugeNode looks OK.');
 const gaugeMeasure = new GaugeMeasure('gaugeMeasure', new Date(), 300, [cartesianMeasureValue], 1);
 assert(gaugeMeasure.timeInSec === 300);
 assert((gaugeMeasure.values[0] as ICartesianMeasureValue).getCartesianValue(10, 20).value === 123);
+assert((gaugeMeasure.values[0] as ICartesianMeasureValue).getCartesianValue(10.0001, 20.00001) === null);
 
 // Radars
 
@@ -117,7 +118,6 @@ const rainComputationQuality = new RainComputationQuality('RainComputationQualit
     new Date(), new Date(),
     [radarNode],
     1,
-    100,
     'v1'
 );
 assert(rainComputationQuality.id === 'RainComputationQuality looks OK.');

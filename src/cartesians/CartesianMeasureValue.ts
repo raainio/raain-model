@@ -34,7 +34,7 @@ export class CartesianMeasureValue implements ICartesianMeasureValue {
             values = values.cartesianValues;
         }
 
-        if (values.isArray()) {
+        if (Array.isArray(values)) {
             this.cartesianValues = [];
             values.forEach(v => {
                 this.cartesianValues.push(new CartesianValue(v.value, v.lat, v.lng));

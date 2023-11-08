@@ -9,6 +9,14 @@ import {GaugeNode} from '../gauges/GaugeNode';
  */
 export class RainNode extends RaainNode {
 
+    public static TYPE = 'rain';
+    public name: string;
+    public status: number;
+    public quality: number;
+    public latitude: number;
+    public longitude: number;
+    public radius: number;
+
     constructor(
         idOrObjectToCopy: any | string,
         name?: string,
@@ -17,9 +25,10 @@ export class RainNode extends RaainNode {
         quality?: number,
         latitude?: number,
         longitude?: number,
-        radius?: number
+        radius?: number,
+        version?: string,
     ) {
-        super(idOrObjectToCopy, links);
+        super(idOrObjectToCopy, links, version);
 
         if (typeof (idOrObjectToCopy) === 'object') {
             this.name = idOrObjectToCopy.name;
@@ -46,14 +55,6 @@ export class RainNode extends RaainNode {
         this.addCompletedComputations(links);
         this.addGauges(links);
     }
-
-    public static TYPE = 'rain';
-    public name: string;
-    public status: number;
-    public quality: number;
-    public latitude: number;
-    public longitude: number;
-    public radius: number;
 
     private static _getRadarLinks(linksToPurify: any[]): any[] {
         if (!linksToPurify || linksToPurify.length === 0) {
@@ -120,10 +121,6 @@ export class RainNode extends RaainNode {
         return json;
     }
 
-    protected getLinkType(): string {
-        return RainNode.TYPE;
-    }
-
     public addRadars(linksToAdd: Link[] | any[]): void {
         this.addLinks(RainNode._getRadarLinks(linksToAdd));
     }
@@ -134,6 +131,10 @@ export class RainNode extends RaainNode {
 
     public addGauges(linksToAdd: Link[] | any[]): void {
         this.addLinks(RainNode._getGaugeLinks(linksToAdd));
+    }
+
+    protected getLinkType(): string {
+        return RainNode.TYPE;
     }
 }
 
