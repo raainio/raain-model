@@ -60,6 +60,19 @@ export class CartesianMeasureValue implements ICartesianMeasureValue {
         return null;
     }
 
+    getCartesianValueRounded(lat: number, lng: number, scale: number = 0.01): CartesianValue {
+        for (const value of this.cartesianValues) {
+            const latRounded1 = Math.round(lat / scale) * scale;
+            const lngRounded1 = Math.round(lng / scale) * scale;
+            const latRounded2 = Math.round(value.lat / scale) * scale;
+            const lngRounded2 = Math.round(value.lng / scale) * scale;
+            if (latRounded1 === latRounded2 && lngRounded1 === lngRounded2) {
+                return value;
+            }
+        }
+        return null;
+    }
+
     setCartesianValue(lat: number, lng: number, value: number): void {
         this.cartesianValues.push(new CartesianValue(value, lat, lng));
     }

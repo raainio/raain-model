@@ -25,7 +25,7 @@ export class RainPolarMeasureValue implements IPolarMeasureValue, IVersion {
             } else {
                 this.setPolarsAsContainer(polars.polars);
             }
-            this.version = polars.version ? polars.version : undefined;
+            this.version = polars.version ? polars.version : version;
             return;
         }
 
