@@ -73,7 +73,7 @@ assert(polarValueFound.polarDistanceInMeters === 1);
 // Cartesian values
 
 const cartesianValue = new CartesianValue(123, 10, 20);
-const cartesianMeasureValue = new CartesianMeasureValue([cartesianValue, cartesianValue]);
+const cartesianMeasureValue = new CartesianMeasureValue([cartesianValue, cartesianValue], {lat: 1.002, lng: 13.0024});
 const radarCartesianMeasureValue = new RadarCartesianMeasureValue(4, [cartesianValue, cartesianValue]);
 assert(radarCartesianMeasureValue.angle === 4);
 assert(radarCartesianMeasureValue.getCartesianValues().length === 2);

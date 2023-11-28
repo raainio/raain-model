@@ -5,7 +5,8 @@ export class CartesianMeasureValue implements ICartesianMeasureValue {
     private cartesianValues: CartesianValue[];
 
     constructor(
-        cartesianValues?: string | CartesianValue[]
+        cartesianValues?: string | CartesianValue[],
+        protected cartesianPixelWidth: { lat: number, lng: number } = {lat: 0, lng: 0},
     ) {
 
         this.cartesianValues = [];
@@ -43,7 +44,10 @@ export class CartesianMeasureValue implements ICartesianMeasureValue {
     }
 
     toJSON(): JSON {
-        const json: any = {cartesianValues: this.cartesianValues};
+        const json: any = {
+            cartesianValues: this.cartesianValues,
+            cartesianPixelWidth: this.cartesianPixelWidth,
+        };
         return json;
     }
 
@@ -75,5 +79,13 @@ export class CartesianMeasureValue implements ICartesianMeasureValue {
 
     setCartesianValue(lat: number, lng: number, value: number): void {
         this.cartesianValues.push(new CartesianValue(value, lat, lng));
+    }
+
+    getCartesianPixelWidth(): { lat: number; lng: number } {
+        return this.cartesianPixelWidth;
+    }
+
+    setCartesianPixelWidth(lat: number, lng: number): void {
+        this.cartesianPixelWidth = {lat, lng};
     }
 }

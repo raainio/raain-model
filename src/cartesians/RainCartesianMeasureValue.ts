@@ -8,6 +8,7 @@ export class RainCartesianMeasureValue extends CartesianMeasureValue implements 
 
     constructor(
         cartesianValuesOrObject: any | CartesianValue[],
+        cartesianPixelWidth: { lat: number, lng: number } = {lat: 0, lng: 0},
         version?: string,
     ) {
         if (!cartesianValuesOrObject) {
@@ -15,12 +16,12 @@ export class RainCartesianMeasureValue extends CartesianMeasureValue implements 
         }
 
         if (typeof (cartesianValuesOrObject.cartesianValues) !== 'undefined') {
-            super(cartesianValuesOrObject.cartesianValues);
+            super(cartesianValuesOrObject.cartesianValues, cartesianValuesOrObject.cartesianPixelWidth);
             this.version = cartesianValuesOrObject.version;
             return;
         }
 
-        super(cartesianValuesOrObject);
+        super(cartesianValuesOrObject, cartesianPixelWidth);
         this.version = version;
     }
 

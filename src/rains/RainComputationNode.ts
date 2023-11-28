@@ -11,6 +11,12 @@ import {RainComputation} from './RainComputation';
  */
 export class RainComputationNode extends RainComputation {
 
+    public static TYPE = 'rain-computation';
+    // why array ? because you can have different angle from the Radar
+    public results: RainPolarMeasureValue[] | RainCartesianMeasureValue[];
+
+    // not "values" (aka Measure.values), but "results" from computation
+
     constructor(
         idOrObjectToCopy: string | {
             id?: string,
@@ -66,16 +72,14 @@ export class RainComputationNode extends RainComputation {
         this.setResults(results);
     }
 
-    public static TYPE = 'rain-computation';
-
-    // not "values" (aka Measure.values), but "results" from computation
-    // why array ? because you can have different angle from the Radar
-    public results: RainPolarMeasureValue[] | RainCartesianMeasureValue[];
-
     public toJSON(): JSON {
         const json = super.toJSON();
         json['results'] = JSON.stringify(this.results.map(r => r.toJSON()));
         return json;
+    }
+
+    protected getLinkType(): string {
+        return RainComputationNode.TYPE;
     }
 
     private setResults(results: string[] | RainPolarMeasureValue[] | RainCartesianMeasureValue[]) {
@@ -99,17 +103,13 @@ export class RainComputationNode extends RainComputation {
             if (typeof r === 'string' && r.indexOf('cartesian') >= 0) {
                 return new RainCartesianMeasureValue(r);
             } else if (r.getCartesianValuesStringified) {
-                return new RainCartesianMeasureValue(r.getCartesianValuesStringified());
+                return new RainCartesianMeasureValue(r.getCartesianValuesStringified(), r.getCartesianPixelWidth());
             } else if (r.cartesianValues) {
                 return new RainCartesianMeasureValue(r);
             } else {
                 return r;
             }
         });
-    }
-
-    protected getLinkType(): string {
-        return RainComputationNode.TYPE;
     }
 
 }

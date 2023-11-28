@@ -19,4 +19,8 @@ export interface ICartesianMeasureValue {
     getCartesianValueRounded(lat: number, lng: number, scale?: number): CartesianValue;
 
     setCartesianValue(lat: number, lng: number, value: number): void;
+
+    getCartesianPixelWidth(): { lat: number, lng: number };
+
+    setCartesianPixelWidth(lat: number, lng: number): void;
 }

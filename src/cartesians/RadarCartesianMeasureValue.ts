@@ -7,19 +7,20 @@ export class RadarCartesianMeasureValue extends CartesianMeasureValue {
 
     constructor(
         angleOrObject: any | number,
-        cartesianValues?: string | CartesianValue[]
+        cartesianValues?: string | CartesianValue[],
+        cartesianPixelWidth: { lat: number, lng: number } = {lat: 0, lng: 0},
     ) {
         if (!angleOrObject) {
             throw new Error('RadarCartesianMeasureValue needs a valid Object or ID');
         }
 
         if (typeof (angleOrObject.angle) !== 'undefined') {
-            super(angleOrObject.cartesianValues);
+            super(angleOrObject.cartesianValues, angleOrObject.cartesianPixelWidth);
             this.angle = angleOrObject.angle;
             return;
         }
 
-        super(cartesianValues);
+        super(cartesianValues, cartesianPixelWidth);
         this.angle = angleOrObject;
     }
 
