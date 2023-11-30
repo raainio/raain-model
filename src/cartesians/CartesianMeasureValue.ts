@@ -2,7 +2,8 @@ import {ICartesianMeasureValue} from './ICartesianMeasureValue';
 import {CartesianValue} from './CartesianValue';
 
 export class CartesianMeasureValue implements ICartesianMeasureValue {
-    private cartesianValues: CartesianValue[];
+
+    protected cartesianValues: CartesianValue[];
 
     constructor(
         cartesianValues?: string | CartesianValue[],
@@ -52,7 +53,10 @@ export class CartesianMeasureValue implements ICartesianMeasureValue {
     }
 
     toJSONWithCartesianValuesStringified(): JSON {
-        return {cartesianValues: JSON.stringify(this.cartesianValues)} as any;
+        return {
+            cartesianValues: JSON.stringify(this.cartesianValues),
+            cartesianPixelWidth: this.cartesianPixelWidth,
+        } as any;
     }
 
     getCartesianValue(lat: number, lng: number): CartesianValue {

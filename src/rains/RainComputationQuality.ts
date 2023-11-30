@@ -1,4 +1,4 @@
-import {RainComputation} from './RainComputation';
+import {RainComputationAbstract} from './RainComputationAbstract';
 import {Link} from '../organizations/Link';
 import {RaainNode} from '../organizations/RaainNode';
 
@@ -6,7 +6,7 @@ import {RaainNode} from '../organizations/RaainNode';
 /**
  *  api/rains/:id/computations?format=compare&begin=...&gauges=[...]
  */
-export class RainComputationQuality extends RainComputation {
+export class RainComputationQuality extends RainComputationAbstract {
 
     public maximums: { rainMeasureValue: number, gaugeMeasureValue: number };
     public qualitySpeedMatrixContainer: any; // TODO align with raain-quality > SpeedMatrixContainer

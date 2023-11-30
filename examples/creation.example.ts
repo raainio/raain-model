@@ -10,7 +10,7 @@ import {
     PolarValue,
     RadarCartesianMeasureValue,
     RadarNode,
-    RainComputationNode,
+    RainComputation,
     RainComputationQuality,
     RainNode,
     RainPolarMeasureValue,
@@ -95,8 +95,8 @@ assert(radarNode.id === 'RadarNode looks OK.');
 const rainNode = new RainNode('RainNode looks OK.', 'name', [radarNode, null], 1, 1);
 assert(rainNode.id === 'RainNode looks OK.');
 
-const rainComputationNode = new RainComputationNode(
-    'RainComputationNode looks OK.',
+const rainComputation = new RainComputation(
+    'RainComputation looks OK.',
     new Date('2022-01-01'),
     new Date('2022-01-02'),
     [radarNode, radarNode, null],
@@ -111,8 +111,8 @@ const rainComputationNode = new RainComputationNode(
     'v1',
 );
 
-assert(rainComputationNode.id === 'RainComputationNode looks OK.');
-assert(rainComputationNode.getVersion() === 'v1');
+assert(rainComputation.id === 'RainComputation looks OK.');
+assert(rainComputation.getVersion() === 'v1');
 
 const rainComputationQuality = new RainComputationQuality('RainComputationQuality looks OK.',
     new Date(), new Date(),
@@ -125,9 +125,9 @@ assert(rainComputationQuality.getVersion() === 'v1');
 
 // Links
 assert(rainNode.getLinkId('radar') === 'RadarNode looks OK.');
-assert(rainComputationNode.getLinkId('radar', 0) === 'RadarNode looks OK.');
-assert(rainComputationNode.getLinksCount() === 1);
-assert(rainComputationNode.getLinksCount(RadarNode.TYPE) === 1);
+assert(rainComputation.getLinkId('radar', 0) === 'RadarNode looks OK.');
+assert(rainComputation.getLinksCount() === 1);
+assert(rainComputation.getLinksCount(RadarNode.TYPE) === 1);
 
 
 console.log('### Done. ');

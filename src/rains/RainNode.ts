@@ -1,7 +1,7 @@
 import {RaainNode} from '../organizations/RaainNode';
 import {Link} from '../organizations/Link';
 import {RadarNode} from '../radars/RadarNode';
-import {RainComputationNode} from './RainComputationNode';
+import {RainComputation} from './RainComputation';
 import {GaugeNode} from '../gauges/GaugeNode';
 
 /**
@@ -83,9 +83,9 @@ export class RainNode extends RaainNode {
             if (l instanceof Link) {
                 return l;
             } else if (l && l._id) {
-                return new RainComputationNode(l._id.toString());
+                return new RainComputation(l._id.toString());
             } else if (l && l.id) {
-                return new RainComputationNode(l.id.toString()); // 'hex'
+                return new RainComputation(l.id.toString()); // 'hex'
             }
         });
 

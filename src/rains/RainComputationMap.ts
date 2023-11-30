@@ -1,4 +1,4 @@
-import {RainComputation} from './RainComputation';
+import {RainComputationAbstract} from './RainComputationAbstract';
 import {Link} from '../organizations/Link';
 import {RainMeasure} from './RainMeasure';
 import {RaainNode} from '../organizations/RaainNode';
@@ -8,7 +8,7 @@ import {RaainNode} from '../organizations/RaainNode';
  *  or with
  *  api/rains/:id/computations?format=map&begin=...
  */
-export class RainComputationMap extends RainComputation {
+export class RainComputationMap extends RainComputationAbstract {
 
     private map: string; // RainMeasure[]; stringified
 

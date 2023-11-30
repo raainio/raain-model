@@ -17,7 +17,7 @@ export * from './radars/RadarNode';
 export * from './rains/RainMeasure';
 export * from './rains/RainNode';
 export * from './rains/RainComputationQuality';
-export * from './rains/RainComputationNode';
+export * from './rains/RainComputation';
 export * from './rains/RainComputationMap';
 
 export * from './polars/GaugePolarMeasureValue';
