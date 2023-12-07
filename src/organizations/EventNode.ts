@@ -1,4 +1,6 @@
-// api/notifications/:id
+/**
+ * api/notifications/:id
+ */
 export class EventNode {
 
     constructor(

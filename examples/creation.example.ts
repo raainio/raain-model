@@ -74,7 +74,7 @@ assert(polarValueFound.polarDistanceInMeters === 1);
 
 const cartesianValue = new CartesianValue(123, 10, 20);
 const cartesianMeasureValue = new CartesianMeasureValue([cartesianValue, cartesianValue], {lat: 1.002, lng: 13.0024});
-const radarCartesianMeasureValue = new RadarCartesianMeasureValue(4, [cartesianValue, cartesianValue]);
+const radarCartesianMeasureValue = new RadarCartesianMeasureValue([cartesianValue, cartesianValue], {lat: 1, lng: 2}, 4);
 assert(radarCartesianMeasureValue.angle === 4);
 assert(radarCartesianMeasureValue.getCartesianValues().length === 2);
 
@@ -106,7 +106,7 @@ const rainComputation = new RainComputation(
     100,
     true,
     new Date(),
-    [new RainPolarMeasureValue({id: 'emptyValue'})],
+    [new RainPolarMeasureValue('[]', 'version2')],
     'oneUser',
     'v1',
 );

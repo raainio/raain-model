@@ -5,14 +5,18 @@ import {PolarValue} from './PolarValue';
 export class PolarMeasureValue implements IPolarMeasureValue {
     private polars: MeasureValuePolarContainer[];
 
-    constructor(measureValuePolarContainers: MeasureValuePolarContainer[] | any) {
+    constructor(measureValuePolarContainers: MeasureValuePolarContainer[] | string) {
         if (typeof measureValuePolarContainers === 'string') {
             this.setPolarsAsString(measureValuePolarContainers);
-        } else if (measureValuePolarContainers instanceof PolarMeasureValue && measureValuePolarContainers.getPolars()) {
-            this.setPolarsAsContainer(measureValuePolarContainers.getPolars());
-        } else {
-            this.setPolarsAsContainer(measureValuePolarContainers);
+            return;
         }
+
+        if (measureValuePolarContainers instanceof PolarMeasureValue && measureValuePolarContainers.getPolars()) {
+            this.setPolarsAsContainer(measureValuePolarContainers.getPolars());
+            return;
+        }
+
+        this.setPolarsAsContainer(measureValuePolarContainers);
     }
 
     getPolarsStringified(): string {

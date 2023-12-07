@@ -3,6 +3,10 @@ import {IVersion} from './IVersion';
 
 export class RaainNode implements IVersion {
 
+    public id: string;
+    private links: Link[];
+    private version: string;
+
     constructor(
         idOrObjectToCopy: any | string,
         links?: Link[] | RaainNode[],
@@ -29,10 +33,6 @@ export class RaainNode implements IVersion {
         this.setLinks(links);
     }
 
-    public id: string;
-    private links: Link[];
-    private version: string;
-
     private static _getPurifiedLinks(linksToPurify: any[]): Link[] {
         if (!linksToPurify || linksToPurify.length === 0) {
             return [];
@@ -48,7 +48,7 @@ export class RaainNode implements IVersion {
 
         function uniqBy(a, key) {
             const seen = {};
-            return a.filter(function(item) {
+            return a.filter(function (item) {
                 if (!item) {
                     return false;
                 }
@@ -117,12 +117,16 @@ export class RaainNode implements IVersion {
         return linksFound.length;
     }
 
-    protected getLinkType(): string {
-        throw new Error('to implement');
+    public getLinks(): Link[] {
+        return this.links.map(l => Link.clone(l));
     }
 
     public getVersion() {
         return this.version;
+    }
+
+    protected getLinkType(): string {
+        throw new Error('to implement');
     }
 
 }

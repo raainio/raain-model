@@ -5,7 +5,7 @@ import {GaugeNode} from './GaugeNode';
 
 
 /**
- *  // api/gauges/:id/measures/:id
+ *  api/gauges/:id/measures/:id
  */
 export class GaugeMeasure extends Measure {
 
@@ -29,14 +29,14 @@ export class GaugeMeasure extends Measure {
 
     }
 
-    protected getLinkType(): string {
-        return 'gauge-measure';
-    }
-
     public toJSON(): JSON {
         const json = super.toJSON();
         json['timeInSec'] = this.timeInSec;
         return json;
+    }
+
+    protected getLinkType(): string {
+        return 'gauge-measure';
     }
 }
 

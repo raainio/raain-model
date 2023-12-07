@@ -7,17 +7,25 @@ export class RainCartesianMeasureValue extends CartesianMeasureValue implements 
     private readonly version: string;
 
     constructor(
-        cartesianValuesOrObject: any | CartesianValue[],
+        cartesianValuesOrObject: RainCartesianMeasureValue | CartesianValue[] | string,
         cartesianPixelWidth: { lat: number, lng: number } = {lat: 0, lng: 0},
         version?: string,
     ) {
-        if (!cartesianValuesOrObject) {
-            throw new Error('RainCartesianMeasureValue needs a valid Object or ID');
+        if (typeof cartesianValuesOrObject === 'string') {
+            super(cartesianValuesOrObject, cartesianPixelWidth);
+            this.version = version;
+            return;
         }
 
-        if (typeof (cartesianValuesOrObject.cartesianValues) !== 'undefined') {
-            super(cartesianValuesOrObject.cartesianValues, cartesianValuesOrObject.cartesianPixelWidth);
-            this.version = cartesianValuesOrObject.version;
+        if (cartesianValuesOrObject instanceof RainCartesianMeasureValue) {
+            super(cartesianValuesOrObject.getCartesianValues(), cartesianValuesOrObject.getCartesianPixelWidth());
+            this.version = cartesianValuesOrObject.getVersion();
+            return;
+        }
+
+        if ('cartesianValues' in cartesianValuesOrObject && 'cartesianPixelWidth' in cartesianValuesOrObject) {
+            super(cartesianValuesOrObject['cartesianValues'] as any, cartesianValuesOrObject['cartesianPixelWidth'] as any);
+            this.version = cartesianValuesOrObject['version'];
             return;
         }
 
@@ -29,8 +37,8 @@ export class RainCartesianMeasureValue extends CartesianMeasureValue implements 
         return this.version;
     }
 
-    toJSON(): JSON {
-        const json: any = super.toJSON();
+    toJSON(stringify = false): JSON {
+        const json: any = super.toJSON(stringify);
         json.version = this.getVersion();
         return json;
     }

@@ -4,11 +4,16 @@ import {CartesianValue} from './CartesianValue';
 export class CartesianMeasureValue implements ICartesianMeasureValue {
 
     protected cartesianValues: CartesianValue[];
+    protected cartesianPixelWidth: { lat: number, lng: number };
 
     constructor(
         cartesianValues?: string | CartesianValue[],
-        protected cartesianPixelWidth: { lat: number, lng: number } = {lat: 0, lng: 0},
+        cartesianPixelWidth: { lat: number, lng: number } = {lat: 0, lng: 0},
     ) {
+
+        if (!cartesianValues) {
+            throw new Error('CartesianMeasureValue needs cartesianValues');
+        }
 
         this.cartesianValues = [];
         if (typeof cartesianValues === 'string') {
@@ -16,6 +21,9 @@ export class CartesianMeasureValue implements ICartesianMeasureValue {
         } else {
             this.setCartesianValues(cartesianValues);
         }
+
+        this.setCartesianPixelWidth(cartesianPixelWidth.lat, cartesianPixelWidth.lng);
+
     }
 
     getCartesianValuesStringified(): string {
@@ -44,9 +52,15 @@ export class CartesianMeasureValue implements ICartesianMeasureValue {
         }
     }
 
-    toJSON(): JSON {
+    toJSON(stringify = false): JSON {
+
+        let cartesianValues: any = this.cartesianValues;
+        if (stringify) {
+            cartesianValues = JSON.stringify(this.cartesianValues)
+        }
+
         const json: any = {
-            cartesianValues: this.cartesianValues,
+            cartesianValues,
             cartesianPixelWidth: this.cartesianPixelWidth,
         };
         return json;

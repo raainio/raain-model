@@ -12,7 +12,7 @@ export class RainComputationQuality extends RainComputationAbstract {
     public qualitySpeedMatrixContainer: any; // TODO align with raain-quality > SpeedMatrixContainer
 
     constructor(
-        idOrObjectToCopy: string | any,
+        idOrObjectToCopy: RainComputationQuality | string,
         periodBegin?: Date,
         periodEnd?: Date,
         links?: Link[] | RaainNode[],
@@ -24,13 +24,13 @@ export class RainComputationQuality extends RainComputationAbstract {
             super(idOrObjectToCopy.id,
                 idOrObjectToCopy.periodBegin,
                 idOrObjectToCopy.periodEnd,
-                idOrObjectToCopy.links,
+                idOrObjectToCopy['links'],
                 undefined,
                 idOrObjectToCopy.progressIngest,
                 idOrObjectToCopy.progressComputing,
                 idOrObjectToCopy.timeSpentInMs,
                 undefined, undefined, undefined,
-                idOrObjectToCopy.version);
+                idOrObjectToCopy['version']);
 
             this.qualitySpeedMatrixContainer = idOrObjectToCopy.qualitySpeedMatrixContainer;
 

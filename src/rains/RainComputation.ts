@@ -72,9 +72,9 @@ export class RainComputation extends RainComputationAbstract {
         this.setResults(results);
     }
 
-    public toJSON(): JSON {
+    public toJSON(stringify = false): JSON {
         const json = super.toJSON();
-        json['results'] = JSON.stringify(this.results.map(r => r.toJSON()));
+        json['results'] = this.results.map(r => r.toJSON(stringify));
         return json;
     }
 
@@ -95,15 +95,11 @@ export class RainComputation extends RainComputationAbstract {
         this.results = results.map(r => {
             if (typeof r === 'string' && r.indexOf('polars') >= 0) {
                 return new RainPolarMeasureValue(r);
-            } else if (r.getPolarsStringified) {
-                return new RainPolarMeasureValue(r.getPolarsStringified());
             } else if (r.polars) {
                 return new RainPolarMeasureValue(r);
             }
             if (typeof r === 'string' && r.indexOf('cartesian') >= 0) {
                 return new RainCartesianMeasureValue(r);
-            } else if (r.getCartesianValuesStringified) {
-                return new RainCartesianMeasureValue(r.getCartesianValuesStringified(), r.getCartesianPixelWidth());
             } else if (r.cartesianValues) {
                 return new RainCartesianMeasureValue(r);
             } else {

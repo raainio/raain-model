@@ -13,7 +13,7 @@ export class RainComputationMap extends RainComputationAbstract {
     private map: string; // RainMeasure[]; stringified
 
     constructor(
-        idOrObjectToCopy: string | any,
+        idOrObjectToCopy: RainComputationMap | string,
         periodBegin?: Date,
         periodEnd?: Date,
         links?: Link[] | RaainNode[],
@@ -26,13 +26,13 @@ export class RainComputationMap extends RainComputationAbstract {
             super(idOrObjectToCopy.id,
                 idOrObjectToCopy.periodBegin,
                 idOrObjectToCopy.periodEnd,
-                idOrObjectToCopy.links,
+                idOrObjectToCopy['links'],
                 idOrObjectToCopy.quality,
                 idOrObjectToCopy.progressIngest,
                 idOrObjectToCopy.progressComputing,
                 idOrObjectToCopy.timeSpentInMs,
                 undefined, undefined, undefined,
-                idOrObjectToCopy.version);
+                idOrObjectToCopy['version']);
 
             this.setMapData(idOrObjectToCopy.map);
             return;
