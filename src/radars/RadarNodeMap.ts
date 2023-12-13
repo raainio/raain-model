@@ -31,15 +31,15 @@ export class RadarNodeMap extends RadarNode {
                 idOrObjectToCopy.longitude);
 
             this.setMapData(idOrObjectToCopy.map);
-            this.periodBegin = idOrObjectToCopy.periodBegin;
-            this.periodEnd = idOrObjectToCopy.periodEnd;
+            this.periodBegin = new Date(idOrObjectToCopy.periodBegin);
+            this.periodEnd = new Date(idOrObjectToCopy.periodEnd);
             return;
         }
 
         super(idOrObjectToCopy, name, links, latitude, longitude);
         this.setMapData(map);
-        this.periodBegin = periodBegin;
-        this.periodEnd = periodEnd;
+        this.periodBegin = new Date(periodBegin);
+        this.periodEnd = new Date(periodEnd);
     }
 
     public toJSON(): JSON {
@@ -47,6 +47,8 @@ export class RadarNodeMap extends RadarNode {
         if (this.map) {
             json['map'] = this.map;
         }
+        json['periodBegin'] = this.periodBegin.toISOString();
+        json['periodEnd'] = this.periodEnd.toISOString();
         return json;
     }
 

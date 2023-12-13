@@ -58,7 +58,7 @@ export class RainComputationQuality extends RainComputationAbstract {
 
     }
 
-    public toJSON(arg?): JSON {
+    public toJSON(arg?: any): JSON {
         const json = super.toJSON();
 
         if (this.qualitySpeedMatrixContainer && this.qualitySpeedMatrixContainer.toJSON) {

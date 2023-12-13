@@ -16,21 +16,24 @@ export class Measure extends RaainNode {
     ) {
         super(idOrObjectToCopy);
         if (typeof (idOrObjectToCopy) === 'object') {
-            this.date = idOrObjectToCopy.date;
+            this.date = new Date(idOrObjectToCopy.date);
             this.values = idOrObjectToCopy.values;
             this.validity = idOrObjectToCopy.validity;
             return;
         }
-        this.date = date;
+        this.date = new Date(date);
         this.values = values;
         this.validity = validity;
     }
 
-    public toJSON(): JSON {
+    public toJSON(options: { removeValues?: boolean } = {}): JSON {
         const json = super.toJSON();
-        json['date'] = this.date;
-        json['values'] = this.values;
+        json['date'] = this.date.toISOString();
         json['validity'] = this.validity;
+
+        if (!options?.removeValues) {
+            json['values'] = this.values;
+        }
         return json;
     }
 }

@@ -53,14 +53,14 @@ export class RainComputationAbstract extends RaainNode {
     ) {
         super(idOrObjectToCopy, links, version);
         if (typeof idOrObjectToCopy !== 'string') {
-            this.periodBegin = idOrObjectToCopy.periodBegin;
-            this.periodEnd = idOrObjectToCopy.periodEnd;
+            this.periodBegin = new Date(idOrObjectToCopy.periodBegin);
+            this.periodEnd = new Date(idOrObjectToCopy.periodEnd);
             this.quality = idOrObjectToCopy.quality;
             this.progressIngest = idOrObjectToCopy.progressIngest;
             this.progressComputing = idOrObjectToCopy.progressComputing;
             this.timeSpentInMs = idOrObjectToCopy.timeSpentInMs;
             this.isReady = idOrObjectToCopy.isReady;
-            this.isDoneDate = idOrObjectToCopy.isDoneDate;
+            this.isDoneDate = idOrObjectToCopy.isDoneDate ? new Date(idOrObjectToCopy.isDoneDate) : undefined;
             this.launchedBy = idOrObjectToCopy.launchedBy;
 
             this.replaceRainLink(idOrObjectToCopy.links);
@@ -69,14 +69,14 @@ export class RainComputationAbstract extends RaainNode {
             this.addRadarLinks(idOrObjectToCopy.radars);
             return;
         }
-        this.periodBegin = periodBegin;
-        this.periodEnd = periodEnd;
+        this.periodBegin = new Date(periodBegin);
+        this.periodEnd = new Date(periodEnd);
         this.quality = quality;
         this.progressIngest = progressIngest;
         this.progressComputing = progressComputing;
         this.timeSpentInMs = timeSpentInMs;
         this.isReady = isReady;
-        this.isDoneDate = isDoneDate;
+        this.isDoneDate = isDoneDate ? new Date(isDoneDate) : undefined;
         this.launchedBy = launchedBy;
 
         this.replaceRainLink(links);
@@ -125,14 +125,14 @@ export class RainComputationAbstract extends RaainNode {
 
     public toJSON(): JSON {
         const json = super.toJSON();
-        json['periodBegin'] = this.periodBegin;
-        json['periodEnd'] = this.periodEnd;
+        json['periodBegin'] = this.periodBegin.toISOString();
+        json['periodEnd'] = this.periodEnd.toISOString();
         json['quality'] = this.quality;
         json['progressIngest'] = this.progressIngest;
         json['progressComputing'] = this.progressComputing;
         json['timeSpentInMs'] = this.timeSpentInMs;
         json['isReady'] = this.isReady;
-        json['isDoneDate'] = this.isDoneDate;
+        json['isDoneDate'] = this.isDoneDate?.toISOString();
         json['launchedBy'] = this.launchedBy;
         json['name'] = this.name;
         return json;
