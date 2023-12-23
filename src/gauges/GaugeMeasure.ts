@@ -9,10 +9,12 @@ import {GaugeNode} from './GaugeNode';
  */
 export class GaugeMeasure extends Measure {
 
+    public timeInSec: number;
+
     constructor(
         idOrObjectToCopy: any | string,
         date?: Date,
-        public timeInSec?: number,
+        timeInSec?: number,
         values?: IPolarMeasureValue[] | ICartesianMeasureValue[] | Measure[] | number[],
         validity?: number
     ) {
@@ -21,6 +23,7 @@ export class GaugeMeasure extends Measure {
             if (idOrObjectToCopy.gauge) {
                 this.addLinks([new GaugeNode(idOrObjectToCopy.gauge)]);
             }
+
             this.timeInSec = idOrObjectToCopy.timeInSec;
             return;
         }

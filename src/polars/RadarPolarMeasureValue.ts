@@ -19,6 +19,11 @@ export class RadarPolarMeasureValue extends AbstractPolarMeasureValue implements
             this.angle = polars.angle;
             return;
         }
+        if (typeof polars === 'string') {
+            const object = JSON.parse(polars);
+            this.angle = angle ? angle : object.angle;
+            return;
+        }
         this.angle = angle;
     }
 

@@ -54,14 +54,21 @@ export class PolarMeasureValue implements IPolarMeasureValue {
         this.polars = parsed;
     }
 
-    getPolarValue(azimuthIndex: number, edgeIndex: number): PolarValue {
-        azimuthIndex = this.updateIndex(this.polars, azimuthIndex);
+    getPolarValue(azimuthIndex: number, edgeIndex: number, strict = false): PolarValue {
+        if (!strict) {
+            azimuthIndex = this.updateIndex(this.polars, azimuthIndex);
+        }
         const azimuthContainer = this.polars[azimuthIndex];
         if (!azimuthContainer) {
             return null;
         }
-        edgeIndex = this.updateIndex(azimuthContainer.polarEdges, edgeIndex);
+        if (!strict) {
+            edgeIndex = this.updateIndex(azimuthContainer.polarEdges, edgeIndex);
+        }
         const edgeValue = azimuthContainer.polarEdges[edgeIndex];
+        if (typeof edgeValue === 'undefined') {
+            return null;
+        }
         return new PolarValue(edgeValue, azimuthContainer.azimuth, azimuthContainer.distance * edgeIndex);
     }
 

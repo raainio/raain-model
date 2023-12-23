@@ -55,8 +55,8 @@ export class AbstractPolarMeasureValue implements IPolarMeasureValue {
         this.polars = new PolarMeasureValue(s);
     }
 
-    getPolarValue(azimuthIndex: number, edgeIndex: number): PolarValue {
-        return this.polars.getPolarValue(azimuthIndex, edgeIndex);
+    getPolarValue(azimuthIndex: number, edgeIndex: number, strict = false): PolarValue {
+        return this.polars.getPolarValue(azimuthIndex, edgeIndex, strict);
     }
 
     setPolarValue(azimuthIndex: number, edgeIndex: number, value: number): void {

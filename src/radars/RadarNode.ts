@@ -1,6 +1,5 @@
 import {RaainNode} from '../organizations/RaainNode';
 import {Link} from '../organizations/Link';
-import {TeamNode} from '../organizations/TeamNode';
 
 /**
  *  api/radars/:id
@@ -19,14 +18,18 @@ export class RadarNode extends RaainNode {
         links?: Link[] | RaainNode[],
         latitude?: number,
         longitude?: number,
+        version?: string,
     ) {
-        super(idOrObjectToCopy, links);
-        if (typeof (idOrObjectToCopy) === 'object') {
+        if (typeof (idOrObjectToCopy) !== 'string') {
+            super(idOrObjectToCopy, idOrObjectToCopy.links, idOrObjectToCopy.version);
+
             this.name = idOrObjectToCopy.name;
             this.latitude = idOrObjectToCopy.latitude;
             this.longitude = idOrObjectToCopy.longitude;
             return;
         }
+
+        super(idOrObjectToCopy, links, version);
         this.name = name;
         this.latitude = latitude;
         this.longitude = longitude;

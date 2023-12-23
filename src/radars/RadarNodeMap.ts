@@ -21,6 +21,7 @@ export class RadarNodeMap extends RadarNode {
         latitude?: number,
         longitude?: number,
         map?: RadarMeasure[] | string,
+        version?: string,
     ) {
 
         if (typeof idOrObjectToCopy !== 'string') {
@@ -28,7 +29,8 @@ export class RadarNodeMap extends RadarNode {
                 idOrObjectToCopy.name,
                 idOrObjectToCopy.links,
                 idOrObjectToCopy.latitude,
-                idOrObjectToCopy.longitude);
+                idOrObjectToCopy.longitude,
+                idOrObjectToCopy.version);
 
             this.setMapData(idOrObjectToCopy.map);
             this.periodBegin = new Date(idOrObjectToCopy.periodBegin);
@@ -36,7 +38,7 @@ export class RadarNodeMap extends RadarNode {
             return;
         }
 
-        super(idOrObjectToCopy, name, links, latitude, longitude);
+        super(idOrObjectToCopy, name, links, latitude, longitude, version);
         this.setMapData(map);
         this.periodBegin = new Date(periodBegin);
         this.periodEnd = new Date(periodEnd);
