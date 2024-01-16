@@ -113,7 +113,7 @@ export class RaainNode implements IVersion {
             return this.links.length;
         }
 
-        const linksFound = this.links.filter(l => l && l.rel && linkType.indexOf(l.rel) > -1);
+        const linksFound = this.links.filter(l => l?.rel === linkType);
         return linksFound.length;
     }
 
