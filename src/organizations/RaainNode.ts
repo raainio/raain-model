@@ -1,11 +1,11 @@
-import {Link} from "./Link";
-import {IVersion} from "./IVersion";
+import {Link} from './Link';
+import {IVersion} from './IVersion';
 
 export class RaainNode implements IVersion {
 
-    public readonly id: string;
+    public id: string;
     private links: Link[];
-    private readonly version: string;
+    private version: string;
 
     constructor(
         idOrObjectToCopy: any | string,
@@ -33,30 +33,6 @@ export class RaainNode implements IVersion {
         this.setLinks(links);
     }
 
-    public toJSON(): Object {
-        return {
-            "id": this.id,
-            "links": this.links,
-            "version": this.version,
-        };
-    }
-
-    public getId(): string {
-        return this.id.toString();
-    }
-
-    public setLinks(linksToSet: Link[] | RaainNode[]) {
-        this.links = RaainNode._getPurifiedLinks(linksToSet);
-    }
-
-    public addLinks(linksToAdd: Link[] | RaainNode[]) {
-        if (!this.links) {
-            this.links = [];
-        }
-        const concatLinks = this.links.concat((linksToAdd as Link[]));
-        this.links = RaainNode._getPurifiedLinks(concatLinks);
-    }
-
     private static _getPurifiedLinks(linksToPurify: any[]): Link[] {
         if (!linksToPurify || linksToPurify.length === 0) {
             return [];
@@ -79,7 +55,7 @@ export class RaainNode implements IVersion {
 
                 const k = key(item);
                 return seen.hasOwnProperty(k) ? false : (seen[k] = true);
-            })
+            });
         }
 
         const finalLinks = uniqBy(linksPurified, JSON.stringify);
@@ -87,12 +63,36 @@ export class RaainNode implements IVersion {
         return finalLinks;
     }
 
+    public toJSON(): JSON {
+        return {
+            id: this.id,
+            links: this.links,
+            version: this.version,
+        } as any;
+    }
+
+    public getId(): string {
+        return this.id.toString();
+    }
+
+    public setLinks(linksToSet: Link[] | RaainNode[]) {
+        this.links = RaainNode._getPurifiedLinks(linksToSet);
+    }
+
+    public addLinks(linksToAdd: Link[] | RaainNode[]) {
+        if (!this.links) {
+            this.links = [];
+        }
+        const concatLinks = this.links.concat((linksToAdd as Link[]));
+        this.links = RaainNode._getPurifiedLinks(concatLinks);
+    }
+
     public getLink(linkType: string, index?: number): Link {
         if (!this.links || !linkType) {
             return null;
         }
         index = !index ? 0 : index;
-        const linksFound = this.links.filter(l => l && l.rel && linkType.indexOf(l.rel) > -1);
+        const linksFound = this.links.filter(l => l && l.rel && linkType === l.rel);
         if (linksFound.length <= index) {
             return null;
         }
@@ -113,18 +113,20 @@ export class RaainNode implements IVersion {
             return this.links.length;
         }
 
-        const linksFound = this.links.filter(l => l && l.rel && linkType.indexOf(l.rel) > -1);
+        const linksFound = this.links.filter(l => l?.rel === linkType);
         return linksFound.length;
     }
 
-    protected getLinkType(): string {
-        throw new Error('to implement');
+    public getLinks(): Link[] {
+        return this.links.map(l => Link.clone(l));
     }
 
     public getVersion() {
         return this.version;
     }
 
+    protected getLinkType(): string {
+        throw new Error('to implement');
+    }
+
 }
-
-

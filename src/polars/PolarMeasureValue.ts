@@ -1,18 +1,22 @@
-import {MeasureValuePolarContainer} from "../MeasureValuePolarContainer";
-import {IMeasureValue} from "../IMeasureValue";
-import {PolarValue} from "../PolarValue";
+import {MeasureValuePolarContainer} from './MeasureValuePolarContainer';
+import {IPolarMeasureValue} from './IPolarMeasureValue';
+import {PolarValue} from './PolarValue';
 
-export class PolarValues implements IMeasureValue {
+export class PolarMeasureValue implements IPolarMeasureValue {
     private polars: MeasureValuePolarContainer[];
 
-    constructor(polars: MeasureValuePolarContainer[] | any) {
-        if (typeof polars === 'string') {
-            this.setPolarsAsString(polars);
-        } else if (polars instanceof PolarValues && polars.getPolars()) {
-            this.setPolarsAsContainer(polars.getPolars());
-        } else {
-            this.setPolarsAsContainer(polars);
+    constructor(measureValuePolarContainers: MeasureValuePolarContainer[] | string) {
+        if (typeof measureValuePolarContainers === 'string') {
+            this.setPolarsAsString(measureValuePolarContainers);
+            return;
         }
+
+        if (measureValuePolarContainers instanceof PolarMeasureValue && measureValuePolarContainers.getPolars()) {
+            this.setPolarsAsContainer(measureValuePolarContainers.getPolars());
+            return;
+        }
+
+        this.setPolarsAsContainer(measureValuePolarContainers);
     }
 
     getPolarsStringified(): string {
@@ -20,52 +24,51 @@ export class PolarValues implements IMeasureValue {
     }
 
     getPolars(): MeasureValuePolarContainer[] {
-        let converted: any = this.polars;
-        try {
-            // converted = JSON.parse(converted);
-            // converted = converted.map(convertedPolar => new MeasureValuePolarContainer(convertedPolar));
-        } catch (e) {
-            console.warn('getPolars pb: ', e, typeof converted, converted);
-        }
-        return converted;
+        return this.polars;
     }
 
     setPolarsAsString(s: string): void {
         try {
             let polars = JSON.parse(s);
-            // console.warn('setPolarsAsString polars: ', polars, typeof s, s);
+
             if (polars && polars.polars) {
                 polars = polars.polars;
             }
-            // console.warn('setPolarsAsString polars : ', polars, typeof polars);
+
             if (typeof polars === 'string') {
                 polars = JSON.parse(polars);
             }
-            // console.warn('setPolarsAsString polars  : ', polars);
+
             this.polars = polars.map(convertedPolar => new MeasureValuePolarContainer(convertedPolar));
-            // console.warn('setPolarsAsString this.polars : ', this.polars);
         } catch (e) {
             console.warn('setPolarsAsString pb: ', e, typeof s, s);
             this.polars = [];
         }
     }
 
-    setPolarsAsContainer(s: MeasureValuePolarContainer[]): void {
-        let parsed: any = s ? s : [];
+    setPolarsAsContainer(measureValuePolarContainers: MeasureValuePolarContainer[]): void {
+        let parsed: any = measureValuePolarContainers ? measureValuePolarContainers : [];
         if (!('length' in parsed)) {
             parsed = [];
         }
         this.polars = parsed;
     }
 
-    getPolarValue(azimuthIndex: number, edgeIndex: number): PolarValue {
-        azimuthIndex = this.updateIndex(this.polars, azimuthIndex);
+    getPolarValue(azimuthIndex: number, edgeIndex: number, strict = false): PolarValue {
+        if (!strict) {
+            azimuthIndex = this.updateIndex(this.polars, azimuthIndex);
+        }
         const azimuthContainer = this.polars[azimuthIndex];
         if (!azimuthContainer) {
             return null;
         }
-        edgeIndex = this.updateIndex(azimuthContainer.polarEdges, edgeIndex);
+        if (!strict) {
+            edgeIndex = this.updateIndex(azimuthContainer.polarEdges, edgeIndex);
+        }
         const edgeValue = azimuthContainer.polarEdges[edgeIndex];
+        if (typeof edgeValue === 'undefined') {
+            return null;
+        }
         return new PolarValue(edgeValue, azimuthContainer.azimuth, azimuthContainer.distance * edgeIndex);
     }
 
@@ -79,16 +82,16 @@ export class PolarValues implements IMeasureValue {
         azimuthContainer.polarEdges[edgeIndex] = value;
     }
 
-    public toJSON(): Object {
+    public toJSON(): JSON {
         return {
-            "polars": this.polars
-        };
+            polars: this.polars
+        } as any;
     }
 
-    public toJSONWithPolarStringified(): Object {
+    public toJSONWithPolarStringified(): JSON {
         return {
-            "polars": this.getPolarsStringified()
-        };
+            polars: this.getPolarsStringified()
+        } as any;
     }
 
     protected updateIndex(array: Array<any>, index: number): number {

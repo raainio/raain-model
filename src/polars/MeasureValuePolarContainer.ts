@@ -24,11 +24,11 @@ export class MeasureValuePolarContainer {
         this.polarEdges = polarEdges;
     }
 
-    public toJSON(): Object {
+    public toJSON(): JSON {
         return {
-            "azimuth": this.azimuth,
-            "distance": this.distance,
-            "polarEdges": this.polarEdges,
-        };
+            azimuth: this.azimuth,
+            distance: this.distance,
+            polarEdges: this.polarEdges,
+        } as any;
     }
 }

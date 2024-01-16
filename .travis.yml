@@ -1,6 +1,6 @@
 language: node_js
 node_js:
-  - 12
+  - 18
 cache:
   bundler: true
   directories:
@@ -17,6 +17,6 @@ before_deploy:
   - cd dist
 deploy:
   provider: npm
-  email: mat@mlefree.com
+  email: $NPM_USER
   api_key: $NPM_TOKEN
   skip_cleanup: true

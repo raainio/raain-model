@@ -1,27 +1,28 @@
-import {RaainNode} from "./RaainNode";
-import {Link} from "./Link";
-import {RadarNode} from "./RadarNode";
-import {RainNode} from "./RainNode";
-import {RadarMeasure} from "./RadarMeasure";
-import {RainMeasureValue} from "./RainMeasureValue";
+import {RaainNode} from '../organizations/RaainNode';
+import {Link} from '../organizations/Link';
+import {RadarNode} from '../radars/RadarNode';
+import {RainNode} from './RainNode';
+import {RadarMeasure} from '../radars/RadarMeasure';
 
-export class RainComputationNode extends RaainNode {
+/**
+ *  not used directly
+ */
+export class RainComputationAbstract extends RaainNode {
 
     public static TYPE = 'rain-computation';
     public quality: number;
     public progressIngest: number;
     public progressComputing: number;
     public timeSpentInMs: number;
-
     public periodBegin: Date;
     public periodEnd: Date;
     public isReady: boolean;
     public isDoneDate: Date;
     public launchedBy: string;
-
-    public results: RainMeasureValue[]; // why array ? because you can have different angle for Radar (same as Measure)
+    public name: string;
 
     constructor(
+        // public values: IPolarMeasureValue[] | ICartesianMeasureValue[] | number[];
         idOrObjectToCopy: string | {
             id?: string,
             periodBegin?: Date,
@@ -33,7 +34,6 @@ export class RainComputationNode extends RaainNode {
             timeSpentInMs?: number,
             isReady?: boolean,
             isDoneDate?: Date,
-            results?: RainMeasureValue[],
             launchedBy?: string,
             version?: string,
             rain?: RaainNode[],
@@ -48,21 +48,19 @@ export class RainComputationNode extends RaainNode {
         timeSpentInMs?: number,
         isReady?: boolean,
         isDoneDate?: Date,
-        results?: RainMeasureValue[],
         launchedBy?: string,
         version?: string,
     ) {
         super(idOrObjectToCopy, links, version);
         if (typeof idOrObjectToCopy !== 'string') {
-            this.periodBegin = idOrObjectToCopy.periodBegin;
-            this.periodEnd = idOrObjectToCopy.periodEnd;
+            this.periodBegin = new Date(idOrObjectToCopy.periodBegin);
+            this.periodEnd = new Date(idOrObjectToCopy.periodEnd);
             this.quality = idOrObjectToCopy.quality;
             this.progressIngest = idOrObjectToCopy.progressIngest;
             this.progressComputing = idOrObjectToCopy.progressComputing;
             this.timeSpentInMs = idOrObjectToCopy.timeSpentInMs;
             this.isReady = idOrObjectToCopy.isReady;
-            this.isDoneDate = idOrObjectToCopy.isDoneDate;
-            this.setResults(idOrObjectToCopy.results);
+            this.isDoneDate = idOrObjectToCopy.isDoneDate ? new Date(idOrObjectToCopy.isDoneDate) : undefined;
             this.launchedBy = idOrObjectToCopy.launchedBy;
 
             this.replaceRainLink(idOrObjectToCopy.links);
@@ -71,73 +69,18 @@ export class RainComputationNode extends RaainNode {
             this.addRadarLinks(idOrObjectToCopy.radars);
             return;
         }
-        this.periodBegin = periodBegin;
-        this.periodEnd = periodEnd;
+        this.periodBegin = new Date(periodBegin);
+        this.periodEnd = new Date(periodEnd);
         this.quality = quality;
         this.progressIngest = progressIngest;
         this.progressComputing = progressComputing;
         this.timeSpentInMs = timeSpentInMs;
         this.isReady = isReady;
-        this.isDoneDate = isDoneDate;
-        this.setResults(results);
+        this.isDoneDate = isDoneDate ? new Date(isDoneDate) : undefined;
         this.launchedBy = launchedBy;
 
         this.replaceRainLink(links);
         this.addRadarLinks(links);
-    }
-
-    public toJSON(): Object {
-        let json = super.toJSON();
-        json['periodBegin'] = this.periodBegin;
-        json['periodEnd'] = this.periodEnd;
-        json['quality'] = this.quality;
-        json['progressIngest'] = this.progressIngest;
-        json['progressComputing'] = this.progressComputing;
-        json['timeSpentInMs'] = this.timeSpentInMs;
-        json['isReady'] = this.isReady;
-        json['isDoneDate'] = this.isDoneDate;
-        json['results'] = JSON.stringify(this.results.map(r => r.toJSON()));
-        json['launchedBy'] = this.launchedBy;
-        return json;
-    }
-
-    protected getLinkType(): string {
-        return RainComputationNode.TYPE;
-    }
-
-    public addRadarLinks(linksToAdd: Link[] | RaainNode[]): void {
-        this.addLinks(RainComputationNode._getRadarLinks(linksToAdd));
-    }
-
-    public replaceRainLink(linksToAdd: Link | RaainNode | any): void {
-        this.addLinks([RainComputationNode._getRainLink(linksToAdd)]);
-    }
-
-    public addRadarMeasureLinks(linksToAdd: Link[] | any[]): void {
-        this.addLinks(RainComputationNode._getRadarMeasureLinks(linksToAdd));
-    }
-
-    private setResults(results) {
-        if (typeof results === 'string') {
-            results = JSON.parse(results);
-        }
-
-        if (!results || results.length === 0) {
-            this.results = [];
-            return;
-        }
-
-        this.results = results.map(r => {
-            if (typeof r === 'string') {
-                return new RainMeasureValue(r);
-            } else if (r.getPolarsStringified) {
-                return new RainMeasureValue(r.getPolarsStringified());
-            } else if (r.polars) {
-                return new RainMeasureValue(r);
-            } else {
-                return r;
-            }
-        });
     }
 
     private static _getRadarLinks(linksToPurify: any[]): any[] {
@@ -165,7 +108,7 @@ export class RainComputationNode extends RaainNode {
             if (l instanceof Link) {
                 return l;
             } else if (l && l._id) {
-                return new RadarNode(l._id.toString());
+                return new RadarMeasure(l._id.toString());
             } else if (l && l.id) {
                 return new RadarMeasure(l.id.toString()); // 'hex'
             }
@@ -178,6 +121,37 @@ export class RainComputationNode extends RaainNode {
         }
 
         return new RainNode(linkToPurify.id.toString()); // 'hex'
+    }
+
+    public toJSON(): JSON {
+        const json = super.toJSON();
+        json['periodBegin'] = this.periodBegin.toISOString();
+        json['periodEnd'] = this.periodEnd.toISOString();
+        json['quality'] = this.quality;
+        json['progressIngest'] = this.progressIngest;
+        json['progressComputing'] = this.progressComputing;
+        json['timeSpentInMs'] = this.timeSpentInMs;
+        json['isReady'] = this.isReady;
+        json['isDoneDate'] = this.isDoneDate?.toISOString();
+        json['launchedBy'] = this.launchedBy;
+        json['name'] = this.name;
+        return json;
+    }
+
+    public addRadarLinks(linksToAdd: Link[] | RaainNode[]): void {
+        this.addLinks(RainComputationAbstract._getRadarLinks(linksToAdd));
+    }
+
+    public replaceRainLink(linksToAdd: Link | RaainNode | any): void {
+        this.addLinks([RainComputationAbstract._getRainLink(linksToAdd)]);
+    }
+
+    public addRadarMeasureLinks(linksToAdd: Link[] | any[]): void {
+        this.addLinks(RainComputationAbstract._getRadarMeasureLinks(linksToAdd));
+    }
+
+    protected getLinkType(): string {
+        return RainComputationAbstract.TYPE;
     }
 
 }

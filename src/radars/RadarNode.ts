@@ -1,46 +1,50 @@
-import {RaainNode} from "./RaainNode";
-import {Link} from "./Link";
+import {RaainNode} from '../organizations/RaainNode';
+import {Link} from '../organizations/Link';
 
 /**
- *  api/gauges/:id
+ *  api/radars/:id
  */
-export class GaugeNode extends RaainNode {
+export class RadarNode extends RaainNode {
+
+    public static TYPE = 'radar';
 
     public name: string;
     public latitude: number;
     public longitude: number;
 
     constructor(
-        idOrObjectToCopy: string |  { id?: string, name?: string, links?: Link[], latitude?: number, longitude?: number },
+        idOrObjectToCopy: any | string,
         name?: string,
         links?: Link[] | RaainNode[],
         latitude?: number,
-        longitude?: number
+        longitude?: number,
+        version?: string,
     ) {
-        super(idOrObjectToCopy, links);
-        if (typeof idOrObjectToCopy !== "string") {
+        if (typeof (idOrObjectToCopy) !== 'string') {
+            super(idOrObjectToCopy, idOrObjectToCopy.links, idOrObjectToCopy.version);
+
             this.name = idOrObjectToCopy.name;
             this.latitude = idOrObjectToCopy.latitude;
             this.longitude = idOrObjectToCopy.longitude;
             return;
         }
+
+        super(idOrObjectToCopy, links, version);
         this.name = name;
         this.latitude = latitude;
         this.longitude = longitude;
     }
 
-    public toJSON(): Object {
-        let json = super.toJSON();
+    public toJSON(): JSON {
+        const json = super.toJSON();
         json['name'] = this.name;
         json['latitude'] = this.latitude;
         json['longitude'] = this.longitude;
         return json;
     }
 
-    protected getLinkType() : string {
-        return 'gauge';
+    protected getLinkType(): string {
+        return RadarNode.TYPE;
     }
 
 }
-
-
