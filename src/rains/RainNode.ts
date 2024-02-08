@@ -15,7 +15,6 @@ export class RainNode extends RaainNode {
     public quality: number;
     public latitude: number;
     public longitude: number;
-    public radius: number;
 
     constructor(
         idOrObjectToCopy: any | string,
@@ -25,7 +24,6 @@ export class RainNode extends RaainNode {
         quality?: number,
         latitude?: number,
         longitude?: number,
-        radius?: number,
         version?: string,
     ) {
         super(idOrObjectToCopy, links, version);
@@ -36,7 +34,6 @@ export class RainNode extends RaainNode {
             this.quality = idOrObjectToCopy.quality;
             this.latitude = parseFloat(idOrObjectToCopy.latitude);
             this.longitude = parseFloat(idOrObjectToCopy.longitude);
-            this.radius = idOrObjectToCopy.radius;
             this.addRadars(idOrObjectToCopy.links);
             this.addRadars(idOrObjectToCopy.radars);
             this.addCompletedComputations(idOrObjectToCopy.links);
@@ -50,7 +47,6 @@ export class RainNode extends RaainNode {
         this.quality = quality;
         this.latitude = latitude;
         this.longitude = longitude;
-        this.radius = radius;
         this.addRadars(links);
         this.addCompletedComputations(links);
         this.addGauges(links);
@@ -117,7 +113,6 @@ export class RainNode extends RaainNode {
         json['quality'] = this.quality;
         json['latitude'] = this.latitude;
         json['longitude'] = this.longitude;
-        json['radius'] = this.radius;
         return json;
     }
 
