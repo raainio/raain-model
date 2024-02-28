@@ -1,25 +1,21 @@
 # raain-model
 
-[![npm version](https://nodei.co/npm/raain-model.png?downloads=true)](https://www.npmjs.com/package/raain-model)
+> RAAIN model defined in [radartorain.com](https://api.radartorain.com) services.
 
-[![Build Status](https://app.travis-ci.com/raainio/raain-model.svg?branch=master)](https://app.travis-ci.com/github/raainio/raain-model)
+IN PROGRESS...
 
-RAAIN model defined in [raain.io](https://raain.io) services.
+### Usage
 
-###  Usage
+Should be used in :
 
-Raain.io has Open API (in progress). 
-
-See [examples/](https://github.com/raainio/raain-model/blob/master/examples/v1/asCustomer.spec.js) directory for examples and usage scenario.
-
-Used in :
 - [https://radartorain.com](https://radartorain.com)
 - [node-raain-tools](https://github.com/raainio/node-raain-tools)
-- [https://raain.io](https://raain.io) api
+- [https://api.radartorain.com](https://api.radartorain.com)
 
 ## History
 
-See [Release notes](https://github.com/raainio/raain-model/blob/master/RELEASE.md).
+See [Release notes](./RELEASE.md).
 
 ## License
+
 MIT

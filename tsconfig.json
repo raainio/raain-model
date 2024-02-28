@@ -9,6 +9,9 @@
   "exclude": [
     "node_modules",
     "dist",
-    "examples"
+    "examples",
+    "specs",
+    "coverage",
+    ".coverage"
   ]
 }

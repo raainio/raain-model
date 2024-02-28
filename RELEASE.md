@@ -8,3 +8,5 @@
 - v0.3.1 : Reformat Links, add IVersion
 - v0.3.2+ : Bugs fixing (conversion, CI/CD)
 - v0.4.1 : Cartesian values, Folder reorg (renaming of Polar objects : XX-MeasureValue => XX-PolarMeasureValue )
+- v1.9.x : Cartesian improvements
+- v1.10.x : Object constructor based on json only. Specs added.
