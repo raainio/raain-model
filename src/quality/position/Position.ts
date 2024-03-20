@@ -52,4 +52,9 @@ export class Position {
     getPrecision(): number {
         return this.precision;
     }
+
+    getXYScaled(scale: number): { x: number, y: number } {
+        const precision = Math.round(Math.log10(1 / scale));
+        return this.getXY(precision);
+    }
 }

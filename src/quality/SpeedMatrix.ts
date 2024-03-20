@@ -8,14 +8,14 @@ import {LatLng} from '../cartesian/LatLng';
 
 export class SpeedMatrix {
 
-    public static DEFAULT_MATRIX_RANGE = 4;
+    public static DEFAULT_MATRIX_RANGE = 8;
     public static DEFAULT_TRUSTED_INDICATOR = 1;
 
     protected flattenPositionHistory: number[][];
 
     constructor(
         protected qualityPoints: QualityPoint[],
-        protected speed: { angleInDegrees: number, pixelCountPerHour: number } = {angleInDegrees: 0, pixelCountPerHour: 0},
+        protected speed: { angleInDegrees: number, pixelsPerPeriod: number } = {angleInDegrees: 0, pixelsPerPeriod: 0},
         protected trustedTechnicalIndicator = SpeedMatrix.DEFAULT_TRUSTED_INDICATOR,
         protected flattenPositionRange: { xMin: number, xMax: number, yMin: number, yMax: number } = {
             xMin: -SpeedMatrix.DEFAULT_MATRIX_RANGE,
@@ -171,7 +171,7 @@ export class SpeedMatrix {
         const qualityPoints = this.getQualityPoints();
         let max = -1;
         for (const p of qualityPoints) {
-            max = Math.max(max, p.getValue());
+            max = Math.max(max, p.getRainValue());
         }
         return max;
     }
@@ -180,7 +180,7 @@ export class SpeedMatrix {
         const qualityPoints = this.getQualityPoints();
         let max = -1;
         for (const p of qualityPoints) {
-            max = Math.max(max, p.gaugeCartesianValue.value);
+            max = Math.max(max, p.getGaugeValue());
         }
         return max;
     }
@@ -245,7 +245,7 @@ export class SpeedMatrix {
 
     getSpeed() {
         if (!this.speed) {
-            return {angleInDegrees: 0, pixelCountPerHour: 0};
+            return {angleInDegrees: 0, pixelsPerPeriod: 0};
         }
         return this.speed;
     }
@@ -256,8 +256,10 @@ export class SpeedMatrix {
         }
 
         this.flattenPositionHistory = [];
-        for (let y = 0; y <= this.flattenPositionRange.yMax - this.flattenPositionRange.yMin; y++) {
-            this.flattenPositionHistory.push(new Array(this.flattenPositionRange.xMax - this.flattenPositionRange.xMin + 1).fill(0));
+        const yWidth = this.flattenPositionRange.yMax - this.flattenPositionRange.yMin + 1;
+        const xWidth = this.flattenPositionRange.xMax - this.flattenPositionRange.xMin + 1;
+        for (let y = 0; y < yWidth; y++) {
+            this.flattenPositionHistory.push(new Array(xWidth).fill(0));
         }
 
         // same position => add value
@@ -265,8 +267,8 @@ export class SpeedMatrix {
             const ratio = qualityPoint.getRatio();
             const cartesianValue = new CartesianValue({
                 value: ratio,
-                lat: qualityPoint.getValueLat() - qualityPoint.gaugeCartesianValue.lat,
-                lng: qualityPoint.getValueLng() - qualityPoint.gaugeCartesianValue.lng,
+                lat: qualityPoint.getRainLat() - qualityPoint.gaugeCartesianValue.lat,
+                lng: qualityPoint.getRainLng() - qualityPoint.gaugeCartesianValue.lng,
             });
             const position = QualityTools.MapLatLngToPosition(cartesianValue, false, new LatLng({
                 lat: QualityTools.DEFAULT_SCALE,
@@ -275,7 +277,12 @@ export class SpeedMatrix {
 
             const positionX = Math.round((position.x / this.roundScale.x) - this.flattenPositionRange.xMin);
             const positionY = Math.round((position.y / this.roundScale.y) - this.flattenPositionRange.yMin);
-            this.flattenPositionHistory[positionX][positionY] += cartesianValue.value;
+
+            if (0 <= positionX && positionX < xWidth && 0 <= positionY && positionY < yWidth) {
+                this.flattenPositionHistory[positionX][positionY] += cartesianValue.value;
+            } else {
+                throw new Error('Matrix ranges and positions are not consistent.');
+            }
         }
 
         return this.flattenPositionHistory;

@@ -16,6 +16,7 @@ export class RainNode extends RaainNode {
     public quality: number;
     public latitude: number;
     public longitude: number;
+    private configurationAsJSON: string;
 
     constructor(json: {
         id: string,
@@ -29,6 +30,7 @@ export class RainNode extends RaainNode {
         radars?: any[],
         lastCompletedComputations?: any[],
         gauges?: any[],
+        configurationAsJSON?: any,
     }) {
         super(json);
         this.name = json.name;
@@ -42,6 +44,7 @@ export class RainNode extends RaainNode {
         this.addCompletedComputations(json.lastCompletedComputations);
         this.addGauges(json.links);
         this.addGauges(json.gauges);
+        this.setConfiguration(json.configurationAsJSON);
     }
 
     private static _getRadarLinks(linksToPurify: any[]): any[] {
@@ -104,6 +107,16 @@ export class RainNode extends RaainNode {
         return linksPurified.filter(l => !!l);
     }
 
+    public setConfiguration(configuration: string | any) {
+        let conf = configuration;
+        try {
+            conf = JSON.parse(configuration);
+        } catch (ignored) {
+        }
+
+        this.configurationAsJSON = JSON.stringify(conf);
+    }
+
     public toJSON(): JSON {
         const json = super.toJSON();
         json['name'] = this.name;
@@ -111,6 +124,7 @@ export class RainNode extends RaainNode {
         json['quality'] = this.quality;
         json['latitude'] = this.latitude;
         json['longitude'] = this.longitude;
+        json['configurationAsJSON'] = this.configurationAsJSON;
         return json;
     }
 
@@ -124,6 +138,14 @@ export class RainNode extends RaainNode {
 
     public addGauges(linksToAdd: Link[] | any[]): void {
         this.addLinks(RainNode._getGaugeLinks(linksToAdd));
+    }
+
+    public getConfiguration(): any {
+        try {
+            return JSON.parse(this.configurationAsJSON);
+        } catch (e) {
+        }
+        return null;
     }
 
     protected getLinkType(): string {

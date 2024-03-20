@@ -9,6 +9,7 @@ export class QualityPoint {
     public gaugeCartesianValue: CartesianValue;
     public rainCartesianValues: CartesianValue[];
     public speed: { x: number, y: number };
+    public remark: string;
 
     constructor(json: {
         gaugeId: string,
@@ -18,6 +19,7 @@ export class QualityPoint {
         gaugeCartesianValue: CartesianValue,
         rainCartesianValues: CartesianValue[],
         speed: { x: number, y: number },
+        remark: string,
     }) {
         this.gaugeId = json.gaugeId;
         this.gaugeLabel = json.gaugeLabel;
@@ -26,39 +28,49 @@ export class QualityPoint {
         this.gaugeCartesianValue = json.gaugeCartesianValue;
         this.rainCartesianValues = json.rainCartesianValues;
         this.speed = json.speed;
+        this.remark = json.remark;
     }
 
-    getValue(): number {
+    getGaugeValue(): number {
+        return this.gaugeCartesianValue?.value;
+    }
+
+    getRainValue(): number {
         const sum = this.rainCartesianValues.reduce((prev, rcv) => prev + rcv.value, 0);
         return this.rainCartesianValues.length ? sum / this.rainCartesianValues.length : 0;
     }
 
-    getValueLat(): number {
+    getRainLat(): number {
         return this.getMiddleValue()?.lat;
     }
 
-    getValueLng(): number {
+    getRainLng(): number {
         return this.getMiddleValue()?.lng;
     }
 
     getDelta(): number {
-        return Math.abs(this.gaugeCartesianValue.value - this.getValue());
+        return Math.abs(this.getRainValue() - this.getGaugeValue());
     }
 
     getRatio(): number {
 
         let ratio = 0;
-        if (this.getValue() === 0) {
+        if (this.getRainValue() === 0) {
             return ratio;
         }
 
-        if (this.gaugeCartesianValue?.value > this.getValue()) {
-            ratio = this.getValue() / this.gaugeCartesianValue.value;
+        if (this.getGaugeValue() > this.getRainValue()) {
+            ratio = this.getRainValue() / this.getGaugeValue();
         } else {
-            ratio = this.gaugeCartesianValue.value / this.getValue();
+            ratio = this.getGaugeValue() / this.getRainValue();
         }
 
         return ratio;
+    }
+
+    getTimeDeltaInMinutes(): number {
+        const delta = this.rainDate.getTime() - this.gaugeDate.getTime();
+        return Math.round(delta / 60000);
     }
 
     private getMiddleValue(): CartesianValue {

@@ -16,6 +16,7 @@ export class GaugeMeasure extends Measure {
                     date?: Date,
                     validity?: number,
                     timeInSec?: number,
+                    configurationAsJSON?: string | any,
                 }
     ) {
         super(json);

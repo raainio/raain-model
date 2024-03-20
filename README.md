@@ -6,7 +6,7 @@ IN PROGRESS...
 
 ### Usage
 
-Should be used in :
+Will be used in :
 
 - [https://radartorain.com](https://radartorain.com)
 - [node-raain-tools](https://github.com/raainio/node-raain-tools)

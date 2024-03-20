@@ -15,30 +15,41 @@ export class AbstractPolarMeasureValue implements IPolarMeasureValue {
             throw new Error('PolarMeasureValue needs polars');
         }
 
-        if (typeof json.polars === 'string') {
-            if (json.polars.indexOf('polars') > 0) {
-                const polarsObject = JSON.parse(json.polars);
-                if (polarsObject.polars && typeof polarsObject.polars === 'string') {
-                    this.setPolarsAsString(polarsObject.polars);
-                } else {
-                    this.setPolarsAsContainer(polarsObject.polars);
-                }
+        let polars = json.polars;
+        if (typeof polars === 'string') {
+            if (polars.indexOf('polars') > 0) {
+                polars = JSON.parse(polars);
             } else {
-                this.setPolarsAsString(json.polars);
+                this.setPolarsAsString(polars);
+                return;
             }
+        }
+
+        if (polars instanceof PolarMeasureValue) {
+            this.setPolarsAsContainer(polars.getPolars());
             return;
         }
 
-        if (json.polars instanceof PolarMeasureValue) {
-            this.setPolarsAsContainer(json.polars.getPolars());
-            return
+        if (polars && polars['polars']) {
+            polars = polars['polars'];
         }
 
-        if (json.polars.polars instanceof PolarMeasureValue) {
-            this.setPolarsAsContainer(json.polars.polars.getPolars());
-        } else {
-            this.setPolarsAsString(JSON.stringify(json.polars.polars));
+        if (polars instanceof PolarMeasureValue) {
+            this.setPolarsAsContainer(polars.getPolars());
+            return;
         }
+
+        if (typeof polars === 'string') {
+            this.setPolarsAsString(polars);
+            return;
+        }
+
+        if (Array.isArray(polars)) {
+            this.setPolarsAsContainer(polars);
+            return;
+        }
+
+        throw new Error('PolarMeasureValue needs valid typed polars');
     }
 
     getPolarsStringified(): string {

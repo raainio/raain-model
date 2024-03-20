@@ -9,6 +9,10 @@ export class LatLng {
         lat: number,
         lng: number,
     }) {
+        if (typeof json?.lat === 'undefined' || typeof json?.lng === 'undefined') {
+            throw new Error('LatLng needs valid latitude && longitude');
+        }
+
         this.lat = json.lat;
         this.lng = json.lng;
     }

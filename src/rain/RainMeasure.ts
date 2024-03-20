@@ -14,7 +14,8 @@ export class RainMeasure extends Measure {
         id: string,
         values: IPolarMeasureValue[] | ICartesianMeasureValue[] | Measure[] | number[],
         date?: Date,
-        validity?: number
+        validity?: number,
+        configurationAsJSON?: string | any,
     }) {
         super(json);
     }

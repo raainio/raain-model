@@ -1,5 +1,13 @@
 import {expect} from 'chai';
-import {RadarNode, RainComputation, RainComputationQuality, RainNode, RainPolarMeasureValue, SpeedMatrixContainer} from '../../src';
+import {
+    RadarNode,
+    RainComputation,
+    RainComputationQuality,
+    RainMeasure,
+    RainNode,
+    RainPolarMeasureValue,
+    SpeedMatrixContainer
+} from '../../src';
 
 describe('Rain', () => {
 
@@ -16,6 +24,10 @@ describe('Rain', () => {
             longitude: 1
         });
         expect(rainNode.id).eq('RainNode looks OK.');
+        expect(JSON.stringify(rainNode.toJSON())).eq('' +
+            '{"id":"RainNode looks OK.",' +
+            '"links":[{"rel":"radar","href":"../radars/any"},{"rel":"rain-computation","href":"../rain-computations/any"},{"rel":"gauge","href":"../gauges/any"}],' +
+            '"name":"name","status":-1,"quality":-1,"latitude":1,"longitude":1}');
 
         const rainComputation = new RainComputation({
             id: 'RainComputation looks OK.',
@@ -51,6 +63,9 @@ describe('Rain', () => {
         });
         expect(rainComputationQuality.id).eq('RainComputationQuality looks OK.');
         expect(rainComputationQuality.getVersion()).eq('v1');
+
+        const measure = new RainMeasure({id: 'measure', values: [10, 11], configurationAsJSON: '{"test": true}'});
+        expect(JSON.stringify(measure.toJSON())).eq('{"id":"measure","links":[],"validity":-1,"configurationAsJSON":"{\\"test\\":true}","values":[10,11]}');
     });
 
 });

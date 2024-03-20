@@ -57,7 +57,7 @@ export class RainComputation extends RainComputationAbstract {
             results = JSON.parse(results);
         }
 
-        if (!results || results.length === 0) {
+        if (!results || results.length === 0 || !Array.isArray(results)) {
             this.results = [];
             return;
         }

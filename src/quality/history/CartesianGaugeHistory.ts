@@ -5,16 +5,19 @@ export class CartesianGaugeHistory {
     public gaugeLabel: string;
     public date: Date;
     public value: CartesianValue;
+    public configurationAsJSON: string;
 
     constructor(json: {
         gaugeId: string,
         gaugeLabel: string,
         date: Date,
-        value: CartesianValue
+        value: CartesianValue,
+        configurationAsJSON: string,
     }) {
         this.gaugeId = json.gaugeId;
         this.gaugeLabel = json.gaugeLabel;
         this.date = json.date;
         this.value = json.value;
+        this.configurationAsJSON = json.configurationAsJSON;
     }
 }
