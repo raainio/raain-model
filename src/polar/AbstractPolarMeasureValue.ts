@@ -30,22 +30,28 @@ export class AbstractPolarMeasureValue implements IPolarMeasureValue {
             return;
         }
 
-        if (polars && polars['polars']) {
-            polars = polars['polars'];
+        let polarMeasure = polars;
+        if (polars && typeof polars['polars'] !== 'undefined' && typeof polars['angle'] !== 'undefined') {
+            polarMeasure = polars['polars'];
         }
 
-        if (polars instanceof PolarMeasureValue) {
-            this.setPolarsAsContainer(polars.getPolars());
+        let subPolars = polarMeasure;
+        if (polarMeasure && polarMeasure['polars']) {
+            subPolars = polarMeasure['polars'];
+        }
+
+        if (subPolars instanceof PolarMeasureValue) {
+            this.setPolarsAsContainer(subPolars.getPolars());
             return;
         }
 
-        if (typeof polars === 'string') {
-            this.setPolarsAsString(polars);
+        if (typeof subPolars === 'string') {
+            this.setPolarsAsString(subPolars);
             return;
         }
 
-        if (Array.isArray(polars)) {
-            this.setPolarsAsContainer(polars);
+        if (Array.isArray(subPolars)) {
+            this.setPolarsAsContainer(subPolars);
             return;
         }
 

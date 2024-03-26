@@ -1,6 +1,6 @@
 {
   "name": "raain-model",
-  "version": "1.10.24",
+  "version": "1.10.28",
   "author": "contact@raain.io",
   "homepage": "https://github.com/raainio/raain-model",
   "description": "raain.io api model",
@@ -14,7 +14,6 @@
   "types": "./index.d.ts",
   "dependencies": {},
   "devDependencies": {
-    "assert": "^2.0.0",
     "@types/chai": "^4.3.10",
     "@types/mocha": "^10.0.1",
     "@types/node": "^20.8.8",
