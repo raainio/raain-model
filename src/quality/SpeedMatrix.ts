@@ -14,6 +14,7 @@ export class SpeedMatrix {
     protected flattenPositionHistory: number[][];
 
     constructor(
+        public name: string,
         protected qualityPoints: QualityPoint[],
         protected speed: { angleInDegrees: number, pixelsPerPeriod: number } = {angleInDegrees: 0, pixelsPerPeriod: 0},
         protected trustedTechnicalIndicator = SpeedMatrix.DEFAULT_TRUSTED_INDICATOR,
@@ -29,6 +30,7 @@ export class SpeedMatrix {
 
     public static CreateFromJson(json: any | SpeedMatrix): SpeedMatrix {
         const created = new SpeedMatrix(
+            json.name,
             json.qualityPoints,
             json.speed,
             json.trustedTechnicalIndicator,
@@ -195,6 +197,7 @@ export class SpeedMatrix {
 
     toJSON() {
         return {
+            name: this.name,
             flattenPositionHistory: this.flattenPositionHistory,
             flattenPositionRange: this.flattenPositionRange,
             speed: this.speed,

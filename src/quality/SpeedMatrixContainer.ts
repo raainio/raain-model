@@ -6,7 +6,7 @@ import {CartesianValue} from '../cartesian/CartesianValue';
 
 export class SpeedMatrixContainer {
 
-    protected qualityPoints: QualityPoint[];
+    protected qualityPoints: any;
     protected trustedIndicators: number[];
     protected flattenMatrices: PositionValue[][];
     protected matrices: SpeedMatrix[];
@@ -14,7 +14,7 @@ export class SpeedMatrixContainer {
     constructor(json: {
         matrices: SpeedMatrix[]
     }) {
-        this.qualityPoints = undefined;
+        this.qualityPoints = {};
         this.trustedIndicators = [];
         this.flattenMatrices = [];
         this.matrices = json.matrices;
@@ -146,35 +146,49 @@ export class SpeedMatrixContainer {
     }
 
     getMatrix(index = 0) {
-        return this.getMatrices()[index];
+        if (this.matrices.length <= index) {
+            return null;
+        }
+        return this.matrices[index];
+    }
+
+    getMatrixByName(name: string) {
+        const found = this.matrices.filter(m => m.name === name);
+        if (found.length === 1) {
+            return found[0];
+        }
+        return null;
     }
 
     getMatrices(): SpeedMatrix[] {
         return this.matrices;
     }
 
-    getQualityPoints(): QualityPoint[] {
-        if (this.qualityPoints) {
-            if (this.qualityPoints.length > 0 && this.flattenMatrices.length > 0) {
-                return this.qualityPoints.map(p => new QualityPoint(p));
-            } else {
-                this.qualityPoints = [];
-            }
+    getQualityPoints(matrixName?: string): QualityPoint[] {
+
+        if (this.matrices.length === 0) {
+            return [];
         }
 
-        const flattenMatrices = [];
+        this.storeFlattenMatrices();
+
+        if (!matrixName) {
+            matrixName = this.matrices[0].name;
+        }
+
+        if (this.qualityPoints[matrixName]?.length > 0 && this.flattenMatrices.length > 0) {
+            return this.qualityPoints[matrixName];
+        }
+
         let qualityPoints: QualityPoint[] = [];
-        for (const matrix of this.matrices) {
-            if (matrix.isConsistent()) {
-                flattenMatrices.push(matrix.renderFlatten({normalize: true}));
-                qualityPoints = SpeedMatrixContainer.mergeReduce(qualityPoints, matrix.getQualityPoints());
-            }
+        const matricesWithSameName = this.matrices.filter(m => m.name === matrixName);
+        if (matricesWithSameName.length === 1) {
+            qualityPoints = matricesWithSameName[0].getQualityPoints().map(p => new QualityPoint(p));
         }
 
         // store
-        this.flattenMatrices = flattenMatrices;
-        this.qualityPoints = qualityPoints.map(p => new QualityPoint(p));
-        return this.qualityPoints;
+        this.qualityPoints[matrixName] = qualityPoints;
+        return qualityPoints;
     }
 
     getMaxGauge(): number {
@@ -328,8 +342,8 @@ export class SpeedMatrixContainer {
 
     merge(speedMatrixContainerToMergeIn: SpeedMatrixContainer) {
 
-        this.qualityPoints = SpeedMatrixContainer.mergeReduce(this.getQualityPoints(),
-            speedMatrixContainerToMergeIn.getQualityPoints());
+        // this.qualityPoints = SpeedMatrixContainer.mergeReduce(this.getQualityPoints(),
+        //    speedMatrixContainerToMergeIn.getQualityPoints());
         this.trustedIndicators = SpeedMatrixContainer.mergeConcat(this.getTrustedIndicators(),
             speedMatrixContainerToMergeIn.getTrustedIndicators());
         this.matrices = SpeedMatrixContainer.mergeConcat(this.matrices,
@@ -362,6 +376,22 @@ export class SpeedMatrixContainer {
         }
 
         SpeedMatrix.LogPositionValues(positionHistories, valueDisplay);
+    }
+
+    protected storeFlattenMatrices() {
+
+        if (this.flattenMatrices.length === this.matrices.length) {
+            return this.flattenMatrices;
+        }
+
+        const flattenMatrices = [];
+        for (const matrix of this.matrices) {
+            if (matrix.isConsistent()) {
+                flattenMatrices.push(matrix.renderFlatten({normalize: true}));
+            }
+        }
+
+        this.flattenMatrices = flattenMatrices;
     }
 
 }

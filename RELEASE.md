@@ -10,3 +10,4 @@
 - v0.4.1 : Cartesian values, Folder reorg (renaming of Polar objects : XX-MeasureValue => XX-PolarMeasureValue )
 - v1.9.x : Cartesian improvements
 - v1.10.x : Object constructor based on json only. Specs added.
+- v1.11.x : Change SpeedMatrixContainer's QualityPoints relation (1.N). Add a SpeedMatrix name.

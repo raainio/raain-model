@@ -7,8 +7,8 @@ describe('SpeedMatrix', () => {
     it('should manipulate SpeedMatrixContainer', () => {
 
         const speedMatrices = [];
-        speedMatrices.push(new SpeedMatrix([]));
-        speedMatrices.push(new SpeedMatrix([]));
+        speedMatrices.push(new SpeedMatrix('1', []));
+        speedMatrices.push(new SpeedMatrix('2', []));
         const speedMatrixContainer = new SpeedMatrixContainer({matrices: speedMatrices});
 
         const speedMatrixContainerTwin = SpeedMatrixContainer.CreateFromJson(speedMatrixContainer.toJSON());
@@ -44,17 +44,16 @@ describe('SpeedMatrix', () => {
         const qualityPoints = [qualityPoint1, qualityPoint2];
 
         const speedMatrixContainerToMerge = SpeedMatrixContainer.CreateFromJson({
-            qualityPoints,
-            matrices: [new SpeedMatrix(qualityPoints)],
+            matrices: [new SpeedMatrix('3', qualityPoints)],
             trustedIndicator: 0.85
         });
         speedMatrixContainer.merge(speedMatrixContainerToMerge);
 
-        expect(JSON.stringify(speedMatrixContainer.toJSON(optionsForFairCompare)))
-            .equal(JSON.stringify(speedMatrixContainerToMerge.toJSON(optionsForFairCompare)));
-
-        expect(speedMatrixContainer.getQualityPoints().length).eq(2);
-        expect(speedMatrixContainer.getQualityPoints()[0].rainCartesianValues.length).eq(2);
+        expect(speedMatrixContainer.getQualityPoints().length).eq(0);
+        expect(speedMatrixContainer.getQualityPoints('1').length).eq(0);
+        expect(speedMatrixContainer.getQualityPoints('2').length).eq(0);
+        expect(speedMatrixContainer.getQualityPoints('3').length).eq(2);
+        expect(speedMatrixContainer.getQualityPoints('3')[0].rainCartesianValues.length).eq(2);
 
         const mergedMatrix = speedMatrixContainer.renderMergedMatrix();
         expect(mergedMatrix.length).eq(Math.pow(SpeedMatrix.DEFAULT_MATRIX_RANGE * 2 + 1, 2));
@@ -83,7 +82,7 @@ describe('SpeedMatrix', () => {
         const roundScale: Position = new Position({x: QualityTools.DEFAULT_SCALE, y: QualityTools.DEFAULT_SCALE});
 
         const flattenPositionRange = {xMin: -4, xMax: 4, yMin: -4, yMax: 4};
-        const speedMatrix1 = new SpeedMatrix(qualityPoints1, speed, 1, flattenPositionRange, roundScale);
+        const speedMatrix1 = new SpeedMatrix('1', qualityPoints1, speed, 1, flattenPositionRange, roundScale);
         const qualitySpeedMatrixContainer1 = new SpeedMatrixContainer({matrices: [speedMatrix1]});
 
         // Verify creation
@@ -100,7 +99,7 @@ describe('SpeedMatrix', () => {
         qp.gaugeId = 'otherGaugeId';
         const qualityPoint2 = new QualityPoint(qp);
         const qualityPoints2: QualityPoint[] = [qualityPoint1, qualityPoint2];
-        const speedMatrix2 = new SpeedMatrix(qualityPoints2, speed, 1, flattenPositionRange, roundScale);
+        const speedMatrix2 = new SpeedMatrix('2', qualityPoints2, speed, 1, flattenPositionRange, roundScale);
         const qualitySpeedMatrixContainer2 = new SpeedMatrixContainer({matrices: [speedMatrix2]});
         qualitySpeedMatrixContainer1.merge(qualitySpeedMatrixContainer2);
 
@@ -109,9 +108,17 @@ describe('SpeedMatrix', () => {
         expect(qualitySpeedMatrixContainer1.getQuality()).eq(0.5);
         expect(qualitySpeedMatrixContainer1.getMaxGauge()).eq(10);
         expect(qualitySpeedMatrixContainer1.getMaxRain()).eq(10.5);
-        expect(qualitySpeedMatrixContainer1.getQualityPoints().length).eq(2);
+        expect(qualitySpeedMatrixContainer1.getQualityPoints().length).eq(1);
         expect(qualitySpeedMatrixContainer1.getQualityPoints()[0].getGaugeValue()).eq(10);
         expect(qualitySpeedMatrixContainer1.getQualityPoints()[0].getRainValue()).eq(10.5);
+
+        expect(qualitySpeedMatrixContainer1.getQualityPoints('1').length).eq(1);
+        expect(qualitySpeedMatrixContainer1.getQualityPoints('1')[0].getGaugeValue()).eq(10);
+        expect(qualitySpeedMatrixContainer1.getQualityPoints('1')[0].getRainValue()).eq(10.5);
+
+        expect(qualitySpeedMatrixContainer1.getQualityPoints('2').length).eq(2);
+        expect(qualitySpeedMatrixContainer1.getQualityPoints('2')[0].getGaugeValue()).eq(10);
+        expect(qualitySpeedMatrixContainer1.getQualityPoints('2')[0].getRainValue()).eq(10.5);
 
     });
 
