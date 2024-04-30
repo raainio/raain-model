@@ -7,8 +7,8 @@ describe('SpeedMatrix', () => {
     it('should manipulate SpeedMatrixContainer', () => {
 
         const speedMatrices = [];
-        speedMatrices.push(new SpeedMatrix('1', []));
-        speedMatrices.push(new SpeedMatrix('2', []));
+        speedMatrices.push(new SpeedMatrix('1', '', []));
+        speedMatrices.push(new SpeedMatrix('2', '', []));
         const speedMatrixContainer = new SpeedMatrixContainer({matrices: speedMatrices});
 
         const speedMatrixContainerTwin = SpeedMatrixContainer.CreateFromJson(speedMatrixContainer.toJSON());
@@ -44,7 +44,7 @@ describe('SpeedMatrix', () => {
         const qualityPoints = [qualityPoint1, qualityPoint2];
 
         const speedMatrixContainerToMerge = SpeedMatrixContainer.CreateFromJson({
-            matrices: [new SpeedMatrix('3', qualityPoints)],
+            matrices: [new SpeedMatrix('3', '', qualityPoints)],
             trustedIndicator: 0.85
         });
         speedMatrixContainer.merge(speedMatrixContainerToMerge);
@@ -82,7 +82,7 @@ describe('SpeedMatrix', () => {
         const roundScale: Position = new Position({x: QualityTools.DEFAULT_SCALE, y: QualityTools.DEFAULT_SCALE});
 
         const flattenPositionRange = {xMin: -4, xMax: 4, yMin: -4, yMax: 4};
-        const speedMatrix1 = new SpeedMatrix('1', qualityPoints1, speed, 1, flattenPositionRange, roundScale);
+        const speedMatrix1 = new SpeedMatrix('1', '', qualityPoints1, speed, 1, flattenPositionRange, roundScale);
         const qualitySpeedMatrixContainer1 = new SpeedMatrixContainer({matrices: [speedMatrix1]});
 
         // Verify creation
@@ -99,7 +99,7 @@ describe('SpeedMatrix', () => {
         qp.gaugeId = 'otherGaugeId';
         const qualityPoint2 = new QualityPoint(qp);
         const qualityPoints2: QualityPoint[] = [qualityPoint1, qualityPoint2];
-        const speedMatrix2 = new SpeedMatrix('2', qualityPoints2, speed, 1, flattenPositionRange, roundScale);
+        const speedMatrix2 = new SpeedMatrix('2', '', qualityPoints2, speed, 1, flattenPositionRange, roundScale);
         const qualitySpeedMatrixContainer2 = new SpeedMatrixContainer({matrices: [speedMatrix2]});
         qualitySpeedMatrixContainer1.merge(qualitySpeedMatrixContainer2);
 
