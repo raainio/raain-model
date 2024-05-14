@@ -1,5 +1,5 @@
 import {expect} from 'chai';
-import {GaugeMeasure, GaugeNode} from '../../src';
+import {GaugeMeasure, GaugeMeasureConfiguration, GaugeNode} from '../../src';
 
 describe('Gauge', () => {
 
@@ -11,8 +11,17 @@ describe('Gauge', () => {
         expect(gaugeNode.id).eq('Node looks OK.');
         expect(JSON.stringify(gaugeNode.toJSON())).eq('{"id":"Node looks OK.","links":[],"latitude":1,"longitude":1,"name":"name"}');
 
-        const gaugeMeasure = new GaugeMeasure({id: 'measure', values: [10, 11], configurationAsJSON: {test: true}});
-        expect(JSON.stringify(gaugeMeasure.toJSON())).eq('{"id":"measure","links":[],"validity":-1,"configurationAsJSON":"{\\"test\\":true}","values":[10,11],"timeInSec":-1}');
+        const measureConf = new GaugeMeasureConfiguration({
+            gaugeId: 'test',
+            rainId: 'rainId',
+            type: 'type',
+            angle: 12,
+            speed: 10,
+            trust: true
+        });
+
+        const gaugeMeasure = new GaugeMeasure({id: 'measure', values: [10, 11], configurationAsJSON: measureConf});
+        expect(JSON.stringify(gaugeMeasure.toJSON())).eq('{"id":"measure","links":[],"validity":-1,"configurationAsJSON":"{\\"rainId\\":\\"rainId\\",\\"type\\":\\"type\\",\\"trust\\":true,\\"gaugeId\\":\\"test\\",\\"angle\\":12,\\"speed\\":10}","values":[10,11],"timeInSec":-1}');
 
     });
 

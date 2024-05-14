@@ -5,6 +5,10 @@ export * from './organization/Link';
 export * from './organization/RaainNode';
 export * from './organization/TeamNode';
 
+export * from './configuration/MeasureConfiguration';
+export * from './configuration/GaugeMeasureConfiguration';
+export * from './configuration/RadarMeasureConfiguration';
+
 export * from './quality/QualityPoint';
 export * from './quality/SpeedMatrix';
 export * from './quality/SpeedMatrixContainer';
@@ -12,7 +16,6 @@ export * from './quality/history/CartesianGaugeHistory';
 export * from './quality/history/CartesianRainHistory';
 export * from './quality/history/PositionHistory';
 export * from './quality/tools/QualityTools';
-export * from './cartesian/LatLng';
 export * from './quality/position/Position';
 export * from './quality/position/PositionValue';
 
@@ -38,6 +41,7 @@ export * from './polar/RadarPolarMeasureValue';
 export * from './polar/RainPolarMeasureValue';
 export * from './polar/IPolarMeasureValue';
 
+export * from './cartesian/LatLng';
 export * from './cartesian/CartesianValue';
 export * from './cartesian/CartesianMeasureValue';
 export * from './cartesian/RadarCartesianMeasureValue';

@@ -1,6 +1,7 @@
 import {Measure} from '../organization/Measure';
 import {IPolarMeasureValue} from '../polar/IPolarMeasureValue';
 import {ICartesianMeasureValue} from '../cartesian/ICartesianMeasureValue';
+import {RadarMeasureConfiguration} from '../configuration/RadarMeasureConfiguration';
 
 /**
  *  api/radars/:id/measures/:id
@@ -14,7 +15,7 @@ export class RadarMeasure extends Measure {
                     values: IPolarMeasureValue[] | ICartesianMeasureValue[] | Measure[] | number[],
                     date?: Date,
                     validity?: number,
-                    configurationAsJSON?: string | any,
+                    configurationAsJSON?: string | RadarMeasureConfiguration,
                 }
     ) {
         super(json);

@@ -1,6 +1,7 @@
 import {Measure} from '../organization/Measure';
 import {IPolarMeasureValue} from '../polar/IPolarMeasureValue';
 import {ICartesianMeasureValue} from '../cartesian/ICartesianMeasureValue';
+import {GaugeMeasureConfiguration} from '../configuration/GaugeMeasureConfiguration';
 
 /**
  *  api/gauges/:id/measures/:id
@@ -16,7 +17,7 @@ export class GaugeMeasure extends Measure {
                     date?: Date,
                     validity?: number,
                     timeInSec?: number,
-                    configurationAsJSON?: string | any,
+                    configurationAsJSON?: string | GaugeMeasureConfiguration,
                 }
     ) {
         super(json);
