@@ -5,6 +5,7 @@ import {PolarValue} from './PolarValue';
 
 export class AbstractPolarMeasureValue implements IPolarMeasureValue {
 
+    // TODO rename "polars" to "polarMeasureValue" (+ inherits kids)
     protected polars: PolarMeasureValue;
 
     constructor(json: {

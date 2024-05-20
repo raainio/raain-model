@@ -3,6 +3,8 @@ import {IPolarMeasureValue} from './IPolarMeasureValue';
 import {PolarValue} from './PolarValue';
 
 export class PolarMeasureValue implements IPolarMeasureValue {
+
+    // TODO rename "polars" to "measureValuePolarContainers"
     private polars: MeasureValuePolarContainer[];
 
     constructor(json: {

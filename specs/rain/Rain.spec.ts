@@ -13,7 +13,7 @@ describe('Rain', () => {
 
     it('should create ones', () => {
 
-        const radarNode = new RadarNode({id: 'any', latitude: 1, longitude: 1});
+        const radarNode = new RadarNode({id: 'any', latitude: 1, longitude: 1, name: 'any name'});
         const rainComputationEmpty = new RainComputation({id: 'any', periodBegin: null, periodEnd: null, isReady: null, results: null});
 
         const rainNode = new RainNode({

@@ -1,5 +1,5 @@
 import {expect} from 'chai';
-import {RadarMeasure, RadarNode} from '../../src';
+import {PolarMeasureValue, RadarMeasure, RadarNode, RadarPolarMeasureValue} from '../../src';
 
 describe('Radar', () => {
 
@@ -11,8 +11,13 @@ describe('Radar', () => {
         expect(radarNode.id).eq('RadarNode looks OK.');
         expect(JSON.stringify(radarNode.toJSON())).eq('{"id":"RadarNode looks OK.","links":[],"name":"name","latitude":1,"longitude":1}');
 
-        const measure = new RadarMeasure({id: 'measure', values: [10, 11]});
-        expect(JSON.stringify(measure.toJSON())).eq('{"id":"measure","links":[],"validity":-1,"values":[10,11]}');
+        const polarMeasureValues = [new PolarMeasureValue({measureValuePolarContainers: []})];
+        const measure = new RadarMeasure({id: 'measure', values: polarMeasureValues});
+        expect(JSON.stringify(measure.toJSON())).eq('{"id":"measure","links":[],"validity":-1,"values":[{"polars":[]}]}');
+
+        const polarMeasureValue = measure.values[0] as PolarMeasureValue;
+        const radarPolarMeasureValue = new RadarPolarMeasureValue({polars: polarMeasureValue});
+        expect(JSON.stringify(radarPolarMeasureValue.toJSON())).eq('{"polars":{"polars":[]}}');
     });
 
 });

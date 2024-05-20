@@ -3,8 +3,8 @@ import {IVersion} from './IVersion';
 
 export class RaainNode implements IVersion {
 
-    public readonly id: string;
-    public readonly version: string;
+    public id: string;
+    public version: string;
     private links: Link[];
 
     constructor(json: {

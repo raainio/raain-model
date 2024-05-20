@@ -18,7 +18,7 @@ export class RadarNode extends RaainNode {
         id: string,
         latitude: number,
         longitude: number,
-        name?: string,
+        name: string,
         links?: Link[] | RaainNode[],
         team?: TeamNode,
         version?: string,

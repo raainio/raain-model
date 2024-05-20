@@ -20,7 +20,7 @@ export class RadarNodeMap extends RadarNode {
         periodBegin: Date,
         periodEnd: Date,
         map: RadarMeasure[] | string,
-        name?: string,
+        name: string,
         links?: Link[] | RaainNode[],
         team?: TeamNode,
         version?: string,

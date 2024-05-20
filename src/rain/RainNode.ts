@@ -56,9 +56,9 @@ export class RainNode extends RaainNode {
             if (l instanceof Link) {
                 return l;
             } else if (l && l['_id']) {
-                return new RadarNode({id: l['_id'].toString(), latitude: 0, longitude: 0});
+                return new RadarNode({id: l['_id'].toString(), latitude: 0, longitude: 0, name: l['name']});
             } else if (l && l.id) {
-                return new RadarNode({id: l.id.toString(), latitude: 0, longitude: 0}); // 'hex'
+                return new RadarNode({id: l.id.toString(), latitude: 0, longitude: 0, name: l['name']}); // 'hex'
             }
         });
 
@@ -152,4 +152,3 @@ export class RainNode extends RaainNode {
         return RainNode.TYPE;
     }
 }
-

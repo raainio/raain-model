@@ -65,11 +65,11 @@ export class RainComputationAbstract extends RaainNode {
             if (l instanceof Link) {
                 return l;
             } else if (l && l['_id']) {
-                return new RadarNode({id: l['_id'].toString(), latitude: 0, longitude: 0});
+                return new RadarNode({id: l['_id'].toString(), latitude: 0, longitude: 0, name: l['name']});
             } else if (l && l.id) {
                 return new RadarNode({
                     id: l.id.toString(),// 'hex'
-                    latitude: 0, longitude: 0
+                    latitude: 0, longitude: 0, name: l['name']
                 });
             }
         });
@@ -134,4 +134,3 @@ export class RainComputationAbstract extends RaainNode {
     }
 
 }
-
