@@ -32,8 +32,12 @@ export class RainPolarMeasureValue extends AbstractPolarMeasureValue implements 
             version = obj.version;
         }
 
-        if (typeof obj.polars !== 'undefined') {
-            polarMeasureValue = obj.polars;
+        if (typeof obj.polarMeasureValue !== 'undefined') {
+            polarMeasureValue = obj.polarMeasureValue;
+        }
+
+        if (typeof obj.measureValuePolarContainers !== 'undefined') {
+            polarMeasureValue = new PolarMeasureValue({measureValuePolarContainers: obj.measureValuePolarContainers});
         }
 
         return new RainPolarMeasureValue({polarMeasureValue, version});

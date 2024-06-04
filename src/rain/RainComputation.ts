@@ -62,9 +62,9 @@ export class RainComputation extends RainComputationAbstract {
         }
 
         this.results = results.map(r => {
-            if (typeof r === 'string' && r.indexOf('polars') >= 0) {
+            if (typeof r === 'string' && r.indexOf('polarMeasureValue') >= 0) {
                 return new RainPolarMeasureValue(JSON.parse(r));
-            } else if (r.polars) {
+            } else if (r.polarMeasureValue) {
                 return new RainPolarMeasureValue(r);
             }
             if (typeof r === 'string' && r.indexOf('cartesian') >= 0) {
