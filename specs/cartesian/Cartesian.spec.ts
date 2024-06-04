@@ -6,13 +6,21 @@ import {
     GaugeNode,
     ICartesianMeasureValue,
     LatLng,
-    RadarCartesianMeasureValue
+    RadarCartesianMeasureValue,
+    TeamNode
 } from '../../src';
 
 describe('Cartesian', () => {
 
     it('should create ones', () => {
 
+        const team1 = new TeamNode({
+            id: 'tid1',
+            name: 'team1',
+            description: 'team...',
+            contracts: ['basic'],
+            contacts: []
+        });
         const cartesianValue = new CartesianValue({
             value: 123,
             lat: 10,
@@ -36,7 +44,8 @@ describe('Cartesian', () => {
             name: 'name',
             links: [],
             latitude: 1,
-            longitude: 1
+            longitude: 1,
+            team: team1,
         });
         expect(gaugeNode.id).eq('GaugeNode looks OK.');
 

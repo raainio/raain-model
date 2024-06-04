@@ -8,7 +8,7 @@ import {PolarMeasureValue} from './PolarMeasureValue';
 export class GaugePolarMeasureValue extends AbstractPolarMeasureValue implements IPolarMeasureValue {
 
     constructor(json: {
-        polars: string | PolarMeasureValue | AbstractPolarMeasureValue
+        polarMeasureValue: string | PolarMeasureValue | AbstractPolarMeasureValue
     }) {
         super(json);
     }

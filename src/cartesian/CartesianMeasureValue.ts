@@ -67,7 +67,7 @@ export class CartesianMeasureValue implements ICartesianMeasureValue {
         }
     }
 
-    toJSON(stringify = false): JSON {
+    toJSON(stringify = false): any {
 
         let cartesianValues: any = this.cartesianValues;
         if (stringify) {
@@ -81,11 +81,11 @@ export class CartesianMeasureValue implements ICartesianMeasureValue {
         return json;
     }
 
-    toJSONWithCartesianValuesStringified(): JSON {
+    toJSONWithCartesianValuesStringified(): any {
         return {
             cartesianValues: JSON.stringify(this.cartesianValues),
             cartesianPixelWidth: this.cartesianPixelWidth,
-        } as any;
+        };
     }
 
     getCartesianValue(json: { lat: number, lng: number }): CartesianValue {

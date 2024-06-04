@@ -24,7 +24,7 @@ export class PeopleNode {
         this.comments = json.comments;
     }
 
-    public toJSON(): JSON {
+    public toJSON(): any {
         return {
             id: this.id,
             role: this.role,

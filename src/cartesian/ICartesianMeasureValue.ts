@@ -11,9 +11,9 @@ export interface ICartesianMeasureValue {
 
     setCartesianValuesAsString(s: string): void;
 
-    toJSON(): JSON;
+    toJSON(): any;
 
-    toJSONWithCartesianValuesStringified(): JSON;
+    toJSONWithCartesianValuesStringified(): any;
 
     getCartesianValue(json: { lat: number, lng: number }): CartesianValue;
 

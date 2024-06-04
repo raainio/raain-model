@@ -9,35 +9,33 @@ import {TeamNode} from '../organization/TeamNode';
  */
 export class RadarNodeMap extends RadarNode {
 
-    public periodBegin: Date;
-    public periodEnd: Date;
+    public date: Date;
     private map: string; // RadarMeasure[]; stringified
 
     constructor(json: {
         id: string,
         latitude: number,
         longitude: number,
-        periodBegin: Date,
-        periodEnd: Date,
+        date: Date,
         map: RadarMeasure[] | string,
         name: string,
+        description: string,
+        team: TeamNode,
         links?: Link[] | RaainNode[],
-        team?: TeamNode,
         version?: string,
+        configurationAsJSON?: any,
     }) {
         super(json);
-        this.periodBegin = new Date(json.periodBegin);
-        this.periodEnd = new Date(json.periodEnd);
+        this.date = new Date(json.date);
         this.setMapData(json.map);
     }
 
-    public toJSON(): JSON {
+    public toJSON(): any {
         const json = super.toJSON();
         if (this.map) {
             json['map'] = this.map;
         }
-        json['periodBegin'] = this.periodBegin.toISOString();
-        json['periodEnd'] = this.periodEnd.toISOString();
+        json['date'] = this.date.toISOString();
         return json;
     }
 

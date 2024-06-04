@@ -2,17 +2,14 @@ import {CartesianValue} from '../../cartesian/CartesianValue';
 
 export class CartesianRainHistory {
 
-    public periodBegin: Date;
-    public periodEnd: Date;
+    public date: Date;
     public computedValue: CartesianValue;
 
     constructor(json: {
-        periodBegin: Date,
-        periodEnd: Date,
+        date: Date,
         computedValue: CartesianValue
     }) {
-        this.periodBegin = json.periodBegin;
-        this.periodEnd = json.periodEnd;
+        this.date = json.date;
         this.computedValue = json.computedValue;
     }
 }

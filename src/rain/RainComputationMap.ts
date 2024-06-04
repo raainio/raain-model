@@ -14,8 +14,7 @@ export class RainComputationMap extends RainComputationAbstract {
 
     constructor(json: {
         id: string,
-        periodBegin: Date,
-        periodEnd: Date,
+        date: Date,
         isReady: boolean,
 
         map: RainMeasure[] | string,
@@ -35,7 +34,7 @@ export class RainComputationMap extends RainComputationAbstract {
         this.setMapData(json.map);
     }
 
-    public toJSON(): JSON {
+    public toJSON(): any {
         const json = super.toJSON();
         if (this.map) {
             json['map'] = this.map;

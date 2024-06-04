@@ -1,7 +1,6 @@
 import {IPolarMeasureValue} from '../polar/IPolarMeasureValue';
 import {RaainNode} from './RaainNode';
 import {ICartesianMeasureValue} from '../cartesian/ICartesianMeasureValue';
-import {MeasureConfiguration} from '../configuration/MeasureConfiguration';
 
 export class Measure extends RaainNode {
     public date: Date;
@@ -16,7 +15,7 @@ export class Measure extends RaainNode {
                     values: IPolarMeasureValue[] | ICartesianMeasureValue[] | Measure[] | number[],
                     date?: Date,
                     validity?: number,
-                    configurationAsJSON?: string | MeasureConfiguration,
+                    configurationAsJSON?: string,
                 }
     ) {
         super(json);
@@ -36,7 +35,7 @@ export class Measure extends RaainNode {
         this.configurationAsJSON = JSON.stringify(conf);
     }
 
-    public toJSON(options: { removeValues?: boolean } = {}): JSON {
+    public toJSON(options: { removeValues?: boolean } = {}): any {
         const json = super.toJSON();
         json['date'] = this.date?.toISOString();
         json['validity'] = this.validity;

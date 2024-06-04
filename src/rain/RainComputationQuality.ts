@@ -13,8 +13,7 @@ export class RainComputationQuality extends RainComputationAbstract {
 
     constructor(json: {
         id: string,
-        periodBegin: Date,
-        periodEnd: Date,
+        date: Date,
         isReady: boolean,
         qualitySpeedMatrixContainer: SpeedMatrixContainer,
 
@@ -35,8 +34,7 @@ export class RainComputationQuality extends RainComputationAbstract {
 
     merge(rainComputationQuality: RainComputationQuality) {
 
-        this.periodBegin = this.mergeDateMin(this.periodBegin, rainComputationQuality.periodBegin);
-        this.periodEnd = this.mergeDateMax(this.periodEnd, rainComputationQuality.periodEnd);
+        this.date = this.mergeDateMin(this.date, rainComputationQuality.date);
         this.quality = this.mergeAvg(this.quality, rainComputationQuality.quality);
         this.progressIngest = this.mergeMin(this.progressIngest, rainComputationQuality.progressIngest);
         this.progressComputing = this.mergeMin(this.progressComputing, rainComputationQuality.progressComputing);
@@ -48,7 +46,7 @@ export class RainComputationQuality extends RainComputationAbstract {
 
     }
 
-    public toJSON(arg?: any): JSON {
+    public toJSON(arg?: any): any {
         const json = super.toJSON();
 
         if (this.qualitySpeedMatrixContainer && this.qualitySpeedMatrixContainer.toJSON) {
@@ -136,4 +134,3 @@ export class RainComputationQuality extends RainComputationAbstract {
     }
 
 }
-

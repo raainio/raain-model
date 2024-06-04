@@ -18,7 +18,7 @@ export class MeasureValuePolarContainer {
         this.polarEdges = json.polarEdges;
     }
 
-    public toJSON(): JSON {
+    public toJSON(): any {
         return {
             azimuth: this.azimuth,
             distance: this.distance,

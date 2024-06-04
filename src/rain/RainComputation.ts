@@ -20,8 +20,7 @@ export class RainComputation extends RainComputationAbstract {
 
     constructor(json: {
         id: string,
-        periodBegin: Date,
-        periodEnd: Date,
+        date: Date,
         isReady: boolean,
 
         results: RainPolarMeasureValue[] | RainCartesianMeasureValue[],
@@ -42,7 +41,7 @@ export class RainComputation extends RainComputationAbstract {
         this.setResults(json.results);
     }
 
-    public toJSON(stringify = false): JSON {
+    public toJSON(stringify = false): any {
         const json = super.toJSON();
         json['results'] = this.results.map(r => r.toJSON(stringify));
         return json;
@@ -79,4 +78,3 @@ export class RainComputation extends RainComputationAbstract {
     }
 
 }
-

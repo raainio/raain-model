@@ -2,7 +2,7 @@
  * Hateoas Links :
  * [ {
  *    rel: string, // "self" or api types ("rain", "gauge", "radar", "radar-measure", "rain-computation"...)
- *    href: string // like "https://.../rains/2"
+ *    href: string // like "https://../rains/2"
  *  },...]
  */
 export class Link {
@@ -27,8 +27,9 @@ export class Link {
     }
 
     public getLinkType(): string {
-        const urls = this.href.split('/');
+        // const urls = this.href.split('/');
         // can be enforced : verify rel in -2 urls ?...
-        return urls[0];
+        // return urls[1].substring(0, urls[1].length - 1);
+        return this.rel;
     }
 }

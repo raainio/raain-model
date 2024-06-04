@@ -15,13 +15,13 @@ export class RadarCartesianMeasureValue extends CartesianMeasureValue {
         this.angle = json.angle;
     }
 
-    toJSON(stringify = false): JSON {
+    toJSON(stringify = false): any {
         const json: any = super.toJSON(stringify);
         json.angle = this.angle;
         return json;
     }
 
-    toJSONWithCartesianValuesStringified(): JSON {
+    toJSONWithCartesianValuesStringified(): any {
         const json: any = super.toJSONWithCartesianValuesStringified();
         json.angle = this.angle;
         return json;
