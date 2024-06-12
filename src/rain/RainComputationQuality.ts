@@ -2,6 +2,7 @@ import {RainComputationAbstract} from './RainComputationAbstract';
 import {Link} from '../organization/Link';
 import {RaainNode} from '../organization/RaainNode';
 import {SpeedMatrixContainer} from '../quality/SpeedMatrixContainer';
+import {RainComputation} from './RainComputation';
 
 
 /**
@@ -25,11 +26,42 @@ export class RainComputationQuality extends RainComputationAbstract {
         timeSpentInMs?: number,
         isDoneDate?: Date,
         launchedBy?: string,
-        rain?: RaainNode[],
+        rain?: Link | RaainNode,
         radars?: Link[] | RaainNode[],
+        rainComputation?: Link | RaainNode,
     }) {
         super(json);
         this.qualitySpeedMatrixContainer = json.qualitySpeedMatrixContainer;
+        this.addRainComputationLink(json.rainComputation);
+    }
+
+    private static _getRainComputationLinks(linkToPurify: any): any[] {
+        if (!linkToPurify) {
+            return [];
+        }
+
+        if (linkToPurify instanceof Link) {
+            return [linkToPurify];
+        } else if (linkToPurify['_id']) {
+            return [new RainComputation({
+                id: linkToPurify['_id'].toString(),
+                date: linkToPurify.date,
+                version: linkToPurify.version,
+                isReady: true, results: [], // useless
+            })];
+        } else if (linkToPurify.id) {
+            return [new RainComputation({
+                id: linkToPurify.id.toString(),
+                date: linkToPurify.date,
+                version: linkToPurify.version,
+                isReady: true, results: [], // useless
+            })];
+        }
+        return [];
+    }
+
+    public addRainComputationLink(linkToAdd: Link | RaainNode): void {
+        this.addLinks(RainComputationQuality._getRainComputationLinks(linkToAdd));
     }
 
     merge(rainComputationQuality: RainComputationQuality) {
@@ -53,6 +85,11 @@ export class RainComputationQuality extends RainComputationAbstract {
             json['qualitySpeedMatrixContainer'] = this.qualitySpeedMatrixContainer.toJSON(arg);
         } else if (this.qualitySpeedMatrixContainer) {
             json['qualitySpeedMatrixContainer'] = this.qualitySpeedMatrixContainer;
+        }
+
+        const rainComputation = this.getLinkId(RainComputation.TYPE);
+        if (rainComputation) {
+            json['rainComputation'] = rainComputation;
         }
 
         return json;

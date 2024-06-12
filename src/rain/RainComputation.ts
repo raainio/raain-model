@@ -33,7 +33,7 @@ export class RainComputation extends RainComputationAbstract {
         timeSpentInMs?: number,
         isDoneDate?: Date,
         launchedBy?: string,
-        rain?: RaainNode[],
+        rain?: Link | RaainNode,
         radars?: Link[] | RaainNode[],
 
     }) {

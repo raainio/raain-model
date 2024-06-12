@@ -7,6 +7,8 @@
 - 1.9.x : Cartesian improvements.
 - 1.10.x : Object constructor based on json only. Specs added.
 - 1.11.x : Change SpeedMatrixContainer's QualityPoints relation (1.N). Add a SpeedMatrix name.
-- 2.0.x : More flexible configuration (rain, radar, gauge).
-  Rain zone is composed by LatLng rects.
+- 2.0.x : More flexible configuration (rain, radar, gauge),
+  Rain zone is composed by LatLng rects,
   No more period usage (date preferred).
+- 2.1.x : RainComputationQuality extended with rainComputation's link,
+  getQualityPointsByHistoricalPosition method. 

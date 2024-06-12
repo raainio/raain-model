@@ -106,7 +106,7 @@ describe('Rain', () => {
         expect(rainNode.getLinkIds().toString()).eq('r1,rc1');
 
         const rainComputation = new RainComputation({
-            id: 'RainComputation looks OK.',
+            id: 'rc1',
             date: new Date('2022-01-01'),
             links: [radarNode, radarNode, null],
             quality: 1,
@@ -123,20 +123,37 @@ describe('Rain', () => {
             version: 'v1',
         });
 
-        expect(rainComputation.id).eq('RainComputation looks OK.');
+        expect(rainComputation.id).eq('rc1');
         expect(rainComputation.getVersion()).eq('v1');
 
         const rainComputationQuality = new RainComputationQuality({
-            id: 'RainComputationQuality looks OK.',
-            date: new Date(),
+            id: 'rcq1',
+            date: new Date('2026-07-08'),
             links: [radarNode],
             quality: 1,
             isReady: true,
+            rainComputation,
             qualitySpeedMatrixContainer: new SpeedMatrixContainer({matrices: []}),
             version: 'v1'
         });
-        expect(rainComputationQuality.id).eq('RainComputationQuality looks OK.');
+        expect(rainComputationQuality.id).eq('rcq1');
         expect(rainComputationQuality.getVersion()).eq('v1');
+        expect(JSON.stringify(rainComputationQuality.toJSON()))
+            .eq('{' +
+                '"id":"rcq1",' +
+                '"links":[' +
+                '{"rel":"radar","href":"../radars/r1"},' +
+                '{"rel":"rain-computation","href":"../rain-computations/2022-01-01T00:00:00.000Z/v1/rc1"}' +
+                '],' +
+                '"version":"v1",' +
+                '"date":"2026-07-08T00:00:00.000Z",' +
+                '"quality":1,' +
+                '"progressIngest":-1,' +
+                '"progressComputing":-1,' +
+                '"isReady":true,' +
+                '"qualitySpeedMatrixContainer":{"qualityPoints":[],"trustedIndicators":[],"flattenMatrices":[],"speed":{"angleInDegrees":0,"pixelsPerPeriod":0},"matrices":[]},' +
+                '"rainComputation":"rc1"' +
+                '}');
 
         const measure = new RainMeasure({id: 'measure', values: [10, 11], configurationAsJSON: '{"test": true}'});
         expect(JSON.stringify(measure.toJSON())).eq('{"id":"measure","links":[],"validity":-1,"configurationAsJSON":"{\\"test\\":true}","values":[10,11]}');

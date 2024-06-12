@@ -55,6 +55,10 @@ describe('SpeedMatrix', () => {
         expect(speedMatrixContainer.getQualityPoints('3').length).eq(2);
         expect(speedMatrixContainer.getQualityPoints('3')[0].rainCartesianValues.length).eq(2);
 
+        expect(speedMatrixContainer.getQualityPointsByHistoricalPosition(0).length).eq(0);
+        expect(speedMatrixContainer.getQualityPointsByHistoricalPosition(2).length).eq(2);
+        expect(speedMatrixContainer.getQualityPointsByHistoricalPosition(20).length).eq(0);
+
         const mergedMatrix = speedMatrixContainer.renderMergedMatrix();
         expect(mergedMatrix.length).eq(Math.pow(SpeedMatrix.DEFAULT_MATRIX_RANGE * 2 + 1, 2));
         expect(mergedMatrix[179].value).eq(1);

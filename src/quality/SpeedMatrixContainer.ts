@@ -191,6 +191,19 @@ export class SpeedMatrixContainer {
         return qualityPoints;
     }
 
+    getQualityPointsByHistoricalPosition(position: number = 0): QualityPoint[] {
+
+        const matrixFound = this.matrices
+            .sort((a, b) => parseInt(a.name, 10) - parseInt(b.name, 10))
+            .filter((m, index) => index === position);
+
+        if (matrixFound.length === 1) {
+            return this.getQualityPoints(matrixFound[0].name);
+        }
+
+        return [];
+    }
+
     getMaxGauge(): number {
         const qualityPoints = this.getQualityPoints();
         let max = -1;
