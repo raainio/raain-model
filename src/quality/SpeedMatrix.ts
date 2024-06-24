@@ -8,7 +8,7 @@ import {LatLng} from '../cartesian/LatLng';
 
 export class SpeedMatrix {
 
-    public static DEFAULT_MATRIX_RANGE = 8;
+    public static DEFAULT_MATRIX_RANGE = 16;
     public static DEFAULT_TRUSTED_INDICATOR = 1;
 
     protected flattenPositionHistory: number[][];

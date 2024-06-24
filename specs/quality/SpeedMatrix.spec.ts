@@ -61,9 +61,9 @@ describe('SpeedMatrix', () => {
 
         const mergedMatrix = speedMatrixContainer.renderMergedMatrix();
         expect(mergedMatrix.length).eq(Math.pow(SpeedMatrix.DEFAULT_MATRIX_RANGE * 2 + 1, 2));
-        expect(mergedMatrix[179].value).eq(1);
-        expect(mergedMatrix[179].x).eq(2);
-        expect(mergedMatrix[179].y).eq(1);
+        expect(mergedMatrix[611].value).eq(1);
+        expect(mergedMatrix[611].x).eq(2);
+        expect(mergedMatrix[611].y).eq(1);
         speedMatrixContainer.logMergedMatrix({normalize: false});
         speedMatrixContainer.logMergedMatrix({normalize: true});
     });
