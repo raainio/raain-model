@@ -11,6 +11,7 @@ import {RainComputation} from './RainComputation';
 export class RainComputationQuality extends RainComputationAbstract {
 
     public qualitySpeedMatrixContainer: SpeedMatrixContainer;
+    public error: string;
 
     constructor(json: {
         id: string,
@@ -29,10 +30,12 @@ export class RainComputationQuality extends RainComputationAbstract {
         rain?: Link | RaainNode,
         radars?: Link[] | RaainNode[],
         rainComputation?: Link | RaainNode,
+        error?: string,
     }) {
         super(json);
         this.qualitySpeedMatrixContainer = json.qualitySpeedMatrixContainer;
         this.addRainComputationLink(json.rainComputation);
+        this.error = json.error;
     }
 
     private static _getRainComputationLinks(linkToPurify: any): any[] {
@@ -90,6 +93,10 @@ export class RainComputationQuality extends RainComputationAbstract {
         const rainComputation = this.getLinkId(RainComputation.TYPE);
         if (rainComputation) {
             json['rainComputation'] = rainComputation;
+        }
+
+        if (this.error) {
+            json['error'] = this.error;
         }
 
         return json;

@@ -55,7 +55,6 @@ describe('QualityTools', () => {
         expect(QualityTools.IsNotAroundLatLng(center, new LatLng({lat: 12.3456, lng: 1.299}), 6, 0.01)).eq(true);
     });
 
-
     it('should MapPositionToLatLng and MapLatLngToPosition', () => {
 
         let point = new Position({x: 0, y: 0});

@@ -199,7 +199,7 @@ export class QualityTools {
         } else {
             return undefined;
         }
-    };
+    }
 
     protected static LabelWithSign(val: number) {
         const value = val;
@@ -210,6 +210,5 @@ export class QualityTools {
         }
         return '+' + value;
     }
-
 
 }

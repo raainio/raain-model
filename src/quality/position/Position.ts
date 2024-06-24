@@ -31,7 +31,6 @@ export class Position {
         this.y = xy.y;
     }
 
-
     getXY(precision?: number): { x: number, y: number } {
         if (typeof precision === 'undefined') {
             return {x: this.x, y: this.y};
