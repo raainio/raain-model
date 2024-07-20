@@ -25,7 +25,7 @@ export class SpeedMatrix {
             yMin: -SpeedMatrix.DEFAULT_MATRIX_RANGE,
             yMax: SpeedMatrix.DEFAULT_MATRIX_RANGE
         },
-        protected roundScale: Position = new Position({x: QualityTools.DEFAULT_SCALE, y: QualityTools.DEFAULT_SCALE})
+        public roundScale: Position = new Position({x: QualityTools.DEFAULT_SCALE, y: QualityTools.DEFAULT_SCALE})
     ) {
     }
 

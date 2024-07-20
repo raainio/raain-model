@@ -23,6 +23,9 @@ export class RainComputation extends RainComputationAbstract {
         date: Date,
         isReady: boolean,
 
+        // TODO latitude: number, // ??
+        // TODO longitude: number,
+
         results: RainPolarMeasureValue[] | RainCartesianMeasureValue[],
 
         links?: Link[] | RaainNode[],

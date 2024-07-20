@@ -3,6 +3,7 @@ import {PositionValue} from './position/PositionValue';
 import {PositionHistory} from './history/PositionHistory';
 import {QualityPoint} from './QualityPoint';
 import {CartesianValue} from '../cartesian/CartesianValue';
+import {RainComputationQuality} from '../rain/RainComputationQuality';
 
 export class SpeedMatrixContainer {
 
@@ -35,6 +36,97 @@ export class SpeedMatrixContainer {
             created.flattenMatrices = json.flattenMatrices;
         }
         return created;
+    }
+
+    static BuildCompares(currentQuality: RainComputationQuality,
+                         previousQuality: RainComputationQuality,
+                         nextQuality: RainComputationQuality,): {
+        name: string,
+        qualityPointsLegacy: QualityPoint[],
+        qualityPoints: QualityPoint[],
+        maxValue: number,
+        remarks: string,
+    }[] {
+        const compares = [];
+        const qualitySpeedMatrixContainer = currentQuality.qualitySpeedMatrixContainer;
+        const compareNames = qualitySpeedMatrixContainer.getMatrices()
+            .map(m => m.name)
+            .sort((a, b) => parseInt(a, 10) - parseInt(b, 10));
+
+        for (const [index, name] of compareNames.entries()) {
+
+            const qualityPointsLegacy = qualitySpeedMatrixContainer.getQualityPoints(name);
+            const maxValue = Math.max(qualitySpeedMatrixContainer.getMaxGauge(), qualitySpeedMatrixContainer.getMaxRain());
+            const remarks = qualitySpeedMatrixContainer.getMatrix(index)?.remarks;
+
+            const delta = parseInt(name, 10);
+            let renamed = new Date(currentQuality.date.getTime() - delta * 60 * 1000).toLocaleString();
+            renamed += delta > 0 ? ' since ' : ' in ';
+            renamed += Math.abs(delta) + ' minutes';
+
+            console.log('index:', index, 'delta:', delta, 'renamed:', renamed);
+
+            // remove previous or next better values from comparePoints
+            let qualityPoints = qualityPointsLegacy.filter((p: any) => p); // no real filter
+
+            const removeDuplicates = true;
+            if (removeDuplicates) {
+                if (index === compareNames.length - 1) {
+                    if (!previousQuality?.qualitySpeedMatrixContainer) {
+                        qualityPoints = [];
+                    } else {
+                        qualityPoints = qualityPoints.filter((p: QualityPoint) => {
+                            const previousQPs = previousQuality.qualitySpeedMatrixContainer
+                                .getQualityPointsByHistoricalPosition(0)
+                                .filter(previousQP => p.gaugeId === previousQP.gaugeId);
+
+                            // better before ?
+                            const betterBefore = (previousQPs.length === 1 && p.getDelta() > previousQPs[0].getDelta());
+                            if (betterBefore) {
+                                console.log('removed from', renamed, p.gaugeLabel, previousQuality.date.toISOString(),
+                                    p.getDelta(),
+                                    previousQPs.length === 1 ? previousQPs[0].getDelta()
+                                        + ' dated ' + previousQPs[0].gaugeDate.toISOString() : 0);
+                                return false; // => remove it
+                            }
+                            return true;
+                        });
+                    }
+                } else if (index === 0) {
+                    if (!nextQuality?.qualitySpeedMatrixContainer) {
+                        qualityPoints = [];
+                    } else {
+                        qualityPoints = qualityPoints.filter((p: QualityPoint) => {
+                            const nextQPs = nextQuality.qualitySpeedMatrixContainer
+                                .getQualityPointsByHistoricalPosition(1)
+                                .filter(nextQP => p.gaugeId === nextQP.gaugeId);
+
+                            // better after ?
+                            const betterAfter = (nextQPs.length === 1 && p.getDelta() > nextQPs[0].getDelta());
+                            if (betterAfter) {
+                                console.log('removed from', renamed, p.gaugeLabel, nextQuality.date.toISOString(),
+                                    p.getDelta(),
+                                    nextQPs.length === 1 ? nextQPs[0].getDelta() + ' dated ' + nextQPs[0].gaugeDate.toISOString() : 0);
+                                return false; // => remove it
+                            }
+                            return true;
+                        });
+                    }
+                }
+            }
+
+            const compare = {
+                name: renamed,
+                qualityPointsLegacy,
+                qualityPoints,
+                maxValue,
+                remarks,
+            };
+
+            compares.push(compare);
+        }
+
+        return compares;
     }
 
     protected static mergeStillComputed(v1: any, v2: any): any {
@@ -172,26 +264,35 @@ export class SpeedMatrixContainer {
 
         this.storeFlattenMatrices();
 
+        let matrixNames = [matrixName];
         if (!matrixName) {
-            matrixName = this.matrices[0].name;
-        }
-
-        if (this.qualityPoints[matrixName]?.length > 0 && this.flattenMatrices.length > 0) {
-            return this.qualityPoints[matrixName];
+            matrixNames = this.matrices.map(m => m.name);
+        } else {
+            if (this.qualityPoints[matrixName]?.length > 0 && this.flattenMatrices.length > 0) {
+                return this.qualityPoints[matrixName];
+            }
         }
 
         let qualityPoints: QualityPoint[] = [];
-        const matricesWithSameName = this.matrices.filter(m => m.name === matrixName);
-        if (matricesWithSameName.length === 1) {
-            qualityPoints = matricesWithSameName[0].getQualityPoints().map(p => new QualityPoint(p));
+        for (const name of matrixNames) {
+            const matricesWithSameName = this.matrices.filter(m => m.name === name);
+            if (matricesWithSameName.length === 1) {
+                const points = matricesWithSameName[0].getQualityPoints().map(p => new QualityPoint(p));
+                qualityPoints = qualityPoints.concat(points);
+
+                // store
+                this.qualityPoints[name] = points;
+            }
         }
 
-        // store
-        this.qualityPoints[matrixName] = qualityPoints;
         return qualityPoints;
     }
 
     getQualityPointsByHistoricalPosition(position: number = 0): QualityPoint[] {
+
+        if (this.matrices.length <= 1) {
+            return [];
+        }
 
         const matrixFound = this.matrices
             .sort((a, b) => parseInt(a.name, 10) - parseInt(b.name, 10))
@@ -355,8 +456,6 @@ export class SpeedMatrixContainer {
 
     merge(speedMatrixContainerToMergeIn: SpeedMatrixContainer) {
 
-        // this.qualityPoints = SpeedMatrixContainer.mergeReduce(this.getQualityPoints(),
-        //    speedMatrixContainerToMergeIn.getQualityPoints());
         this.trustedIndicators = SpeedMatrixContainer.mergeConcat(this.getTrustedIndicators(),
             speedMatrixContainerToMergeIn.getTrustedIndicators());
         this.matrices = SpeedMatrixContainer.mergeConcat(this.matrices,
