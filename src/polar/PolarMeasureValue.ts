@@ -99,16 +99,16 @@ export class PolarMeasureValue implements IPolarMeasureValue {
         azimuthContainer.polarEdges[edgeIndex] = json.value;
     }
 
-    public toJSON(): any {
+    public toJSON() {
         return {
             measureValuePolarContainers: this.measureValuePolarContainers
-        } as any;
+        };
     }
 
-    public toJSONWithPolarStringified(): any {
+    public toJSONWithPolarStringified() {
         return {
             measureValuePolarContainers: this.getPolarsStringified()
-        } as any;
+        };
     }
 
     protected updateIndex(array: Array<any>, index: number): number {

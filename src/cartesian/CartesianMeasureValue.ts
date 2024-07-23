@@ -100,13 +100,13 @@ export class CartesianMeasureValue implements ICartesianMeasureValue {
     getCartesianValueRounded(json: {
         lat: number,
         lng: number,
-        scale: number
+        scale: LatLng
     }): CartesianValue {
         for (const value of this.cartesianValues) {
-            const latRounded1 = Math.round(json.lat / json.scale) * json.scale;
-            const lngRounded1 = Math.round(json.lng / json.scale) * json.scale;
-            const latRounded2 = Math.round(value.lat / json.scale) * json.scale;
-            const lngRounded2 = Math.round(value.lng / json.scale) * json.scale;
+            const latRounded1 = Math.round(json.lat / json.scale.lat) * json.scale.lat;
+            const lngRounded1 = Math.round(json.lng / json.scale.lng) * json.scale.lng;
+            const latRounded2 = Math.round(value.lat / json.scale.lat) * json.scale.lat;
+            const lngRounded2 = Math.round(value.lng / json.scale.lng) * json.scale.lng;
             if (latRounded1 === latRounded2 && lngRounded1 === lngRounded2) {
                 return value;
             }

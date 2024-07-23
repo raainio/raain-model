@@ -5,7 +5,7 @@ import {PolarValue} from './PolarValue';
 
 export class AbstractPolarMeasureValue implements IPolarMeasureValue {
 
-    protected polarMeasureValue: PolarMeasureValue;
+    public polarMeasureValue: PolarMeasureValue;
 
     constructor(json: {
         polarMeasureValue: AbstractPolarMeasureValue | PolarMeasureValue | string
@@ -112,10 +112,9 @@ export class AbstractPolarMeasureValue implements IPolarMeasureValue {
             polarMeasureValue = JSON.stringify(this.polarMeasureValue.toJSONWithPolarStringified());
         }
 
-        const json: any = {
+        return {
             polarMeasureValue,
         };
-        return json;
     }
 
     public toJSONWithPolarStringified(): any {
