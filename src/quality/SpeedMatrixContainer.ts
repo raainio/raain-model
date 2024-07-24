@@ -305,8 +305,8 @@ export class SpeedMatrixContainer {
         return [];
     }
 
-    getMaxGauge(): number {
-        const qualityPoints = this.getQualityPoints();
+    getMaxGauge(matrixName?: string): number {
+        const qualityPoints = this.getQualityPoints(matrixName);
         let max = -1;
         for (const p of qualityPoints) {
             max = Math.max(max, p.getGaugeValue());
@@ -314,8 +314,8 @@ export class SpeedMatrixContainer {
         return max;
     }
 
-    getMaxRain(): number {
-        const qualityPoints = this.getQualityPoints();
+    getMaxRain(matrixName?: string): number {
+        const qualityPoints = this.getQualityPoints(matrixName);
         let max = -1;
         for (const p of qualityPoints) {
             max = Math.max(max, p.getRainValue());
@@ -327,8 +327,8 @@ export class SpeedMatrixContainer {
      * Get summed quality indicator (0 ideally)
      *  @link SpeedMatrix.ComputeQualityIndicator
      */
-    getQuality(): number {
-        const qualityPoints = this.getQualityPoints();
+    getQuality(matrixName?: string): number {
+        const qualityPoints = this.getQualityPoints(matrixName);
         return SpeedMatrix.ComputeQualityIndicator(qualityPoints);
     }
 

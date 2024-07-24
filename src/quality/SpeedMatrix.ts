@@ -270,12 +270,10 @@ export class SpeedMatrix {
 
         // same position => add value
         for (const qualityPoint of this.qualityPoints) {
-            const ratio = qualityPoint.getRatio();
-            const cartesianValue = new CartesianValue({
-                value: ratio,
-                lat: qualityPoint.getRainLat() - qualityPoint.gaugeCartesianValue.lat,
-                lng: qualityPoint.getRainLng() - qualityPoint.gaugeCartesianValue.lng,
-            });
+            const value = qualityPoint.getRatio();
+            const lat = qualityPoint.getRainLat() - qualityPoint.gaugeCartesianValue.lat;
+            const lng = qualityPoint.getRainLng() - qualityPoint.gaugeCartesianValue.lng;
+            const cartesianValue = new CartesianValue({value, lat, lng});
             const position = QualityTools.MapLatLngToPosition(cartesianValue, false, new LatLng({
                 lat: QualityTools.DEFAULT_SCALE,
                 lng: QualityTools.DEFAULT_SCALE
