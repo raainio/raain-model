@@ -40,7 +40,8 @@ export class SpeedMatrixContainer {
 
     static BuildCompares(currentQuality: RainComputationQuality,
                          previousQuality: RainComputationQuality,
-                         nextQuality: RainComputationQuality,): {
+                         nextQuality: RainComputationQuality,
+                         removeDuplicates = true): {
         name: string,
         qualityPointsLegacy: QualityPoint[],
         qualityPoints: QualityPoint[],
@@ -69,7 +70,6 @@ export class SpeedMatrixContainer {
             // remove previous or next better values from comparePoints
             let qualityPoints = qualityPointsLegacy.filter((p: any) => p); // no real filter
 
-            const removeDuplicates = true;
             if (removeDuplicates) {
                 if (index === compareNames.length - 1) {
                     if (!previousQuality?.qualitySpeedMatrixContainer) {
