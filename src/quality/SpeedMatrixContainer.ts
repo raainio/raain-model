@@ -65,7 +65,7 @@ export class SpeedMatrixContainer {
             renamed += delta > 0 ? ' since ' : ' in ';
             renamed += Math.abs(delta) + ' minutes';
 
-            console.log('index:', index, 'delta:', delta, 'renamed:', renamed);
+            // console.log('index:', index, 'delta:', delta, 'renamed:', renamed);
 
             // remove previous or next better values from comparePoints
             let qualityPoints = qualityPointsLegacy.filter((p: any) => p); // no real filter
@@ -83,10 +83,10 @@ export class SpeedMatrixContainer {
                             // better before ?
                             const betterBefore = (previousQPs.length === 1 && p.getDelta() > previousQPs[0].getDelta());
                             if (betterBefore) {
-                                console.log('removed from', renamed, p.gaugeLabel, previousQuality.date.toISOString(),
-                                    p.getDelta(),
-                                    previousQPs.length === 1 ? previousQPs[0].getDelta()
-                                        + ' dated ' + previousQPs[0].gaugeDate.toISOString() : 0);
+                                // console.log('removed from', renamed, p.gaugeLabel, previousQuality.date.toISOString(),
+                                //     p.getDelta(),
+                                //     previousQPs.length === 1 ? previousQPs[0].getDelta()
+                                //         + ' dated ' + previousQPs[0].gaugeDate.toISOString() : 0);
                                 return false; // => remove it
                             }
                             return true;
@@ -104,9 +104,9 @@ export class SpeedMatrixContainer {
                             // better after ?
                             const betterAfter = (nextQPs.length === 1 && p.getDelta() > nextQPs[0].getDelta());
                             if (betterAfter) {
-                                console.log('removed from', renamed, p.gaugeLabel, nextQuality.date.toISOString(),
-                                    p.getDelta(),
-                                    nextQPs.length === 1 ? nextQPs[0].getDelta() + ' dated ' + nextQPs[0].gaugeDate.toISOString() : 0);
+                                // console.log('removed from', renamed, p.gaugeLabel, nextQuality.date.toISOString(),
+                                //     p.getDelta(),
+                                //     nextQPs.length === 1 ? nextQPs[0].getDelta() + ' dated ' + nextQPs[0].gaugeDate.toISOString() : 0);
                                 return false; // => remove it
                             }
                             return true;
