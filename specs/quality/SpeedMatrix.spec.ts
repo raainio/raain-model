@@ -86,7 +86,7 @@ describe('SpeedMatrix', () => {
         const roundScale: Position = new Position({x: QualityTools.DEFAULT_SCALE, y: QualityTools.DEFAULT_SCALE});
 
         const flattenPositionRange = {xMin: -4, xMax: 4, yMin: -4, yMax: 4};
-        const speedMatrix1 = new SpeedMatrix('1', '', qualityPoints1, speed, 1, flattenPositionRange, roundScale);
+        const speedMatrix1 = new SpeedMatrix('0', '', qualityPoints1, speed, 1, flattenPositionRange, roundScale);
         const qualitySpeedMatrixContainer1 = new SpeedMatrixContainer({matrices: [speedMatrix1]});
 
         // Verify creation
@@ -112,7 +112,7 @@ describe('SpeedMatrix', () => {
         qp.gaugeCartesianValue.value += 0.2;
         const qualityPoint3 = new QualityPoint(JSON.parse(JSON.stringify(qp)));
         const qualityPoints3: QualityPoint[] = [qualityPoint2, qualityPoint3];
-        const speedMatrix3 = new SpeedMatrix('3', '', qualityPoints3, speed, 1, flattenPositionRange, roundScale);
+        const speedMatrix3 = new SpeedMatrix('-3', '', qualityPoints3, speed, 1, flattenPositionRange, roundScale);
         const qualitySpeedMatrixContainer3 = new SpeedMatrixContainer({matrices: [speedMatrix3]});
         qualitySpeedMatrixContainer2.merge(qualitySpeedMatrixContainer3);
 
@@ -126,9 +126,9 @@ describe('SpeedMatrix', () => {
         expect(qps[0].getGaugeValue()).eq(10);
         expect(qps[0].getRainValue()).eq(10.5);
 
-        expect(qualitySpeedMatrixContainer2.getQualityPoints('1').length).eq(1);
-        expect(qualitySpeedMatrixContainer2.getQualityPoints('1')[0].getGaugeValue()).eq(10);
-        expect(qualitySpeedMatrixContainer2.getQualityPoints('1')[0].getRainValue()).eq(10.5);
+        expect(qualitySpeedMatrixContainer2.getQualityPoints('0').length).eq(1);
+        expect(qualitySpeedMatrixContainer2.getQualityPoints('0')[0].getGaugeValue()).eq(10);
+        expect(qualitySpeedMatrixContainer2.getQualityPoints('0')[0].getRainValue()).eq(10.5);
 
         expect(qualitySpeedMatrixContainer2.getQualityPoints('2').length).eq(2);
         expect(qualitySpeedMatrixContainer2.getQualityPoints('2')[0].getGaugeValue()).eq(10);
@@ -137,47 +137,40 @@ describe('SpeedMatrix', () => {
         // build compare
         const rainComputationQuality1 = new RainComputationQuality({
             id: 'rcq1',
-            date: new Date(1),
+            date: new Date(100000),
             isReady: true,
             qualitySpeedMatrixContainer: new SpeedMatrixContainer({matrices: [speedMatrix1, speedMatrix2]})
         });
         const rainComputationQuality2 = new RainComputationQuality({
             id: 'rcq2',
-            date: new Date(2),
+            date: new Date(200000),
             isReady: true,
             qualitySpeedMatrixContainer: qualitySpeedMatrixContainer2
         });
         const rainComputationQuality3 = new RainComputationQuality({
             id: 'rcq3',
-            date: new Date(3),
+            date: new Date(300000),
             isReady: true,
             qualitySpeedMatrixContainer: new SpeedMatrixContainer({matrices: [speedMatrix2, speedMatrix3]})
         });
-        const compares = SpeedMatrixContainer.BuildCompares([new Date(1), new Date(2), new Date(3)],
-            [rainComputationQuality1, rainComputationQuality2, rainComputationQuality3]);
+        const compares = SpeedMatrixContainer.BuildCompares([rainComputationQuality1, rainComputationQuality2, rainComputationQuality3]);
+
         expect(compares.comparesPerDate.length).eq(3);
-        expect(compares.comparesPerDate[0].date.getTime()).eq(1);
-        expect(compares.comparesPerDate[1].date.getTime()).eq(2);
-        expect(compares.comparesPerDate[2].date.getTime()).eq(3);
+        expect(compares.comparesPerDate[0].date.getTime()).eq(100000);
+        expect(compares.comparesPerDate[1].date.getTime()).eq(200000);
+        expect(compares.comparesPerDate[2].date.getTime()).eq(300000);
 
-        expect(compares.comparesPerDate[0].compareTimeline.length).eq(2);
-        expect(compares.comparesPerDate[1].compareTimeline.length).eq(3);
-        expect(compares.comparesPerDate[2].compareTimeline.length).eq(2);
+        expect(compares.comparesPerDate[0].compareTimeline.length).eq(1);
+        expect(compares.comparesPerDate[1].compareTimeline.length).eq(1);
+        expect(compares.comparesPerDate[2].compareTimeline.length).eq(1);
 
-
-        expect(compares.comparesPerDate[0].compareTimeline[0].name).contains('since 1');
-        expect(compares.comparesPerDate[1].compareTimeline[0].name).contains('since 1');
+        expect(compares.comparesPerDate[0].compareTimeline[0].name).contains('in 0');
+        expect(compares.comparesPerDate[1].compareTimeline[0].name).contains('in 0');
         expect(compares.comparesPerDate[2].compareTimeline[0].name).contains('since 2');
-        expect(compares.comparesPerDate[0].compareTimeline[1].name).contains('since 2');
-        expect(compares.comparesPerDate[2].compareTimeline[1].name).contains('since 3');
 
-        expect(compares.comparesPerDate[0].compareTimeline[0].qualityPoints.length).eq(0);
+        expect(compares.comparesPerDate[0].compareTimeline[0].qualityPoints.length).eq(1);
         expect(compares.comparesPerDate[1].compareTimeline[0].qualityPoints.length).eq(0);
-        expect(compares.comparesPerDate[2].compareTimeline[0].qualityPoints.length).eq(0);
-
-        expect(compares.comparesPerDate[0].compareTimeline[1].qualityPoints.length).eq(1);
-        expect(compares.comparesPerDate[1].compareTimeline[1].qualityPoints.length).eq(0);
-        expect(compares.comparesPerDate[2].compareTimeline[1].qualityPoints.length).eq(0);
+        expect(compares.comparesPerDate[2].compareTimeline[0].qualityPoints.length).eq(1);
 
     });
 

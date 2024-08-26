@@ -58,15 +58,14 @@ export class SpeedMatrixContainer {
         return created;
     }
 
-    static BuildCompares(dates: Date[],
-                         qualities: RainComputationQuality[],
+    static BuildCompares(qualities: RainComputationQuality[],
                          removeDuplicates = true): ICompares {
         const qualitiesSorted = qualities
             .sort((a, b) => a.date.getTime() - b.date.getTime());
         const comparesPerDate: IComparePerDate[] = [];
         const compareCumulative: ICompare = {
-            name: 'cumulative_' + dates.reduce((p, c) => p + '_' + c.toISOString(), ''),
-            date: dates[0],
+            name: 'cumulative_' + qualities.reduce((p, rcq) => p + '_' + rcq.date.toISOString(), ''),
+            date: qualities[0]?.date,
             qualityPointsLegacy: [],
             qualityPoints: [],
             maxValue: 0,
@@ -74,25 +73,30 @@ export class SpeedMatrixContainer {
         };
         const minDeltaPerDate_GaugeId = {};
 
-        // build timelines and store
-        for (const current of qualitiesSorted) {
-            const compareTimeline = SpeedMatrixContainer.BuildCompareTimeline(current);
-            const datesIn = dates.filter(d => d.getTime() === current.date.getTime());
-            if (datesIn.length === 1) {
-                comparesPerDate.push({
-                    date: current.date,
-                    rainComputationQuality: current,
-                    compareTimeline
-                });
+        let dateMin = new Date();
+        let dateMax = new Date();
+        if (qualitiesSorted.length > 0) {
+            dateMin = qualitiesSorted[0].date;
+            dateMax = qualitiesSorted[qualitiesSorted.length - 1].date;
+        }
 
-                const qualityPoints: QualityPoint[] = compareTimeline.reduce((p, a) => p.concat(a.qualityPoints), []);
-                for (const qualityPoint of qualityPoints) {
-                    const key = qualityPoint.gaugeDate.toISOString() + '_' + qualityPoint.gaugeId;
-                    if (!minDeltaPerDate_GaugeId[key]) {
-                        minDeltaPerDate_GaugeId[key] = qualityPoint.getDelta();
-                    }
-                    minDeltaPerDate_GaugeId[key] = Math.min(minDeltaPerDate_GaugeId[key], qualityPoint.getDelta());
+        // build timelines and store
+        for (const rainComputationQuality of qualitiesSorted) {
+            const compareTimeline = SpeedMatrixContainer.BuildCompareTimeline(rainComputationQuality, dateMin, dateMax);
+
+            comparesPerDate.push({
+                date: rainComputationQuality.date,
+                rainComputationQuality,
+                compareTimeline
+            });
+
+            const qualityPoints: QualityPoint[] = compareTimeline.reduce((p, a) => p.concat(a.qualityPoints), []);
+            for (const qualityPoint of qualityPoints) {
+                const key = qualityPoint.gaugeDate.toISOString() + '_' + qualityPoint.gaugeId;
+                if (!minDeltaPerDate_GaugeId[key]) {
+                    minDeltaPerDate_GaugeId[key] = qualityPoint.getDelta();
                 }
+                minDeltaPerDate_GaugeId[key] = Math.min(minDeltaPerDate_GaugeId[key], qualityPoint.getDelta());
             }
         }
 
@@ -134,7 +138,7 @@ export class SpeedMatrixContainer {
         return {comparesPerDate, compareCumulative};
     }
 
-    static BuildCompareTimeline(currentQuality: RainComputationQuality): ICompare[] {
+    static BuildCompareTimeline(currentQuality: RainComputationQuality, dateMin: Date, dateMax: Date): ICompare[] {
         const compares: ICompare[] = [];
         const qualitySpeedMatrixContainer = currentQuality.qualitySpeedMatrixContainer;
         if (!qualitySpeedMatrixContainer) {
@@ -153,21 +157,25 @@ export class SpeedMatrixContainer {
 
             const delta = parseInt(name, 10);
             const compareDate = new Date(currentQuality.date.getTime() - delta * 60 * 1000);
-            let renamed = compareDate.toLocaleString();
-            renamed += delta > 0 ? ' since ' : ' in ';
-            renamed += Math.abs(delta) + ' minutes';
-            const qualityPoints = qualityPointsLegacy.filter((p: any) => p); // no real filter
 
-            const compare: ICompare = {
-                name: renamed,
-                date: compareDate,
-                qualityPointsLegacy,
-                qualityPoints,
-                maxValue,
-                remarks,
-            };
+            if (dateMin.getTime() <= compareDate.getTime() && compareDate.getTime() <= dateMax.getTime()) {
 
-            compares.push(compare);
+                let renamed = compareDate.toLocaleString();
+                renamed += delta > 0 ? ' since ' : ' in ';
+                renamed += Math.abs(delta) + ' minutes';
+                const qualityPoints = qualityPointsLegacy.filter((p: any) => p); // no real filter
+
+                const compare: ICompare = {
+                    name: renamed,
+                    date: compareDate,
+                    qualityPointsLegacy,
+                    qualityPoints,
+                    maxValue,
+                    remarks,
+                };
+
+                compares.push(compare);
+            }
         }
 
         return compares;
