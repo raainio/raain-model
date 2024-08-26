@@ -11,4 +11,5 @@
   Rain zone is composed by LatLng rects,
   No more period usage (date preferred).
 - 2.1.x : RainComputationQuality extended with rainComputation's link,
-  getQualityPointsByHistoricalPosition method. 
+  getQualityPointsByHistoricalPosition method.
+- 2.2.x : BuildCompares refactored

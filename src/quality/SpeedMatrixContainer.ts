@@ -5,6 +5,26 @@ import {QualityPoint} from './QualityPoint';
 import {CartesianValue} from '../cartesian/CartesianValue';
 import {RainComputationQuality} from '../rain/RainComputationQuality';
 
+export interface ICompares {
+    comparesPerDate: IComparePerDate[],
+    compareCumulative: ICompare,
+}
+
+export interface IComparePerDate {
+    date: Date,
+    rainComputationQuality: RainComputationQuality,
+    compareTimeline: ICompare[],
+}
+
+export interface ICompare {
+    name: string,
+    date: Date,
+    qualityPointsLegacy: QualityPoint[],
+    qualityPoints: QualityPoint[],
+    maxValue: number,
+    remarks: string,
+}
+
 export class SpeedMatrixContainer {
 
     protected qualityPoints: any;
@@ -21,7 +41,7 @@ export class SpeedMatrixContainer {
         this.matrices = json.matrices;
     }
 
-    public static CreateFromJson(json: any): SpeedMatrixContainer {
+    static CreateFromJson(json: any): SpeedMatrixContainer {
         const created = new SpeedMatrixContainer({matrices: []});
         if (json?.qualityPoints) {
             created.qualityPoints = json.qualityPoints;
@@ -38,18 +58,89 @@ export class SpeedMatrixContainer {
         return created;
     }
 
-    static BuildCompares(currentQuality: RainComputationQuality,
-                         previousQuality: RainComputationQuality,
-                         nextQuality: RainComputationQuality,
-                         removeDuplicates = true): {
-        name: string,
-        qualityPointsLegacy: QualityPoint[],
-        qualityPoints: QualityPoint[],
-        maxValue: number,
-        remarks: string,
-    }[] {
-        const compares = [];
+    static BuildCompares(dates: Date[],
+                         qualities: RainComputationQuality[],
+                         removeDuplicates = true): ICompares {
+        const qualitiesSorted = qualities
+            .sort((a, b) => a.date.getTime() - b.date.getTime());
+        const comparesPerDate: IComparePerDate[] = [];
+        const compareCumulative: ICompare = {
+            name: 'cumulative_' + dates.reduce((p, c) => p + '_' + c.toISOString(), ''),
+            date: dates[0],
+            qualityPointsLegacy: [],
+            qualityPoints: [],
+            maxValue: 0,
+            remarks: '',
+        };
+        const minDeltaPerDate_GaugeId = {};
+
+        // build timelines and store
+        for (const current of qualitiesSorted) {
+            const compareTimeline = SpeedMatrixContainer.BuildCompareTimeline(current);
+            const datesIn = dates.filter(d => d.getTime() === current.date.getTime());
+            if (datesIn.length === 1) {
+                comparesPerDate.push({
+                    date: current.date,
+                    rainComputationQuality: current,
+                    compareTimeline
+                });
+
+                const qualityPoints: QualityPoint[] = compareTimeline.reduce((p, a) => p.concat(a.qualityPoints), []);
+                for (const qualityPoint of qualityPoints) {
+                    const key = qualityPoint.gaugeDate.toISOString() + '_' + qualityPoint.gaugeId;
+                    if (!minDeltaPerDate_GaugeId[key]) {
+                        minDeltaPerDate_GaugeId[key] = qualityPoint.getDelta();
+                    }
+                    minDeltaPerDate_GaugeId[key] = Math.min(minDeltaPerDate_GaugeId[key], qualityPoint.getDelta());
+                }
+            }
+        }
+
+        // loop and search for unique points
+        const qualityPointToUsePerDate_GaugeId = {};
+        comparesPerDate.forEach(compare => {
+            compare.compareTimeline.forEach(timeline => {
+                for (let i = timeline.qualityPoints.length - 1; i >= 0; i--) {
+                    const qualityPoint = timeline.qualityPoints[i];
+                    const key = qualityPoint.gaugeDate.toISOString() + '_' + qualityPoint.gaugeId;
+                    if (!qualityPointToUsePerDate_GaugeId[key] && minDeltaPerDate_GaugeId[key]
+                        && minDeltaPerDate_GaugeId[key] === qualityPoint.getDelta()) {
+                        qualityPointToUsePerDate_GaugeId[key] = qualityPoint;
+                    } else {
+                        if (removeDuplicates) {
+                            timeline.qualityPoints.splice(i, 1);
+                        }
+                    }
+                }
+            });
+        });
+
+        // compute cumulative based on unique points
+        const qualityPointPerGaugeId = {};
+        for (const qp of Object.values(qualityPointToUsePerDate_GaugeId)) {
+            const qualityPoint = qp as QualityPoint;
+            if (!qualityPointPerGaugeId[qualityPoint.gaugeId]) {
+                qualityPointPerGaugeId[qualityPoint.gaugeId] = QualityPoint.CreateFromJSON(qualityPoint);
+            } else {
+                qualityPointPerGaugeId[qualityPoint.gaugeId].accumulateValues(qualityPoint);
+            }
+        }
+
+        compareCumulative.qualityPoints = Object.values(qualityPointPerGaugeId);
+        const maxRain = Math.max(...compareCumulative.qualityPoints.map(p => p.getRainValue()));
+        const maxGauge = Math.max(...compareCumulative.qualityPoints.map(p => p.getGaugeValue()));
+        compareCumulative.maxValue = Math.max(maxRain, maxGauge);
+
+        return {comparesPerDate, compareCumulative};
+    }
+
+    static BuildCompareTimeline(currentQuality: RainComputationQuality): ICompare[] {
+        const compares: ICompare[] = [];
         const qualitySpeedMatrixContainer = currentQuality.qualitySpeedMatrixContainer;
+        if (!qualitySpeedMatrixContainer) {
+            return compares;
+        }
+
         const compareNames = qualitySpeedMatrixContainer.getMatrices()
             .map(m => m.name)
             .sort((a, b) => parseInt(a, 10) - parseInt(b, 10));
@@ -61,62 +152,15 @@ export class SpeedMatrixContainer {
             const remarks = qualitySpeedMatrixContainer.getMatrix(index)?.remarks;
 
             const delta = parseInt(name, 10);
-            let renamed = new Date(currentQuality.date.getTime() - delta * 60 * 1000).toLocaleString();
+            const compareDate = new Date(currentQuality.date.getTime() - delta * 60 * 1000);
+            let renamed = compareDate.toLocaleString();
             renamed += delta > 0 ? ' since ' : ' in ';
             renamed += Math.abs(delta) + ' minutes';
+            const qualityPoints = qualityPointsLegacy.filter((p: any) => p); // no real filter
 
-            // console.log('index:', index, 'delta:', delta, 'renamed:', renamed);
-
-            // remove previous or next better values from comparePoints
-            let qualityPoints = qualityPointsLegacy.filter((p: any) => p); // no real filter
-
-            if (removeDuplicates) {
-                if (index === compareNames.length - 1) {
-                    if (!previousQuality?.qualitySpeedMatrixContainer) {
-                        qualityPoints = [];
-                    } else {
-                        qualityPoints = qualityPoints.filter((p: QualityPoint) => {
-                            const previousQPs = previousQuality.qualitySpeedMatrixContainer
-                                .getQualityPointsByHistoricalPosition(0)
-                                .filter(previousQP => p.gaugeId === previousQP.gaugeId);
-
-                            // better before ?
-                            const betterBefore = (previousQPs.length === 1 && p.getDelta() > previousQPs[0].getDelta());
-                            if (betterBefore) {
-                                // console.log('removed from', renamed, p.gaugeLabel, previousQuality.date.toISOString(),
-                                //     p.getDelta(),
-                                //     previousQPs.length === 1 ? previousQPs[0].getDelta()
-                                //         + ' dated ' + previousQPs[0].gaugeDate.toISOString() : 0);
-                                return false; // => remove it
-                            }
-                            return true;
-                        });
-                    }
-                } else if (index === 0) {
-                    if (!nextQuality?.qualitySpeedMatrixContainer) {
-                        qualityPoints = [];
-                    } else {
-                        qualityPoints = qualityPoints.filter((p: QualityPoint) => {
-                            const nextQPs = nextQuality.qualitySpeedMatrixContainer
-                                .getQualityPointsByHistoricalPosition(1)
-                                .filter(nextQP => p.gaugeId === nextQP.gaugeId);
-
-                            // better after ?
-                            const betterAfter = (nextQPs.length === 1 && p.getDelta() > nextQPs[0].getDelta());
-                            if (betterAfter) {
-                                // console.log('removed from', renamed, p.gaugeLabel, nextQuality.date.toISOString(),
-                                //     p.getDelta(),
-                                //     nextQPs.length === 1 ? nextQPs[0].getDelta() + ' dated ' + nextQPs[0].gaugeDate.toISOString() : 0);
-                                return false; // => remove it
-                            }
-                            return true;
-                        });
-                    }
-                }
-            }
-
-            const compare = {
+            const compare: ICompare = {
                 name: renamed,
+                date: compareDate,
                 qualityPointsLegacy,
                 qualityPoints,
                 maxValue,

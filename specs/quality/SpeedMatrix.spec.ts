@@ -137,31 +137,47 @@ describe('SpeedMatrix', () => {
         // build compare
         const rainComputationQuality1 = new RainComputationQuality({
             id: 'rcq1',
-            date: new Date(),
+            date: new Date(1),
             isReady: true,
             qualitySpeedMatrixContainer: new SpeedMatrixContainer({matrices: [speedMatrix1, speedMatrix2]})
         });
         const rainComputationQuality2 = new RainComputationQuality({
-            id: 'rcq1',
-            date: new Date(),
+            id: 'rcq2',
+            date: new Date(2),
             isReady: true,
             qualitySpeedMatrixContainer: qualitySpeedMatrixContainer2
         });
         const rainComputationQuality3 = new RainComputationQuality({
-            id: 'rcq1',
-            date: new Date(),
+            id: 'rcq3',
+            date: new Date(3),
             isReady: true,
             qualitySpeedMatrixContainer: new SpeedMatrixContainer({matrices: [speedMatrix2, speedMatrix3]})
         });
-        const compares = SpeedMatrixContainer.BuildCompares(rainComputationQuality2,
-            rainComputationQuality1, rainComputationQuality3);
-        expect(compares.length).eq(3);
-        expect(compares[0].qualityPoints.length).eq(0);
-        expect(compares[1].qualityPoints.length).eq(2);
-        expect(compares[2].qualityPoints.length).eq(2);
-        expect(compares[0].name).contains('since 1');
-        expect(compares[1].name).contains('since 2');
-        expect(compares[2].name).contains('since 3');
+        const compares = SpeedMatrixContainer.BuildCompares([new Date(1), new Date(2), new Date(3)],
+            [rainComputationQuality1, rainComputationQuality2, rainComputationQuality3]);
+        expect(compares.comparesPerDate.length).eq(3);
+        expect(compares.comparesPerDate[0].date.getTime()).eq(1);
+        expect(compares.comparesPerDate[1].date.getTime()).eq(2);
+        expect(compares.comparesPerDate[2].date.getTime()).eq(3);
+
+        expect(compares.comparesPerDate[0].compareTimeline.length).eq(2);
+        expect(compares.comparesPerDate[1].compareTimeline.length).eq(3);
+        expect(compares.comparesPerDate[2].compareTimeline.length).eq(2);
+
+
+        expect(compares.comparesPerDate[0].compareTimeline[0].name).contains('since 1');
+        expect(compares.comparesPerDate[1].compareTimeline[0].name).contains('since 1');
+        expect(compares.comparesPerDate[2].compareTimeline[0].name).contains('since 2');
+        expect(compares.comparesPerDate[0].compareTimeline[1].name).contains('since 2');
+        expect(compares.comparesPerDate[2].compareTimeline[1].name).contains('since 3');
+
+        expect(compares.comparesPerDate[0].compareTimeline[0].qualityPoints.length).eq(0);
+        expect(compares.comparesPerDate[1].compareTimeline[0].qualityPoints.length).eq(0);
+        expect(compares.comparesPerDate[2].compareTimeline[0].qualityPoints.length).eq(0);
+
+        expect(compares.comparesPerDate[0].compareTimeline[1].qualityPoints.length).eq(1);
+        expect(compares.comparesPerDate[1].compareTimeline[1].qualityPoints.length).eq(0);
+        expect(compares.comparesPerDate[2].compareTimeline[1].qualityPoints.length).eq(0);
 
     });
 
