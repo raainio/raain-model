@@ -26,27 +26,34 @@ describe('Radar', () => {
 
         const measureValuePolarContainer = new MeasureValuePolarContainer({azimuth: 0, distance: 1, polarEdges: [33, 45.5]});
         const polarMeasureValue = new PolarMeasureValue({measureValuePolarContainers: [measureValuePolarContainer]});
-        const radarPolarMeasureValue1 = new RadarPolarMeasureValue({polarMeasureValue});
+        const radarPolarMeasureValue1 = new RadarPolarMeasureValue({polarMeasureValue, angle: 1, axis: 0});
         expect(radarPolarMeasureValue1.getAzimuthsCount()).equal(1);
 
-        const radarPolarMeasureValue2 = new RadarPolarMeasureValue({polarMeasureValue: radarPolarMeasureValue1});
+        const radarPolarMeasureValue2 = new RadarPolarMeasureValue({polarMeasureValue: radarPolarMeasureValue1, angle: 1, axis: 0});
         expect(radarPolarMeasureValue1.getPolarEdgesCount()).equal(2);
         expect(JSON.stringify(radarPolarMeasureValue2.toJSON(true))).eq(JSON.stringify(radarPolarMeasureValue1.toJSON(true)));
-        expect(JSON.stringify(radarPolarMeasureValue2.toJSON(true))).eq('{"polarMeasureValue":"{\\"measureValuePolarContainers\\":\\"[{\\\\\\"azimuth\\\\\\":0,\\\\\\"distance\\\\\\":1,\\\\\\"polarEdges\\\\\\":[33,45.5]}]\\"}"}');
+        expect(JSON.stringify(radarPolarMeasureValue2.toJSON(true))).eq('{"polarMeasureValue":"{\\"measureValuePolarContainers\\":\\"[{\\\\\\"azimuth\\\\\\":0,\\\\\\"distance\\\\\\":1,\\\\\\"polarEdges\\\\\\":[33,45.5]}]\\"}","angle":1,"axis":0}');
 
-        const radarPolarMeasureValue3 = new RadarPolarMeasureValue({polarMeasureValue: radarPolarMeasureValue1.getPolarsStringified()});
+        const radarPolarMeasureValue3 = new RadarPolarMeasureValue({
+            polarMeasureValue: radarPolarMeasureValue1.getPolarsStringified(),
+            angle: 1,
+            axis: 0
+        });
         expect(radarPolarMeasureValue3.getPolarEdgesCount()).equal(2);
         expect(JSON.stringify(radarPolarMeasureValue3.toJSON(true))).eq(JSON.stringify(radarPolarMeasureValue1.toJSON(true)));
-        expect(JSON.stringify(radarPolarMeasureValue3.toJSON(true))).eq('{"polarMeasureValue":"{\\"measureValuePolarContainers\\":\\"[{\\\\\\"azimuth\\\\\\":0,\\\\\\"distance\\\\\\":1,\\\\\\"polarEdges\\\\\\":[33,45.5]}]\\"}"}');
+        expect(JSON.stringify(radarPolarMeasureValue3.toJSON(true))).eq('{"polarMeasureValue":"{\\"measureValuePolarContainers\\":\\"[{\\\\\\"azimuth\\\\\\":0,\\\\\\"distance\\\\\\":1,\\\\\\"polarEdges\\\\\\":[33,45.5]}]\\"}","angle":1,"axis":0}');
 
         const radarMeasure = new RadarMeasure({id: 'measureId', values: [polarMeasureValue], date: new Date(100000)});
         expect(JSON.stringify(radarMeasure.toJSON())).eq('{"id":"measureId","links":[],"date":"1970-01-01T00:01:40.000Z","validity":-1,"values":[{"measureValuePolarContainers":[{"azimuth":0,"distance":1,"polarEdges":[33,45.5]}]}]}');
 
         const polarMeasureValue1 = radarMeasure.values[0] as PolarMeasureValue;
-        const radarPolarMeasureValue4 = new RadarPolarMeasureValue({polarMeasureValue: polarMeasureValue1});
-        expect(JSON.stringify(radarPolarMeasureValue4.toJSON())).eq('{"polarMeasureValue":{"measureValuePolarContainers":[{"azimuth":0,"distance":1,"polarEdges":[33,45.5]}]}}');
+        const radarPolarMeasureValue4 = new RadarPolarMeasureValue({polarMeasureValue: polarMeasureValue1, angle: 1, axis: 0});
+        expect(JSON.stringify(radarPolarMeasureValue4.toJSON())).eq('{"polarMeasureValue":{"measureValuePolarContainers":[{"azimuth":0,"distance":1,"polarEdges":[33,45.5]}]},"angle":1,"axis":0}');
 
-        const radarPolarMeasureValue5 = new RadarPolarMeasureValue({polarMeasureValue: JSON.stringify(radarMeasure.values[0])});
+        const radarPolarMeasureValue5 = new RadarPolarMeasureValue({
+            polarMeasureValue: JSON.stringify(radarMeasure.values[0]),
+            angle: 1, axis: 90
+        });
         expect(radarPolarMeasureValue5.getAzimuthsCount()).equal(1);
 
 

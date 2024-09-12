@@ -5,7 +5,7 @@ describe('Organization', () => {
 
     it('should create ones', () => {
         const user1 = new PeopleNode({
-            id: 'uid1', role: 'user', email: 'user1@null.com', name: 'user1', comments: 'extra info...'
+            id: 'uid1', role: 'user', email: 'user1@null.com', name: 'user1'
         });
         const team1 = new TeamNode({
             id: 'tid1',

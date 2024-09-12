@@ -19,6 +19,8 @@ export class RainNode extends RaainNode {
     public status: number;
     public quality: number;
     public latLngRectsAsJSON: string;
+
+    // internal
     private configurationAsJSON: string;
 
     constructor(json: {

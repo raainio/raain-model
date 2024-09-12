@@ -33,8 +33,7 @@ export class AbstractPolarMeasureValue implements IPolarMeasureValue {
 
         let polarMeasure = polarMeasureValue;
         if (polarMeasureValue
-            && typeof polarMeasureValue['polarMeasureValue'] !== 'undefined'
-            && typeof polarMeasureValue['angle'] !== 'undefined') {
+            && typeof polarMeasureValue['polarMeasureValue'] !== 'undefined') {
             polarMeasure = polarMeasureValue['polarMeasureValue'];
         }
 

@@ -14,6 +14,8 @@ export class GaugeNode extends RaainNode {
     public latitude: number;
     public longitude: number;
     public team: TeamNode;
+
+    // internal
     private configurationAsJSON: string;
 
     constructor(json: {

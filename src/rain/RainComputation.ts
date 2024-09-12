@@ -13,21 +13,15 @@ export class RainComputation extends RainComputationAbstract {
 
     public static TYPE = 'rain-computation';
 
-    // why array ? because you can have different angle from the Radar
+    // why "results" ? because "values" came from Measure.values, "results" came from computation
+    // why array ? because you can have different angle/axis from the Radar
     public results: RainPolarMeasureValue[] | RainCartesianMeasureValue[];
-
-    // not "values" (aka Measure.values), but "results" from computation
 
     constructor(json: {
         id: string,
         date: Date,
         isReady: boolean,
-
-        // TODO latitude: number, // ??
-        // TODO longitude: number,
-
         results: RainPolarMeasureValue[] | RainCartesianMeasureValue[],
-
         links?: Link[] | RaainNode[],
         version?: string,
         quality?: number,

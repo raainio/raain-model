@@ -12,7 +12,7 @@ export class RadarMeasure extends Measure {
 
     constructor(json: {
                     id: string,
-                    values: IPolarMeasureValue[] | ICartesianMeasureValue[] | Measure[] | number[],
+                    values: IPolarMeasureValue[] | ICartesianMeasureValue[] | number[],
                     date?: Date,
                     validity?: number,
                     configurationAsJSON?: string,

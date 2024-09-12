@@ -29,9 +29,7 @@ export class GaugeNodeMap extends GaugeNode {
 
     public toJSON(): any {
         const json = super.toJSON();
-        if (this.map) {
-            json['map'] = this.map;
-        }
+        json.map = this.map;
         return json;
     }
 

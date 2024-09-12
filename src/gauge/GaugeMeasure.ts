@@ -9,21 +9,19 @@ import {GaugeNode} from './GaugeNode';
 export class GaugeMeasure extends Measure {
 
     public static TYPE = 'gauge-measure';
-    public timeInSec: number;
+
     public gauge: string;
 
     constructor(json: {
                     id: string,
-                    values: IPolarMeasureValue[] | ICartesianMeasureValue[] | Measure[] | number[],
+                    values: IPolarMeasureValue[] | ICartesianMeasureValue[] | number[],
                     date?: Date,
                     validity?: number,
-                    timeInSec?: number,
                     configurationAsJSON?: string,
                     gauge?: string
                 }
     ) {
         super(json);
-        this.timeInSec = json.timeInSec >= 0 ? json.timeInSec : -1;
         if (json.gauge) {
             this.addLinks([new GaugeNode({id: json.gauge, latitude: NaN, longitude: NaN, team: null, name: null})]);
         }
@@ -31,11 +29,7 @@ export class GaugeMeasure extends Measure {
 
     public toJSON(): any {
         const json = super.toJSON();
-        json['timeInSec'] = this.timeInSec;
-        const gaugeId = this.getLinkId(GaugeNode.TYPE);
-        if (gaugeId) {
-            json['gauge'] = gaugeId;
-        }
+        json.gauge = this.getLinkId(GaugeNode.TYPE);
         return json;
     }
 

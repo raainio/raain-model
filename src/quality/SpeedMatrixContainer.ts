@@ -131,6 +131,7 @@ export class SpeedMatrixContainer {
         }
 
         compareCumulative.qualityPoints = Object.values(qualityPointPerGaugeId);
+        compareCumulative.qualityPointsLegacy = Object.values(qualityPointPerGaugeId);
         const maxRain = Math.max(...compareCumulative.qualityPoints.map(p => p.getRainValue()));
         const maxGauge = Math.max(...compareCumulative.qualityPoints.map(p => p.getGaugeValue()));
         compareCumulative.maxValue = Math.max(maxRain, maxGauge);

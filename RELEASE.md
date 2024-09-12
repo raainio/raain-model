@@ -12,4 +12,5 @@
   No more period usage (date preferred).
 - 2.1.x : RainComputationQuality extended with rainComputation's link,
   getQualityPointsByHistoricalPosition method.
-- 2.2.x : BuildCompares refactored
+- 2.2.x : BuildCompares refactored.
+- 2.3.x : Angle/Axis refactored.

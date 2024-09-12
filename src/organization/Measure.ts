@@ -4,15 +4,16 @@ import {ICartesianMeasureValue} from '../cartesian/ICartesianMeasureValue';
 
 export class Measure extends RaainNode {
     public date: Date;
-    public values: IPolarMeasureValue[] | ICartesianMeasureValue[] | Measure[] | number[];
-    //   -> why array ? because you can have potential different angle from the Radar
-
+    //   -> why array ? because you have different angle/axis from the Radar
+    public values: IPolarMeasureValue[] | ICartesianMeasureValue[] | number[];
     public validity: number
+
+    // internal
     private configurationAsJSON: string;
 
     constructor(json: {
                     id: string,
-                    values: IPolarMeasureValue[] | ICartesianMeasureValue[] | Measure[] | number[],
+                    values: IPolarMeasureValue[] | ICartesianMeasureValue[] | number[],
                     date?: Date,
                     validity?: number,
                     configurationAsJSON?: string,
