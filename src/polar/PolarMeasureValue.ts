@@ -46,7 +46,7 @@ export class PolarMeasureValue implements IPolarMeasureValue {
 
             this.measureValuePolarContainers = polars.map(convertedPolar => new MeasureValuePolarContainer(convertedPolar));
         } catch (e) {
-            console.warn('setPolarsAsString pb: ', e, typeof s, s);
+            // console.warn('setPolarsAsString pb: ', e, typeof s, s);
             this.measureValuePolarContainers = [];
         }
     }

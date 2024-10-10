@@ -133,13 +133,13 @@ export class QualityTools {
         return QualityTools.UniqNum(lngs);
     }
 
-    public static LogCartesianValues(cartesianValues: CartesianValue[]) {
-        console.log('>> raain-quality ### logCartesianValues with', cartesianValues.length,
+    public static LogCartesianValues(cartesianValues: CartesianValue[],
+                                     logger = console) {
+        logger.log('>> raain-quality ### logCartesianValues with', cartesianValues.length,
             QualityTools.DEFAULT_SCALE, ' in progress...');
         const pointsToShow = {};
         const latSteps = QualityTools.ComputeLatSteps(cartesianValues);
         const lngSteps = QualityTools.ComputeLngSteps(cartesianValues);
-        // console.log('>> raain-quality ### logCartesianValues latSteps:', latSteps, 'lngSteps:', lngSteps);
 
         const labelX = (v: number) => {
             return QualityTools.LabelWithSign(v)
@@ -173,7 +173,7 @@ export class QualityTools {
             pointsToShow[labelY(point.lat)][labelX(point.lng)] = value;
         }
 
-        console.table(pointsToShow);
+        logger.table(pointsToShow);
     }
 
     public static UniqNum(a: number[]) {

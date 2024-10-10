@@ -4,19 +4,19 @@
 export class PeopleNode {
 
     public id: string;
-    public role: string;
+    public roles: string[];
     public email: string;
     public name: string;
 
     constructor(json: {
                     id: string,
-                    role: string,
+                    roles: string[],
                     email: string,
                     name: string,
                 }
     ) {
         this.id = json.id;
-        this.role = json.role;
+        this.roles = json.roles;
         this.email = json.email;
         this.name = json.name;
     }
@@ -24,9 +24,19 @@ export class PeopleNode {
     public toJSON(): any {
         return {
             id: this.id,
-            role: this.role,
+            roles: this.roles,
             email: this.email,
             name: this.name,
         };
+    }
+
+    hasRole(role: string): boolean {
+        return this.roles.indexOf(role) >= 0;
+    }
+
+    addRole(role: string) {
+        if (!this.hasRole(role)) {
+            this.roles.push(role);
+        }
     }
 }

@@ -14,3 +14,4 @@
   getQualityPointsByHistoricalPosition method.
 - 2.2.x : BuildCompares refactored.
 - 2.3.x : Angle/Axis refactored.
+- 2.4.x : PeopleNode move role to roles.
