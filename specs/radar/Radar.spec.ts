@@ -1,5 +1,8 @@
 import {expect} from 'chai';
 import {MeasureValuePolarContainer, PolarMeasureValue, RadarMeasure, RadarNode, RadarPolarMeasureValue, TeamNode} from '../../src';
+import {promisify} from 'util';
+
+const sleep = promisify(setTimeout);
 
 describe('Radar', () => {
 
@@ -72,5 +75,25 @@ describe('Radar', () => {
 
         expect(JSON.stringify(radarNode.toJSON())).eq('{"id":"RadarNode looks OK.","links":[{"rel":"radar-measure","href":"../radar-measures/1970-01-01T00:01:40.000Z/measureId"}],"name":"name","latitude":1,"longitude":1,"team":"tid1"}');
     });
+
+    it('should use multi-dimension image', async () => {
+
+        const testOneFake = (move: number) => {
+            const radarPolarMeasureValues = RadarPolarMeasureValue.BuildFakeRadarPolarMeasureValues(move);
+            expect(radarPolarMeasureValues.length).equal(6);
+            const polars = radarPolarMeasureValues[0].polarMeasureValue.getPolars();
+            console.table(polars
+                .filter((p, pi) => pi % 10 === 0)
+                .map(m =>
+                    m.polarEdges
+                        .filter((n, ni) => ni % 10 === 0)));
+        }
+
+        // for (let move = 0; move < 90; move++) {
+        testOneFake(45);
+        // await sleep(1000);
+        // }
+    });
+
 
 });
