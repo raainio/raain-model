@@ -33,7 +33,9 @@ export class Measure extends RaainNode {
         } catch (ignored) {
         }
 
-        this.configurationAsJSON = JSON.stringify(conf);
+        if (conf) {
+            this.configurationAsJSON = JSON.stringify(conf);
+        }
     }
 
     public toJSON(options: { removeValues?: boolean } = {}): any {

@@ -60,7 +60,9 @@ export class RadarNode extends RaainNode {
         } catch (ignored) {
         }
 
-        this.configurationAsJSON = JSON.stringify(conf);
+        if (conf) {
+            this.configurationAsJSON = JSON.stringify(conf);
+        }
     }
 
     public getConfiguration(): any {
