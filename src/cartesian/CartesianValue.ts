@@ -13,5 +13,10 @@ export class CartesianValue extends LatLng {
         super(json);
         this.value = json.value;
     }
-}
 
+    toJSON() {
+        const json = super.toJSON();
+        json['value'] = this.value;
+        return json;
+    }
+}

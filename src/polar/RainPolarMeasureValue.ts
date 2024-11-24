@@ -11,13 +11,13 @@ export class RainPolarMeasureValue extends AbstractPolarMeasureValue implements 
     private readonly version: string;
 
     constructor(json: {
-        polars: RainPolarMeasureValue | PolarMeasureValue | string,
+        polarMeasureValue: RainPolarMeasureValue | PolarMeasureValue | string,
         version?: string
     }) {
         super(json);
 
-        if (json.polars instanceof RainPolarMeasureValue) {
-            this.version = json.polars.version;
+        if (json.polarMeasureValue instanceof RainPolarMeasureValue) {
+            this.version = json.polarMeasureValue.version;
             return;
         }
 
@@ -26,26 +26,30 @@ export class RainPolarMeasureValue extends AbstractPolarMeasureValue implements 
 
     static From(obj: any): RainPolarMeasureValue {
         let version: string,
-            polars: PolarMeasureValue;
+            polarMeasureValue: PolarMeasureValue;
 
         if (typeof obj.version === 'string') {
             version = obj.version;
         }
 
-        if (typeof obj.polars !== 'undefined') {
-            polars = obj.polars;
+        if (typeof obj.polarMeasureValue !== 'undefined') {
+            polarMeasureValue = obj.polarMeasureValue;
         }
 
-        return new RainPolarMeasureValue({polars, version});
+        if (typeof obj.measureValuePolarContainers !== 'undefined') {
+            polarMeasureValue = new PolarMeasureValue({measureValuePolarContainers: obj.measureValuePolarContainers});
+        }
+
+        return new RainPolarMeasureValue({polarMeasureValue, version});
     }
 
-    public toJSON(stringify = false): JSON {
+    public toJSON(stringify = false): any {
         const json: any = super.toJSON(stringify);
         json.version = this.version;
         return json;
     }
 
-    public toJSONWithPolarStringified(): JSON {
+    public toJSONWithPolarStringified(): any {
         const json: any = super.toJSONWithPolarStringified();
         json.version = this.version;
         return json;

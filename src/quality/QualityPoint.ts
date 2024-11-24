@@ -31,6 +31,19 @@ export class QualityPoint {
         this.remark = json.remark;
     }
 
+    static CreateFromJSON(src: QualityPoint) {
+        return new QualityPoint({
+            gaugeId: src.gaugeId,
+            gaugeLabel: src.gaugeLabel,
+            gaugeDate: new Date(src.gaugeDate),
+            rainDate: new Date(src.rainDate),
+            gaugeCartesianValue: new CartesianValue(src.gaugeCartesianValue),
+            rainCartesianValues: src.rainCartesianValues.map(v => new CartesianValue(v)),
+            speed: {x: src.speed?.x, y: src.speed?.y},
+            remark: src.remark,
+        })
+    }
+
     getGaugeValue(): number {
         return this.gaugeCartesianValue?.value;
     }
@@ -73,6 +86,15 @@ export class QualityPoint {
         return Math.round(delta / 60000);
     }
 
+    accumulateValues(qualityPoint: QualityPoint) {
+        this.gaugeCartesianValue.value += qualityPoint.getGaugeValue();
+        if (this.rainCartesianValues.length === 0) {
+            this.rainCartesianValues = qualityPoint.rainCartesianValues.map(q => q);
+        } else {
+            this.rainCartesianValues.forEach(v => v.value += qualityPoint.getRainValue());
+        }
+    }
+
     private getMiddleValue(): CartesianValue {
         if (!this.rainCartesianValues || this.rainCartesianValues.length === 0) {
             return null;
@@ -84,5 +106,4 @@ export class QualityPoint {
         const middlePos = Math.floor(sortedValues.length / 2);
         return sortedValues[middlePos];
     }
-
 }

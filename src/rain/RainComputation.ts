@@ -13,19 +13,15 @@ export class RainComputation extends RainComputationAbstract {
 
     public static TYPE = 'rain-computation';
 
-    // why array ? because you can have different angle from the Radar
+    // why "results" ? because "values" came from Measure.values, "results" came from computation
+    // why array ? because you can have different angle/axis from the Radar
     public results: RainPolarMeasureValue[] | RainCartesianMeasureValue[];
-
-    // not "values" (aka Measure.values), but "results" from computation
 
     constructor(json: {
         id: string,
-        periodBegin: Date,
-        periodEnd: Date,
+        date: Date,
         isReady: boolean,
-
         results: RainPolarMeasureValue[] | RainCartesianMeasureValue[],
-
         links?: Link[] | RaainNode[],
         version?: string,
         quality?: number,
@@ -34,7 +30,7 @@ export class RainComputation extends RainComputationAbstract {
         timeSpentInMs?: number,
         isDoneDate?: Date,
         launchedBy?: string,
-        rain?: RaainNode[],
+        rain?: Link | RaainNode,
         radars?: Link[] | RaainNode[],
 
     }) {
@@ -42,7 +38,7 @@ export class RainComputation extends RainComputationAbstract {
         this.setResults(json.results);
     }
 
-    public toJSON(stringify = false): JSON {
+    public toJSON(stringify = false): any {
         const json = super.toJSON();
         json['results'] = this.results.map(r => r.toJSON(stringify));
         return json;
@@ -63,9 +59,9 @@ export class RainComputation extends RainComputationAbstract {
         }
 
         this.results = results.map(r => {
-            if (typeof r === 'string' && r.indexOf('polars') >= 0) {
+            if (typeof r === 'string' && r.indexOf('polarMeasureValue') >= 0) {
                 return new RainPolarMeasureValue(JSON.parse(r));
-            } else if (r.polars) {
+            } else if (r.polarMeasureValue) {
                 return new RainPolarMeasureValue(r);
             }
             if (typeof r === 'string' && r.indexOf('cartesian') >= 0) {
@@ -79,4 +75,3 @@ export class RainComputation extends RainComputationAbstract {
     }
 
 }
-

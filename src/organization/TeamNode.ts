@@ -30,7 +30,7 @@ export class TeamNode extends RaainNode {
         this.contacts = json.contacts;
     }
 
-    public toJSON(): JSON {
+    public toJSON(): any {
         return {
             id: this.id,
             name: this.name,

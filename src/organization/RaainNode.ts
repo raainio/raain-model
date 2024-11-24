@@ -31,7 +31,16 @@ export class RaainNode implements IVersion {
             if (l instanceof Link || Link.isCloneable(l)) {
                 return Link.clone(l);
             } else if (l && l.getLinkType && l.id) {
-                return new Link(l.getLinkType(), '../' + l.getLinkType() + 's/' + l.id);
+                let href = '../' + l.getLinkType() + 's';
+                const l2 = l as any;
+                if (l2.date && l2.date.toISOString) {
+                    href += '/' + l2.date.toISOString();
+                    if (l2.version) {
+                        href += '/' + l2.version;
+                    }
+                }
+                href += '/' + l.id
+                return new Link(l.getLinkType(), href);
             }
         });
 
@@ -50,7 +59,7 @@ export class RaainNode implements IVersion {
         return uniqBy(linksPurified, JSON.stringify);
     }
 
-    public toJSON(): JSON {
+    public toJSON(): any {
         return {
             id: this.id,
             links: this.links,
@@ -74,12 +83,21 @@ export class RaainNode implements IVersion {
         this.links = RaainNode._getPurifiedLinks(concatLinks);
     }
 
-    public getLink(linkType: string, index?: number): Link {
-        if (!this.links || !linkType) {
-            return null;
+    public getLinks(linkType?: string): Link[] {
+        if (!this.links) {
+            return [];
         }
+        if (!linkType) {
+            return this.links;
+        }
+        // return this.links.filter(l => l && l.rel && linkType === l.rel);
+        return this.links.filter(l => l.getLinkType() === linkType);
+
+    }
+
+    public getLink(linkType: string, index?: number): Link {
         index = !index ? 0 : index;
-        const linksFound = this.links.filter(l => l && l.rel && linkType === l.rel);
+        const linksFound = this.getLinks(linkType);
         if (linksFound.length <= index) {
             return null;
         }
@@ -95,17 +113,14 @@ export class RaainNode implements IVersion {
         return null;
     }
 
-    public getLinksCount(linkType?: string): number {
-        if (!linkType) {
-            return this.links.length;
-        }
-
-        const linksFound = this.links.filter(l => l?.rel === linkType);
-        return linksFound.length;
+    public getLinkIds(linkType?: string, index?: number): string[] {
+        const linksFound = this.getLinks(linkType);
+        return linksFound.map(l => l.getId());
     }
 
-    public getLinks(): Link[] {
-        return this.links.map(l => Link.clone(l));
+    public getLinksCount(linkType?: string): number {
+        const linksFound = this.getLinks(linkType);
+        return linksFound.length;
     }
 
     public getVersion() {

@@ -8,7 +8,7 @@ import {LatLng} from '../cartesian/LatLng';
 
 export class SpeedMatrix {
 
-    public static DEFAULT_MATRIX_RANGE = 8;
+    public static DEFAULT_MATRIX_RANGE = 16;
     public static DEFAULT_TRUSTED_INDICATOR = 1;
 
     protected flattenPositionHistory: number[][];
@@ -25,7 +25,7 @@ export class SpeedMatrix {
             yMin: -SpeedMatrix.DEFAULT_MATRIX_RANGE,
             yMax: SpeedMatrix.DEFAULT_MATRIX_RANGE
         },
-        protected roundScale: Position = new Position({x: QualityTools.DEFAULT_SCALE, y: QualityTools.DEFAULT_SCALE})
+        public roundScale: Position = new Position({x: QualityTools.DEFAULT_SCALE, y: QualityTools.DEFAULT_SCALE})
     ) {
     }
 
@@ -270,12 +270,10 @@ export class SpeedMatrix {
 
         // same position => add value
         for (const qualityPoint of this.qualityPoints) {
-            const ratio = qualityPoint.getRatio();
-            const cartesianValue = new CartesianValue({
-                value: ratio,
-                lat: qualityPoint.getRainLat() - qualityPoint.gaugeCartesianValue.lat,
-                lng: qualityPoint.getRainLng() - qualityPoint.gaugeCartesianValue.lng,
-            });
+            const value = qualityPoint.getRatio();
+            const lat = qualityPoint.getRainLat() - qualityPoint.gaugeCartesianValue.lat;
+            const lng = qualityPoint.getRainLng() - qualityPoint.gaugeCartesianValue.lng;
+            const cartesianValue = new CartesianValue({value, lat, lng});
             const position = QualityTools.MapLatLngToPosition(cartesianValue, false, new LatLng({
                 lat: QualityTools.DEFAULT_SCALE,
                 lng: QualityTools.DEFAULT_SCALE

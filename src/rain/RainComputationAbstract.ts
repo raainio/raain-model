@@ -13,8 +13,7 @@ export class RainComputationAbstract extends RaainNode {
     public progressIngest: number;
     public progressComputing: number;
     public timeSpentInMs: number;
-    public periodBegin: Date;
-    public periodEnd: Date;
+    public date: Date;
     public isReady: boolean;
     public isDoneDate: Date;
     public launchedBy: string;
@@ -22,8 +21,7 @@ export class RainComputationAbstract extends RaainNode {
 
     constructor(json: {
         id: string,
-        periodBegin: Date,
-        periodEnd: Date,
+        date: Date,
         isReady: boolean,
 
         links?: Link[] | RaainNode[],
@@ -34,14 +32,13 @@ export class RainComputationAbstract extends RaainNode {
         timeSpentInMs?: number,
         isDoneDate?: Date,
         launchedBy?: string,
-        rain?: RaainNode[],
+        rain?: Link | RaainNode,
         radars?: Link[] | RaainNode[],
 
     }) {
         super(json);
 
-        this.periodBegin = new Date(json.periodBegin);
-        this.periodEnd = new Date(json.periodEnd);
+        this.date = json.date ? new Date(json.date) : null;
         this.quality = json.quality >= 0 ? json.quality : -1;
         this.progressIngest = json.progressIngest >= 0 ? json.progressIngest : -1;
         this.progressComputing = json.progressComputing >= 0 ? json.progressComputing : -1;
@@ -65,11 +62,11 @@ export class RainComputationAbstract extends RaainNode {
             if (l instanceof Link) {
                 return l;
             } else if (l && l['_id']) {
-                return new RadarNode({id: l['_id'].toString(), latitude: 0, longitude: 0, name: l['name']});
+                return new RadarNode({id: l['_id'].toString(), latitude: 0, longitude: 0, name: l.name, team: l.team});
             } else if (l && l.id) {
                 return new RadarNode({
                     id: l.id.toString(),// 'hex'
-                    latitude: 0, longitude: 0, name: l['name']
+                    latitude: 0, longitude: 0, name: l.name, team: l.team
                 });
             }
         });
@@ -97,15 +94,15 @@ export class RainComputationAbstract extends RaainNode {
         }
 
         return new RainNode({
-            id: linkToPurify.id.toString(), // 'hex'
-            latitude: 0, longitude: 0
+            id: linkToPurify.id.toString(),
+            name: linkToPurify.id.toString(),
+            team: null
         });
     }
 
-    public toJSON(): JSON {
+    public toJSON(): any {
         const json = super.toJSON();
-        json['periodBegin'] = this.periodBegin.toISOString();
-        json['periodEnd'] = this.periodEnd.toISOString();
+        json['date'] = this.date.toISOString();
         json['quality'] = this.quality;
         json['progressIngest'] = this.progressIngest;
         json['progressComputing'] = this.progressComputing;

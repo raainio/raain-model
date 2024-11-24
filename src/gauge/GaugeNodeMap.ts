@@ -2,6 +2,7 @@ import {Link} from '../organization/Link';
 import {GaugeNode} from './GaugeNode';
 import {GaugeMeasure} from './GaugeMeasure';
 import {RaainNode} from '../organization/RaainNode';
+import {TeamNode} from '../organization/TeamNode';
 
 /**
  * api/gauges/:id?format=map&begin=...
@@ -14,8 +15,11 @@ export class GaugeNodeMap extends GaugeNode {
         id: string,
         latitude: number,
         longitude: number,
+        name: string,
+        description: string,
+        team: TeamNode,
+        configurationAsJSON?: any,
         map?: string,
-        name?: string,
         links?: Link[] | RaainNode[],
         version?: string,
     }) {
@@ -23,11 +27,9 @@ export class GaugeNodeMap extends GaugeNode {
         this.setMapData(json.map);
     }
 
-    public toJSON(): JSON {
+    public toJSON(): any {
         const json = super.toJSON();
-        if (this.map) {
-            json['map'] = this.map;
-        }
+        json.map = this.map;
         return json;
     }
 

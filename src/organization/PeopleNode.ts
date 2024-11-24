@@ -4,33 +4,39 @@
 export class PeopleNode {
 
     public id: string;
-    public role: string;
+    public roles: string[];
     public email: string;
     public name: string;
-    public comments: string; // potential additional info
 
     constructor(json: {
                     id: string,
-                    role: string,
+                    roles: string[],
                     email: string,
                     name: string,
-                    comments: string
                 }
     ) {
         this.id = json.id;
-        this.role = json.role;
+        this.roles = json.roles;
         this.email = json.email;
         this.name = json.name;
-        this.comments = json.comments;
     }
 
-    public toJSON(): JSON {
+    public toJSON(): any {
         return {
             id: this.id,
-            role: this.role,
+            roles: this.roles,
             email: this.email,
             name: this.name,
-            comments: this.comments,
-        } as any;
+        };
+    }
+
+    hasRole(role: string): boolean {
+        return this.roles.indexOf(role) >= 0;
+    }
+
+    addRole(role: string) {
+        if (!this.hasRole(role)) {
+            this.roles.push(role);
+        }
     }
 }

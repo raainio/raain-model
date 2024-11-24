@@ -11,9 +11,9 @@ export interface IPolarMeasureValue {
 
     setPolarsAsContainer(s: MeasureValuePolarContainer[]): void;
 
-    toJSON(): JSON;
+    toJSON(): any;
 
-    toJSONWithPolarStringified(): JSON;
+    toJSONWithPolarStringified(): any;
 
     getPolarValue(json: { azimuthIndex: number, edgeIndex: number }): PolarValue;
 

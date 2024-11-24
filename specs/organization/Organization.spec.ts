@@ -3,10 +3,16 @@ import {EventNode, PeopleNode, TeamNode} from '../../src';
 
 describe('Organization', () => {
 
-    it('should create ones', () => {
+    it('should create People, Team, Event', () => {
         const user1 = new PeopleNode({
-            id: 'uid1', role: 'user', email: 'user1@null.com', name: 'user1', comments: 'extra info...'
+            id: 'uid1', roles: ['user', 'test'], email: 'user1@null.com', name: 'user1'
         });
+        expect(user1.hasRole('admin')).eq(false);
+        expect(user1.hasRole('user')).eq(true);
+
+        user1.addRole('admin');
+        expect(user1.hasRole('admin')).eq(true);
+
         const team1 = new TeamNode({
             id: 'tid1',
             name: 'team1',

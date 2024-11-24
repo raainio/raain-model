@@ -2,6 +2,7 @@ import {RainComputationAbstract} from './RainComputationAbstract';
 import {Link} from '../organization/Link';
 import {RaainNode} from '../organization/RaainNode';
 import {SpeedMatrixContainer} from '../quality/SpeedMatrixContainer';
+import {RainComputation} from './RainComputation';
 
 
 /**
@@ -10,11 +11,11 @@ import {SpeedMatrixContainer} from '../quality/SpeedMatrixContainer';
 export class RainComputationQuality extends RainComputationAbstract {
 
     public qualitySpeedMatrixContainer: SpeedMatrixContainer;
+    public error: string;
 
     constructor(json: {
         id: string,
-        periodBegin: Date,
-        periodEnd: Date,
+        date: Date,
         isReady: boolean,
         qualitySpeedMatrixContainer: SpeedMatrixContainer,
 
@@ -26,17 +27,49 @@ export class RainComputationQuality extends RainComputationAbstract {
         timeSpentInMs?: number,
         isDoneDate?: Date,
         launchedBy?: string,
-        rain?: RaainNode[],
+        rain?: Link | RaainNode,
         radars?: Link[] | RaainNode[],
+        rainComputation?: Link | RaainNode,
+        error?: string,
     }) {
         super(json);
         this.qualitySpeedMatrixContainer = json.qualitySpeedMatrixContainer;
+        this.addRainComputationLink(json.rainComputation);
+        this.error = json.error;
+    }
+
+    private static _getRainComputationLinks(linkToPurify: any): any[] {
+        if (!linkToPurify) {
+            return [];
+        }
+
+        if (linkToPurify instanceof Link) {
+            return [linkToPurify];
+        } else if (linkToPurify['_id']) {
+            return [new RainComputation({
+                id: linkToPurify['_id'].toString(),
+                date: linkToPurify.date,
+                version: linkToPurify.version,
+                isReady: true, results: [], // useless
+            })];
+        } else if (linkToPurify.id) {
+            return [new RainComputation({
+                id: linkToPurify.id.toString(),
+                date: linkToPurify.date,
+                version: linkToPurify.version,
+                isReady: true, results: [], // useless
+            })];
+        }
+        return [];
+    }
+
+    public addRainComputationLink(linkToAdd: Link | RaainNode): void {
+        this.addLinks(RainComputationQuality._getRainComputationLinks(linkToAdd));
     }
 
     merge(rainComputationQuality: RainComputationQuality) {
 
-        this.periodBegin = this.mergeDateMin(this.periodBegin, rainComputationQuality.periodBegin);
-        this.periodEnd = this.mergeDateMax(this.periodEnd, rainComputationQuality.periodEnd);
+        this.date = this.mergeDateMin(this.date, rainComputationQuality.date);
         this.quality = this.mergeAvg(this.quality, rainComputationQuality.quality);
         this.progressIngest = this.mergeMin(this.progressIngest, rainComputationQuality.progressIngest);
         this.progressComputing = this.mergeMin(this.progressComputing, rainComputationQuality.progressComputing);
@@ -48,13 +81,22 @@ export class RainComputationQuality extends RainComputationAbstract {
 
     }
 
-    public toJSON(arg?: any): JSON {
+    public toJSON(arg?: any): any {
         const json = super.toJSON();
 
         if (this.qualitySpeedMatrixContainer && this.qualitySpeedMatrixContainer.toJSON) {
             json['qualitySpeedMatrixContainer'] = this.qualitySpeedMatrixContainer.toJSON(arg);
         } else if (this.qualitySpeedMatrixContainer) {
             json['qualitySpeedMatrixContainer'] = this.qualitySpeedMatrixContainer;
+        }
+
+        const rainComputation = this.getLinkId(RainComputation.TYPE);
+        if (rainComputation) {
+            json['rainComputation'] = rainComputation;
+        }
+
+        if (this.error) {
+            json['error'] = this.error;
         }
 
         return json;
@@ -136,4 +178,3 @@ export class RainComputationQuality extends RainComputationAbstract {
     }
 
 }
-

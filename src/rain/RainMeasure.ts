@@ -1,11 +1,9 @@
 import {Measure} from '../organization/Measure';
 import {IPolarMeasureValue} from '../polar/IPolarMeasureValue';
 import {ICartesianMeasureValue} from '../cartesian/ICartesianMeasureValue';
-import {MeasureConfiguration} from '../configuration/MeasureConfiguration';
 
 /**
- *  // not existing? api/rains/:id/measures/:id
- *  but coming from api/rains/:id/computations/:id?format=map => getMapData()
+ *  api/rains/:id/computations/:id?format=map => RainComputationMap getMapData()
  */
 export class RainMeasure extends Measure {
 
@@ -13,10 +11,10 @@ export class RainMeasure extends Measure {
 
     constructor(json: {
         id: string,
-        values: IPolarMeasureValue[] | ICartesianMeasureValue[] | Measure[] | number[],
+        values: IPolarMeasureValue[] | ICartesianMeasureValue[] | number[],
         date?: Date,
         validity?: number,
-        configurationAsJSON?: string | MeasureConfiguration,
+        configurationAsJSON?: string,
     }) {
         super(json);
     }
@@ -25,4 +23,3 @@ export class RainMeasure extends Measure {
         return RainMeasure.TYPE;
     }
 }
-

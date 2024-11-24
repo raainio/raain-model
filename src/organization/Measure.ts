@@ -1,22 +1,22 @@
 import {IPolarMeasureValue} from '../polar/IPolarMeasureValue';
 import {RaainNode} from './RaainNode';
 import {ICartesianMeasureValue} from '../cartesian/ICartesianMeasureValue';
-import {MeasureConfiguration} from '../configuration/MeasureConfiguration';
 
 export class Measure extends RaainNode {
     public date: Date;
-    public values: IPolarMeasureValue[] | ICartesianMeasureValue[] | Measure[] | number[];
-    //   -> why array ? because you can have potential different angle from the Radar
-
+    //   -> why array ? because you have different angle/axis from the Radar
+    public values: IPolarMeasureValue[] | ICartesianMeasureValue[] | number[];
     public validity: number
+
+    // internal
     private configurationAsJSON: string;
 
     constructor(json: {
                     id: string,
-                    values: IPolarMeasureValue[] | ICartesianMeasureValue[] | Measure[] | number[],
+                    values: IPolarMeasureValue[] | ICartesianMeasureValue[] | number[],
                     date?: Date,
                     validity?: number,
-                    configurationAsJSON?: string | MeasureConfiguration,
+                    configurationAsJSON?: string,
                 }
     ) {
         super(json);
@@ -33,10 +33,12 @@ export class Measure extends RaainNode {
         } catch (ignored) {
         }
 
-        this.configurationAsJSON = JSON.stringify(conf);
+        if (conf) {
+            this.configurationAsJSON = JSON.stringify(conf);
+        }
     }
 
-    public toJSON(options: { removeValues?: boolean } = {}): JSON {
+    public toJSON(options: { removeValues?: boolean } = {}): any {
         const json = super.toJSON();
         json['date'] = this.date?.toISOString();
         json['validity'] = this.validity;

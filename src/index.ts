@@ -5,10 +5,6 @@ export * from './organization/Link';
 export * from './organization/RaainNode';
 export * from './organization/TeamNode';
 
-export * from './configuration/MeasureConfiguration';
-export * from './configuration/GaugeMeasureConfiguration';
-export * from './configuration/RadarMeasureConfiguration';
-
 export * from './quality/QualityPoint';
 export * from './quality/SpeedMatrix';
 export * from './quality/SpeedMatrixContainer';

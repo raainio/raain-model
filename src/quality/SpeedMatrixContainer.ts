@@ -3,6 +3,27 @@ import {PositionValue} from './position/PositionValue';
 import {PositionHistory} from './history/PositionHistory';
 import {QualityPoint} from './QualityPoint';
 import {CartesianValue} from '../cartesian/CartesianValue';
+import {RainComputationQuality} from '../rain/RainComputationQuality';
+
+export interface ICompares {
+    comparesPerDate: IComparePerDate[],
+    compareCumulative: ICompare,
+}
+
+export interface IComparePerDate {
+    date: Date,
+    rainComputationQuality: RainComputationQuality,
+    compareTimeline: ICompare[],
+}
+
+export interface ICompare {
+    name: string,
+    date: Date,
+    qualityPointsLegacy: QualityPoint[],
+    qualityPoints: QualityPoint[],
+    maxValue: number,
+    remarks: string,
+}
 
 export class SpeedMatrixContainer {
 
@@ -20,7 +41,7 @@ export class SpeedMatrixContainer {
         this.matrices = json.matrices;
     }
 
-    public static CreateFromJson(json: any): SpeedMatrixContainer {
+    static CreateFromJson(json: any): SpeedMatrixContainer {
         const created = new SpeedMatrixContainer({matrices: []});
         if (json?.qualityPoints) {
             created.qualityPoints = json.qualityPoints;
@@ -35,6 +56,130 @@ export class SpeedMatrixContainer {
             created.flattenMatrices = json.flattenMatrices;
         }
         return created;
+    }
+
+    static BuildCompares(qualities: RainComputationQuality[],
+                         removeDuplicates = true): ICompares {
+        const qualitiesSorted = qualities
+            .sort((a, b) => a.date.getTime() - b.date.getTime());
+        const comparesPerDate: IComparePerDate[] = [];
+        const compareCumulative: ICompare = {
+            name: 'cumulative_' + qualities.reduce((p, rcq) => p + '_' + rcq.date.toISOString(), ''),
+            date: qualities[0]?.date,
+            qualityPointsLegacy: [],
+            qualityPoints: [],
+            maxValue: 0,
+            remarks: '',
+        };
+        const minDeltaPerDate_GaugeId = {};
+
+        let dateMin = new Date();
+        let dateMax = new Date();
+        if (qualitiesSorted.length > 0) {
+            dateMin = qualitiesSorted[0].date;
+            dateMax = qualitiesSorted[qualitiesSorted.length - 1].date;
+        }
+
+        // build timelines and store
+        for (const rainComputationQuality of qualitiesSorted) {
+            const compareTimeline = SpeedMatrixContainer.BuildCompareTimeline(rainComputationQuality, dateMin, dateMax);
+
+            comparesPerDate.push({
+                date: rainComputationQuality.date,
+                rainComputationQuality,
+                compareTimeline
+            });
+
+            const qualityPoints: QualityPoint[] = compareTimeline.reduce((p, a) => p.concat(a.qualityPoints), []);
+            for (const qualityPoint of qualityPoints) {
+                const key = qualityPoint.gaugeDate.toISOString() + '_' + qualityPoint.gaugeId;
+                if (!minDeltaPerDate_GaugeId[key]) {
+                    minDeltaPerDate_GaugeId[key] = qualityPoint.getDelta();
+                }
+                minDeltaPerDate_GaugeId[key] = Math.min(minDeltaPerDate_GaugeId[key], qualityPoint.getDelta());
+            }
+        }
+
+        // loop and search for unique points
+        const qualityPointToUsePerDate_GaugeId = {};
+        comparesPerDate.forEach(compare => {
+            compare.compareTimeline.forEach(timeline => {
+                for (let i = timeline.qualityPoints.length - 1; i >= 0; i--) {
+                    const qualityPoint = timeline.qualityPoints[i];
+                    const key = qualityPoint.gaugeDate.toISOString() + '_' + qualityPoint.gaugeId;
+                    if (!qualityPointToUsePerDate_GaugeId[key] && minDeltaPerDate_GaugeId[key]
+                        && minDeltaPerDate_GaugeId[key] === qualityPoint.getDelta()) {
+                        qualityPointToUsePerDate_GaugeId[key] = qualityPoint;
+                    } else {
+                        if (removeDuplicates) {
+                            timeline.qualityPoints.splice(i, 1);
+                        }
+                    }
+                }
+            });
+        });
+
+        // compute cumulative based on unique points
+        const qualityPointPerGaugeId = {};
+        for (const qp of Object.values(qualityPointToUsePerDate_GaugeId)) {
+            const qualityPoint = qp as QualityPoint;
+            if (!qualityPointPerGaugeId[qualityPoint.gaugeId]) {
+                qualityPointPerGaugeId[qualityPoint.gaugeId] = QualityPoint.CreateFromJSON(qualityPoint);
+            } else {
+                qualityPointPerGaugeId[qualityPoint.gaugeId].accumulateValues(qualityPoint);
+            }
+        }
+
+        compareCumulative.qualityPoints = Object.values(qualityPointPerGaugeId);
+        compareCumulative.qualityPointsLegacy = Object.values(qualityPointPerGaugeId);
+        const maxRain = Math.max(...compareCumulative.qualityPoints.map(p => p.getRainValue()));
+        const maxGauge = Math.max(...compareCumulative.qualityPoints.map(p => p.getGaugeValue()));
+        compareCumulative.maxValue = Math.max(maxRain, maxGauge);
+
+        return {comparesPerDate, compareCumulative};
+    }
+
+    static BuildCompareTimeline(currentQuality: RainComputationQuality, dateMin: Date, dateMax: Date): ICompare[] {
+        const compares: ICompare[] = [];
+        const qualitySpeedMatrixContainer = currentQuality.qualitySpeedMatrixContainer;
+        if (!qualitySpeedMatrixContainer) {
+            return compares;
+        }
+
+        const compareNames = qualitySpeedMatrixContainer.getMatrices()
+            .map(m => m.name)
+            .sort((a, b) => parseInt(a, 10) - parseInt(b, 10));
+
+        for (const [index, name] of compareNames.entries()) {
+
+            const qualityPointsLegacy = qualitySpeedMatrixContainer.getQualityPoints(name);
+            const maxValue = Math.max(qualitySpeedMatrixContainer.getMaxGauge(), qualitySpeedMatrixContainer.getMaxRain());
+            const remarks = qualitySpeedMatrixContainer.getMatrix(index)?.remarks;
+
+            const delta = parseInt(name, 10);
+            const compareDate = new Date(currentQuality.date.getTime() - delta * 60 * 1000);
+
+            if (dateMin.getTime() <= compareDate.getTime() && compareDate.getTime() <= dateMax.getTime()) {
+
+                let renamed = compareDate.toLocaleString();
+                renamed += delta > 0 ? ' since ' : ' in ';
+                renamed += Math.abs(delta) + ' minutes';
+                const qualityPoints = qualityPointsLegacy.filter((p: any) => p); // no real filter
+
+                const compare: ICompare = {
+                    name: renamed,
+                    date: compareDate,
+                    qualityPointsLegacy,
+                    qualityPoints,
+                    maxValue,
+                    remarks,
+                };
+
+                compares.push(compare);
+            }
+        }
+
+        return compares;
     }
 
     protected static mergeStillComputed(v1: any, v2: any): any {
@@ -172,27 +317,49 @@ export class SpeedMatrixContainer {
 
         this.storeFlattenMatrices();
 
+        let matrixNames = [matrixName];
         if (!matrixName) {
-            matrixName = this.matrices[0].name;
-        }
-
-        if (this.qualityPoints[matrixName]?.length > 0 && this.flattenMatrices.length > 0) {
-            return this.qualityPoints[matrixName];
+            matrixNames = this.matrices.map(m => m.name);
+        } else {
+            if (this.qualityPoints[matrixName]?.length > 0 && this.flattenMatrices.length > 0) {
+                return this.qualityPoints[matrixName];
+            }
         }
 
         let qualityPoints: QualityPoint[] = [];
-        const matricesWithSameName = this.matrices.filter(m => m.name === matrixName);
-        if (matricesWithSameName.length === 1) {
-            qualityPoints = matricesWithSameName[0].getQualityPoints().map(p => new QualityPoint(p));
+        for (const name of matrixNames) {
+            const matricesWithSameName = this.matrices.filter(m => m.name === name);
+            if (matricesWithSameName.length === 1) {
+                const points = matricesWithSameName[0].getQualityPoints().map(p => new QualityPoint(p));
+                qualityPoints = qualityPoints.concat(points);
+
+                // store
+                this.qualityPoints[name] = points;
+            }
         }
 
-        // store
-        this.qualityPoints[matrixName] = qualityPoints;
         return qualityPoints;
     }
 
-    getMaxGauge(): number {
-        const qualityPoints = this.getQualityPoints();
+    getQualityPointsByHistoricalPosition(position: number = 0): QualityPoint[] {
+
+        if (this.matrices.length <= 1) {
+            return [];
+        }
+
+        const matrixFound = this.matrices
+            .sort((a, b) => parseInt(a.name, 10) - parseInt(b.name, 10))
+            .filter((m, index) => index === position);
+
+        if (matrixFound.length === 1) {
+            return this.getQualityPoints(matrixFound[0].name);
+        }
+
+        return [];
+    }
+
+    getMaxGauge(matrixName?: string): number {
+        const qualityPoints = this.getQualityPoints(matrixName);
         let max = -1;
         for (const p of qualityPoints) {
             max = Math.max(max, p.getGaugeValue());
@@ -200,8 +367,8 @@ export class SpeedMatrixContainer {
         return max;
     }
 
-    getMaxRain(): number {
-        const qualityPoints = this.getQualityPoints();
+    getMaxRain(matrixName?: string): number {
+        const qualityPoints = this.getQualityPoints(matrixName);
         let max = -1;
         for (const p of qualityPoints) {
             max = Math.max(max, p.getRainValue());
@@ -213,8 +380,8 @@ export class SpeedMatrixContainer {
      * Get summed quality indicator (0 ideally)
      *  @link SpeedMatrix.ComputeQualityIndicator
      */
-    getQuality(): number {
-        const qualityPoints = this.getQualityPoints();
+    getQuality(matrixName?: string): number {
+        const qualityPoints = this.getQualityPoints(matrixName);
         return SpeedMatrix.ComputeQualityIndicator(qualityPoints);
     }
 
@@ -342,8 +509,6 @@ export class SpeedMatrixContainer {
 
     merge(speedMatrixContainerToMergeIn: SpeedMatrixContainer) {
 
-        // this.qualityPoints = SpeedMatrixContainer.mergeReduce(this.getQualityPoints(),
-        //    speedMatrixContainerToMergeIn.getQualityPoints());
         this.trustedIndicators = SpeedMatrixContainer.mergeConcat(this.getTrustedIndicators(),
             speedMatrixContainerToMergeIn.getTrustedIndicators());
         this.matrices = SpeedMatrixContainer.mergeConcat(this.matrices,

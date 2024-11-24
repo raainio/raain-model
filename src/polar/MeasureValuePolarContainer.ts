@@ -1,7 +1,8 @@
 export class MeasureValuePolarContainer {
-    public azimuth: number;
-    public distance: number;
-    public polarEdges: number[];
+
+    public azimuth: number;         // In degrees. 0° = North, 90°= Est, 180° = South, 270°= West.
+    public distance: number;        // In meters. Edge distance.
+    public polarEdges: number[];    // Edge Dbz values.
 
     constructor(json: {
         azimuth: number,
@@ -18,7 +19,7 @@ export class MeasureValuePolarContainer {
         this.polarEdges = json.polarEdges;
     }
 
-    public toJSON(): JSON {
+    public toJSON(): any {
         return {
             azimuth: this.azimuth,
             distance: this.distance,

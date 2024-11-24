@@ -36,4 +36,8 @@ export class LatLng {
         this.lat = QualityTools.LimitWithPrecision(this.lat, precision);
         this.lng = QualityTools.LimitWithPrecision(this.lng, precision);
     }
+
+    toJSON() {
+        return {lat: this.lat, lng: this.lng};
+    }
 }
