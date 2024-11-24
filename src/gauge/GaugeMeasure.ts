@@ -29,7 +29,10 @@ export class GaugeMeasure extends Measure {
 
     public toJSON(options?: any): any {
         const json = super.toJSON(options);
-        json.gauge = this.getLinkId(GaugeNode.TYPE);
+        const gaugeId = this.getLinkId(GaugeNode.TYPE);
+        if (gaugeId) {
+            json['gauge'] = gaugeId;
+        }
         return json;
     }
 

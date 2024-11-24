@@ -1,6 +1,6 @@
 {
   "name": "raain-model",
-  "version": "2.4.4",
+  "version": "2.4.5",
   "author": "contact@raain.io",
   "homepage": "https://github.com/raainio/raain-model",
   "description": "raain.io api model",
@@ -27,7 +27,9 @@
     "typescript": "^5.0.4"
   },
   "scripts": {
-    "build": "rm -rf dist/ && npm version patch --no-git-tag-version && npx tsc && cp package.json dist/ && cp *.md dist/",
+    "build": "npm run build-dist",
+    "build-version": "VERSION=\"$(npm version patch --no-git-tag-version)\"",
+    "build-dist": "rm -rf dist/ && npx tsc && cp package.json dist/ && cp *.md dist/",
     "test": "mocha --require ts-node/register 'specs/**/**.spec.ts'"
   }
 }
