@@ -2,6 +2,11 @@ import {RainComputationAbstract} from './RainComputationAbstract';
 import {Link} from '../organization/Link';
 import {RainMeasure} from './RainMeasure';
 import {RaainNode} from '../organization/RaainNode';
+import {CartesianValue} from '../cartesian/CartesianValue';
+import {RainCartesianMeasureValue} from '../cartesian/RainCartesianMeasureValue';
+import {LatLng} from '../cartesian/LatLng';
+import {QualityTools} from '../quality/tools/QualityTools';
+import {CartesianMeasureValue} from '../cartesian/CartesianMeasureValue';
 
 /**
  *  api/rains/:id/computations/:computationId?format=map&...
@@ -43,10 +48,42 @@ export class RainComputationMap extends RainComputationAbstract {
         return json;
     }
 
-    public setMapData(mapData: RainMeasure[] | string) {
+    public setMapData(mapData: RainMeasure[] | string, options = {mergeCartesian: false}) {
         if (!mapData) {
             return;
         }
+
+        if (typeof (mapData) !== 'string' && options?.mergeCartesian) {
+            const rainMeasures = mapData as RainMeasure[];
+            let rainMeasuresMerged = [];
+            const cartesianValuesMerged: CartesianValue[] = [];
+            let cartesianPixelWidth = new LatLng({lat: QualityTools.DEFAULT_SCALE, lng: QualityTools.DEFAULT_SCALE});
+            for (const rainMeasure of rainMeasures) {
+                for (const value of rainMeasure.values) {
+                    if (typeof value['cartesianValues'] !== 'undefined' && typeof value['cartesianPixelWidth'] !== 'undefined') {
+                        const cartesianMeasureValue = new CartesianMeasureValue(value as any);
+                        const cartesianValues = cartesianMeasureValue.getCartesianValues();
+                        cartesianPixelWidth = cartesianMeasureValue.getCartesianPixelWidth();
+                        for (const cartesianValue of cartesianValues) {
+
+                            const alreadyExist = cartesianValuesMerged.filter(v => cartesianValue.equals(v))
+                            if (alreadyExist.length === 1) {
+                                alreadyExist[0].value += cartesianValue.value;
+                            } else {
+                                cartesianValuesMerged.push(new CartesianValue(cartesianValue.toJSON()));
+                            }
+                        }
+                    }
+                }
+
+                const rm = new RainMeasure(rainMeasure.toJSON());
+                rm.values = [new RainCartesianMeasureValue({cartesianValues: cartesianValuesMerged, cartesianPixelWidth})];
+                rainMeasuresMerged = [rm];
+            }
+
+            mapData = rainMeasuresMerged;
+        }
+
 
         let map = mapData;
         try {
