@@ -1,6 +1,6 @@
 {
   "name": "raain-model",
-  "version": "2.5.1",
+  "version": "2.5.2",
   "author": "contact@raain.io",
   "homepage": "https://github.com/raainio/raain-model",
   "description": "raain.io api model",
@@ -13,6 +13,9 @@
   "main": "./index.js",
   "types": "./index.d.ts",
   "dependencies": {
+    "hash-it": "^6.0.0"
+  },
+  "peerDependencies": {
     "hash-it": "^6.0.0"
   },
   "devDependencies": {
