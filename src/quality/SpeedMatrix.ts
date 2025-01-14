@@ -114,7 +114,7 @@ export class SpeedMatrix {
             }
         }
 
-        logger.table(matrixToRender);
+        logger?.table(matrixToRender);
     }
 
 
@@ -210,12 +210,9 @@ export class SpeedMatrix {
         };
     }
 
-    logFlatten(options: { overridingLogger?: any, simplify?: boolean }
-                   = {overridingLogger: null, simplify: false}) {
-        let logger = options.overridingLogger;
-        if (!logger) {
-            logger = console;
-        }
+    logFlatten(options: { logger: any, simplify: boolean }
+                   = {logger: console, simplify: false}) {
+        const logger = options.logger;
 
         const flatten = this.renderFlatten({normalize: false});
         const positionHistories = flatten.map(pv => new PositionHistory({

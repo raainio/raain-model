@@ -1,6 +1,7 @@
 import {IPolarMeasureValue} from './IPolarMeasureValue';
 import {AbstractPolarMeasureValue} from './AbstractPolarMeasureValue';
 import {PolarMeasureValue} from './PolarMeasureValue';
+import {MeasureValuePolarContainer} from './MeasureValuePolarContainer';
 
 /**
  * Radar with polar value containers
@@ -49,13 +50,15 @@ export class RadarPolarMeasureValue extends AbstractPolarMeasureValue implements
             const tolerance = 20;
             let val = 0;
             const absAz = Math.abs(az - movementFrom0To90);
-            const absDis = Math.abs(dis - 100);
+            const absDis = Math.abs(dis - movementFrom0To90);
             if (absAz < tolerance && absDis < tolerance) {
-                val = 56 - absAz * Math.random() * 2;
+                val = 56 - Math.random() * 10;
             }
             return val;
         };
 
+        const azimuthsCount = 360 * 2;
+        const polarEdgesCount = 250;
         for (let axis = 0; axis <= 90; axis += 90) {    // 2 axis: horizontal + vertical
             for (let angle = 0.4; angle < 3; angle++) { // 3 sites: 0.4°, 1.4°, 2.4°
                 const value = {
@@ -63,21 +66,21 @@ export class RadarPolarMeasureValue extends AbstractPolarMeasureValue implements
                     axis,
                     angle
                 };
-                const polars = [];
-                for (let azimuth = 0; azimuth < 360; azimuth += 0.5) {  // 0.5° azimuth
+                const measureValuePolarContainers = [];
+                for (let azimuth = 0; azimuth < (azimuthsCount / 2); azimuth += 0.5) {  // 0.5° azimuth
                     const data = [];
-                    for (let distance = 0; distance < 250; distance++) {
+                    for (let distance = 0; distance < polarEdgesCount; distance++) {
                         const num = Math.round(angle * getMovementValue(azimuth, distance));
                         data.push(num);
                     }
-                    const polar = {
+                    const measureValuePolarContainer = new MeasureValuePolarContainer({
                         azimuth,
                         distance: 1000, // 1KM gate = 1000 meters
                         polarEdges: data,
-                    };
-                    polars.push(polar);
+                    });
+                    measureValuePolarContainers.push(measureValuePolarContainer);
                 }
-                value.polarMeasureValue = polars;
+                value.polarMeasureValue = new PolarMeasureValue({measureValuePolarContainers, azimuthsCount, polarEdgesCount});
                 const radarPolarMeasureValue = new RadarPolarMeasureValue(value);
                 radarPolarMeasureValues.push(radarPolarMeasureValue);
             }
@@ -85,17 +88,16 @@ export class RadarPolarMeasureValue extends AbstractPolarMeasureValue implements
         return radarPolarMeasureValues;
     }
 
-    public toJSON(stringify = false): any {
-        const json = super.toJSON(stringify);
+    public toJSON(options = {
+        stringify: false
+    }): any {
+        const json = super.toJSON(options);
         json.angle = this.angle;
         json.axis = this.axis;
         return json;
     }
 
     public toJSONWithPolarStringified(): any {
-        const json = super.toJSONWithPolarStringified();
-        json.angle = this.angle;
-        json.axis = this.axis;
-        return json;
+        return this.toJSON({stringify: true});
     }
 }

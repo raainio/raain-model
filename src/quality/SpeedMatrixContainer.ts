@@ -519,7 +519,7 @@ export class SpeedMatrixContainer {
         return this;
     }
 
-    logMergedMatrix(options: { normalize?: boolean } = {normalize: true}) {
+    logMergedMatrix(options: { normalize: boolean, logger: any } = {normalize: true, logger: null}) {
 
         const mergedMatrix = this.renderMergedMatrix(options);
         const positionHistories = mergedMatrix.map(pv => new PositionHistory({
@@ -540,7 +540,13 @@ export class SpeedMatrixContainer {
             return '' + Math.round(pv.value * 1000) / 1000;
         }
 
-        SpeedMatrix.LogPositionValues(positionHistories, valueDisplay);
+        SpeedMatrix.LogPositionValues(positionHistories, valueDisplay, {
+                xMin: -SpeedMatrix.DEFAULT_MATRIX_RANGE,
+                xMax: SpeedMatrix.DEFAULT_MATRIX_RANGE,
+                yMin: -SpeedMatrix.DEFAULT_MATRIX_RANGE,
+                yMax: SpeedMatrix.DEFAULT_MATRIX_RANGE
+            },
+            options?.logger);
     }
 
     protected storeFlattenMatrices() {

@@ -135,7 +135,7 @@ export class QualityTools {
 
     public static LogCartesianValues(cartesianValues: CartesianValue[],
                                      logger = console) {
-        logger.log('>> raain-quality ### logCartesianValues with', cartesianValues.length,
+        logger?.log('>> raain-quality ### logCartesianValues with', cartesianValues.length,
             QualityTools.DEFAULT_SCALE, ' in progress...');
         const pointsToShow = {};
         const latSteps = QualityTools.ComputeLatSteps(cartesianValues);
@@ -173,7 +173,7 @@ export class QualityTools {
             pointsToShow[labelY(point.lat)][labelX(point.lng)] = value;
         }
 
-        logger.table(pointsToShow);
+        logger?.table(pointsToShow);
     }
 
     public static UniqNum(a: number[]) {

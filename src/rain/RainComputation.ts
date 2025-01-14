@@ -3,6 +3,8 @@ import {Link} from '../organization/Link';
 import {RainPolarMeasureValue} from '../polar/RainPolarMeasureValue';
 import {RainCartesianMeasureValue} from '../cartesian/RainCartesianMeasureValue';
 import {RainComputationAbstract} from './RainComputationAbstract';
+import {LatLng} from '../cartesian/LatLng';
+import {RainMeasure} from './RainMeasure';
 
 /**
  *  api/rains/:rainId/computations/:computationId
@@ -38,10 +40,26 @@ export class RainComputation extends RainComputationAbstract {
         this.setResults(json.results);
     }
 
-    public toJSON(stringify = false): any {
+    public toJSON(options = {
+        stringify: false
+    }): any {
         const json = super.toJSON();
-        json['results'] = this.results.map(r => r.toJSON(stringify));
+        json['results'] = this.results.map(r => r.toJSON(options));
         return json;
+    }
+
+    mergeCartesianResults(options: {
+        mergeCartesianPixelWidth: LatLng,
+        mergeLimitPoints: [LatLng, LatLng],
+        removeNullValues?: boolean,
+    }) {
+        this.buildLatLngMatrix(options);
+        const values = this.results;
+        return this.mergeRainMeasures([new RainMeasure({
+            id: this.id,
+            values,
+            date: this.date
+        })], options);
     }
 
     protected getLinkType(): string {

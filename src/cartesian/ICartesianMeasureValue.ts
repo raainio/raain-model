@@ -3,13 +3,11 @@ import {LatLng} from './LatLng';
 
 export interface ICartesianMeasureValue {
 
+    getLimitPoints(): [LatLng, LatLng];
+
     getCartesianValuesStringified(): string;
 
     getCartesianValues(): CartesianValue[];
-
-    setCartesianValues(cartesianValues: CartesianValue[]): void;
-
-    setCartesianValuesAsString(s: string): void;
 
     toJSON(): any;
 
@@ -22,6 +20,4 @@ export interface ICartesianMeasureValue {
     setCartesianValue(json: { lat: number, lng: number, value: number }): void;
 
     getCartesianPixelWidth(): LatLng;
-
-    setCartesianPixelWidth(json: { lat: number, lng: number }): void;
 }

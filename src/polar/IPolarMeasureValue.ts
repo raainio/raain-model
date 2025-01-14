@@ -3,19 +3,19 @@ import {PolarValue} from './PolarValue';
 
 export interface IPolarMeasureValue {
 
+    getAzimuthsCount(): number;
+
+    getPolarEdgesCount(): number;
+
     getPolarsStringified(): string;
 
     getPolars(): MeasureValuePolarContainer[];
 
-    setPolarsAsString(s: string): void;
-
-    setPolarsAsContainer(s: MeasureValuePolarContainer[]): void;
-
-    toJSON(): any;
+    toJSON(options?: any): any;
 
     toJSONWithPolarStringified(): any;
 
-    getPolarValue(json: { azimuthIndex: number, edgeIndex: number }): PolarValue;
+    getPolarValue(json: { azimuthInDegrees: number, distanceInMeters: number }): PolarValue;
 
-    setPolarValue(json: { azimuthIndex: number, edgeIndex: number, value: number }): void;
+    setPolarValue(json: { azimuthInDegrees: number, distanceInMeters: number, value: number }): void;
 }

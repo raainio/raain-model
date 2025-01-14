@@ -6,10 +6,12 @@ export class CartesianMeasureValue implements ICartesianMeasureValue {
 
     protected cartesianValues: CartesianValue[];
     protected cartesianPixelWidth: LatLng;
+    protected limitPoints: [LatLng, LatLng];
 
     constructor(json: {
                     cartesianValues: string | CartesianValue[],
                     cartesianPixelWidth: { lat: number, lng: number } | LatLng,
+                    limitPoints?: [LatLng, LatLng]
                 }
     ) {
 
@@ -19,10 +21,12 @@ export class CartesianMeasureValue implements ICartesianMeasureValue {
 
         this.setCartesianValuesAsAny(json.cartesianValues);
         this.setCartesianPixelWidth(json.cartesianPixelWidth);
-
+        if (json.limitPoints?.length === 2) {
+            this.setLimitPoints(json.limitPoints[0], json.limitPoints[1]);
+        }
     }
 
-    static From(obj: any): CartesianMeasureValue {
+    static From(obj: ICartesianMeasureValue | any): CartesianMeasureValue {
         const created = new CartesianMeasureValue({
             cartesianValues: [],
             cartesianPixelWidth: {lat: 0, lng: 0}
@@ -36,6 +40,10 @@ export class CartesianMeasureValue implements ICartesianMeasureValue {
             typeof obj.cartesianPixelWidth.lat !== 'undefined' &&
             typeof obj.cartesianPixelWidth.lng !== 'undefined') {
             created.setCartesianPixelWidth(obj.cartesianPixelWidth);
+        }
+
+        if (Array.isArray(obj.limitPoints) && obj.limitPoints.length === 2) {
+            created.setLimitPoints(obj.limitPoints[0], obj.limitPoints[1]);
         }
 
         return created;
@@ -67,25 +75,22 @@ export class CartesianMeasureValue implements ICartesianMeasureValue {
         }
     }
 
-    toJSON(stringify = false): any {
+    toJSON(options = {stringify: false}): any {
 
         let cartesianValues: any = this.cartesianValues;
-        if (stringify) {
+        if (options.stringify) {
             cartesianValues = JSON.stringify(this.cartesianValues)
         }
 
-        const json: any = {
+        return {
             cartesianValues,
-            cartesianPixelWidth: this.cartesianPixelWidth,
+            cartesianPixelWidth: this.getCartesianPixelWidth(),
+            limitPoints: this.getLimitPoints(),
         };
-        return json;
     }
 
     toJSONWithCartesianValuesStringified(): any {
-        return {
-            cartesianValues: JSON.stringify(this.cartesianValues),
-            cartesianPixelWidth: this.cartesianPixelWidth,
-        };
+        return this.toJSON({stringify: true});
     }
 
     getCartesianValue(json: { lat: number, lng: number }): CartesianValue {
@@ -126,11 +131,53 @@ export class CartesianMeasureValue implements ICartesianMeasureValue {
         this.cartesianPixelWidth = new LatLng(latLng);
     }
 
+    getLimitPoints(options = {forceCompute: false}): [LatLng, LatLng] {
+        if (options.forceCompute || !this.limitPoints || this.limitPoints.length !== 2) {
+            this.computeLimits();
+        }
+        return this.limitPoints;
+    }
+
+    setLimitPoints(point1: LatLng, point2: LatLng) {
+        this.limitPoints = [
+            new LatLng({lat: point1.lat, lng: point1.lng}),
+            new LatLng({lat: point2.lat, lng: point2.lng})
+        ];
+    }
+
     protected setCartesianValuesAsAny(cartesianValues: any) {
         if (typeof cartesianValues === 'string') {
             this.setCartesianValuesAsString(cartesianValues);
         } else {
             this.setCartesianValues(cartesianValues);
+        }
+    }
+
+    protected computeLimits() {
+        this.limitPoints = undefined;
+        let p1Lat: number;
+        let p1Lng: number;
+        let p2Lat: number;
+        let p2Lng: number;
+
+        for (const cartesianValue of this.cartesianValues) {
+            if (!p1Lat || cartesianValue.lat < p1Lat) {
+                p1Lat = cartesianValue.lat;
+            }
+            if (!p1Lng || cartesianValue.lng < p1Lng) {
+                p1Lng = cartesianValue.lng;
+            }
+            if (!p2Lat || p2Lat < cartesianValue.lat) {
+                p2Lat = cartesianValue.lat;
+            }
+            if (!p2Lng || p2Lng < cartesianValue.lng) {
+                p2Lng = cartesianValue.lng;
+            }
+        }
+
+        if (p1Lat && p1Lng && p2Lat && p2Lng) {
+            this.setLimitPoints(new LatLng({lat: p1Lat, lng: p1Lng}),
+                new LatLng({lat: p2Lat, lng: p2Lng}));
         }
     }
 }

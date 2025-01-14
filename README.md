@@ -1,16 +1,12 @@
 # raain-model
 
-> RAAIN model defined in [radartorain.com](https://api.radartorain.com) services.
+> RAAIN model used in [radartorain.com](https://api.radartorain.com) services.
 
 IN PROGRESS...
 
 ### Usage
 
-Will be used in :
-
-- [https://radartorain.com](https://radartorain.com)
-- [node-raain-tools](https://github.com/raainio/node-raain-tools)
-- [https://api.radartorain.com](https://api.radartorain.com)
+See [Specs](./specs).
 
 ## History
 

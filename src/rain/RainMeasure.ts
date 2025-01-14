@@ -3,7 +3,7 @@ import {IPolarMeasureValue} from '../polar/IPolarMeasureValue';
 import {ICartesianMeasureValue} from '../cartesian/ICartesianMeasureValue';
 
 /**
- *  api/rains/:id/computations/:id?format=map => RainComputationMap getMapData()
+ *  api/rains/:id/computations/:id?format=map => RainComputationMap getMapData() => RainMeasure[]
  */
 export class RainMeasure extends Measure {
 

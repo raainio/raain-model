@@ -8,57 +8,58 @@ export class AbstractPolarMeasureValue implements IPolarMeasureValue {
     public polarMeasureValue: PolarMeasureValue;
 
     constructor(json: {
-        polarMeasureValue: AbstractPolarMeasureValue | PolarMeasureValue | string
+        polarMeasureValue: AbstractPolarMeasureValue | PolarMeasureValue | string,
     }) {
 
         if (!json?.polarMeasureValue) {
-            throw new Error('PolarMeasureValue needs polarMeasureValue');
+            throw new Error('Needs one polarMeasureValue');
         }
 
-        let polarMeasureValue: any = json.polarMeasureValue;
-        if (typeof polarMeasureValue === 'string') {
-            if (polarMeasureValue.indexOf('polarMeasureValue') > 0) {
-                polarMeasureValue = JSON.parse(polarMeasureValue);
+        let polarMeasureValue1: any = json.polarMeasureValue;
+        if (typeof polarMeasureValue1 === 'string') {
+            polarMeasureValue1 = JSON.parse(polarMeasureValue1);
+        }
+
+        if (polarMeasureValue1 instanceof AbstractPolarMeasureValue
+            || polarMeasureValue1 instanceof PolarMeasureValue) {
+            this.setPolarsAsContainer(polarMeasureValue1.getPolars(),
+                polarMeasureValue1.getAzimuthsCount(),
+                polarMeasureValue1.getPolarEdgesCount());
+            return;
+        }
+
+        let polarMeasureValue2 = polarMeasureValue1;
+        if (polarMeasureValue1['polarMeasureValue']) {
+            if (typeof polarMeasureValue1['polarMeasureValue'] === 'string') {
+                polarMeasureValue2 = JSON.parse(polarMeasureValue1['polarMeasureValue']);
             } else {
-                this.setPolarsAsString(polarMeasureValue);
-                return;
+                polarMeasureValue2 = polarMeasureValue1['polarMeasureValue'];
             }
         }
 
-        if (polarMeasureValue instanceof AbstractPolarMeasureValue
-            || polarMeasureValue instanceof PolarMeasureValue) {
-            this.setPolarsAsContainer(polarMeasureValue.getPolars());
+        let azimuthsCount: number;
+        let polarEdgesCount: number;
+        let measureValuePolarContainers = [];
+        if (polarMeasureValue2 && polarMeasureValue2['measureValuePolarContainers']) {
+            measureValuePolarContainers = polarMeasureValue2['measureValuePolarContainers'];
+
+            if (polarMeasureValue2['azimuthsCount'] && polarMeasureValue2['polarEdgesCount']) {
+                azimuthsCount = parseInt('' + polarMeasureValue2['azimuthsCount'], 10);
+                polarEdgesCount = parseInt('' + polarMeasureValue2['polarEdgesCount'], 10);
+            }
+        }
+
+        if (typeof measureValuePolarContainers === 'string') {
+            this.setPolarsAsString(measureValuePolarContainers, azimuthsCount, polarEdgesCount);
             return;
         }
 
-        let polarMeasure = polarMeasureValue;
-        if (polarMeasureValue
-            && typeof polarMeasureValue['polarMeasureValue'] !== 'undefined') {
-            polarMeasure = polarMeasureValue['polarMeasureValue'];
-        }
-
-        let polarContainers: any = polarMeasure;
-        if (polarMeasure && polarMeasure['measureValuePolarContainers']) {
-            polarContainers = polarMeasure['measureValuePolarContainers'];
-        }
-
-        if (polarContainers instanceof AbstractPolarMeasureValue
-            || polarContainers instanceof PolarMeasureValue) {
-            this.setPolarsAsContainer(polarContainers.getPolars());
+        if (Array.isArray(measureValuePolarContainers)) {
+            this.setPolarsAsContainer(measureValuePolarContainers, azimuthsCount, polarEdgesCount);
             return;
         }
 
-        if (typeof polarContainers === 'string') {
-            this.setPolarsAsString(polarContainers);
-            return;
-        }
-
-        if (Array.isArray(polarContainers)) {
-            this.setPolarsAsContainer(polarContainers);
-            return;
-        }
-
-        throw new Error('PolarMeasureValue needs valid typed polarMeasureValue');
+        throw new Error('Needs valid polarMeasureValue');
     }
 
     getPolarsStringified(): string {
@@ -69,45 +70,36 @@ export class AbstractPolarMeasureValue implements IPolarMeasureValue {
         return this.polarMeasureValue.getPolars();
     }
 
-    setPolarsAsString(s: string): void {
-        this.polarMeasureValue = new PolarMeasureValue({measureValuePolarContainers: s});
+    setPolarsAsString(measureValuePolarContainers: string, azimuthsCount: number, polarEdgesCount: number): void {
+        this.polarMeasureValue = new PolarMeasureValue({measureValuePolarContainers, azimuthsCount, polarEdgesCount});
     }
 
-    setPolarsAsContainer(s: MeasureValuePolarContainer[]): void {
-        this.polarMeasureValue = new PolarMeasureValue({measureValuePolarContainers: s});
+    setPolarsAsContainer(measureValuePolarContainers: MeasureValuePolarContainer[], azimuthsCount: number, polarEdgesCount: number): void {
+        this.polarMeasureValue = new PolarMeasureValue({measureValuePolarContainers, azimuthsCount, polarEdgesCount});
     }
 
-    getPolarValue(json: { azimuthIndex: number, edgeIndex: number, strict?: boolean }): PolarValue {
+    getPolarValue(json: { azimuthInDegrees: number, distanceInMeters: number }): PolarValue {
         return this.polarMeasureValue.getPolarValue(json);
     }
 
-    setPolarValue(json: { azimuthIndex: number, edgeIndex: number, value: number }): void {
+    setPolarValue(json: { azimuthInDegrees: number, distanceInMeters: number, value: number }): void {
         return this.polarMeasureValue.setPolarValue(json);
     }
 
     getAzimuthsCount(): number {
-        return this.polarMeasureValue.getPolars().length;
+        return this.polarMeasureValue.getAzimuthsCount();
     }
 
     getPolarEdgesCount(): number {
-        const polars = this.polarMeasureValue.getPolars();
-        if (polars.length > 0) {
-            return polars[0].polarEdges.length;
-        }
-        return 0;
+        return this.polarMeasureValue.getPolarEdgesCount();
     }
 
-    getDistance(): number {
-        const polars = this.polarMeasureValue.getPolars();
-        if (polars.length > 0) {
-            return polars[0].distance;
-        }
-        return 1;
-    }
+    public toJSON(options = {
+        stringify: false
+    }): any {
 
-    public toJSON(stringify = false): any {
         let polarMeasureValue: any = this.polarMeasureValue;
-        if (stringify) {
+        if (options?.stringify) {
             polarMeasureValue = JSON.stringify(this.polarMeasureValue.toJSONWithPolarStringified());
         }
 
@@ -117,7 +109,6 @@ export class AbstractPolarMeasureValue implements IPolarMeasureValue {
     }
 
     public toJSONWithPolarStringified(): any {
-        const polarMeasureValue = JSON.stringify(this.polarMeasureValue.toJSONWithPolarStringified());
-        return {polarMeasureValue};
+        return this.toJSON({stringify: true});
     }
 }

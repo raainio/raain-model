@@ -3,6 +3,10 @@ import {CartesianValue, Position, QualityPoint, QualityTools, RainComputationQua
 
 describe('SpeedMatrix', () => {
 
+    const optionalTrace = (...log: any[]) => {
+        // console.log(new Date().toISOString(), log)
+    }
+    const optionalLogger = null; // console;
 
     it('should SpeedMatrixContainer CreateFromJson, merge and renderMergedMatrix', () => {
 
@@ -64,8 +68,8 @@ describe('SpeedMatrix', () => {
         expect(mergedMatrix[611].value).eq(1);
         expect(mergedMatrix[611].x).eq(2);
         expect(mergedMatrix[611].y).eq(1);
-        speedMatrixContainer.logMergedMatrix({normalize: false});
-        speedMatrixContainer.logMergedMatrix({normalize: true});
+        speedMatrixContainer.logMergedMatrix({normalize: false, logger: optionalLogger});
+        speedMatrixContainer.logMergedMatrix({normalize: true, logger: optionalLogger});
     });
 
     it('should SpeedMatrixContainer merge and compare', async () => {
@@ -97,8 +101,8 @@ describe('SpeedMatrix', () => {
         const qualitySpeedMatrixContainer1 = new SpeedMatrixContainer({matrices: [speedMatrix1]});
 
         // 1) Verify creation
-        qualitySpeedMatrixContainer1.logMergedMatrix({normalize: false});
-        speedMatrix1.logFlatten();
+        qualitySpeedMatrixContainer1.logMergedMatrix({normalize: false, logger: optionalLogger});
+        speedMatrix1.logFlatten({logger: optionalLogger, simplify: false});
         expect(qualitySpeedMatrixContainer1.getQuality()).eq(0.5);
         expect(qualitySpeedMatrixContainer1.getMaxGauge()).eq(10);
         expect(qualitySpeedMatrixContainer1.getMaxRain()).eq(10.5);
@@ -131,7 +135,7 @@ describe('SpeedMatrix', () => {
         qualitySpeedMatrixContainer2.merge(qualitySpeedMatrixContainer3);
 
         // 2) Verify merging
-        qualitySpeedMatrixContainer2.logMergedMatrix({normalize: false});
+        qualitySpeedMatrixContainer2.logMergedMatrix({normalize: false, logger: optionalLogger});
         expect(qualitySpeedMatrixContainer2.getQuality()).eq(0.38000000000000045);
         expect(qualitySpeedMatrixContainer2.getMaxGauge()).eq(10.399999999999999);
         expect(qualitySpeedMatrixContainer2.getMaxRain()).eq(10.5);

@@ -24,7 +24,7 @@ export class RainPolarMeasureValue extends AbstractPolarMeasureValue implements 
         this.version = json.version;
     }
 
-    static From(obj: any): RainPolarMeasureValue {
+    static From(obj: IPolarMeasureValue | any): RainPolarMeasureValue {
         let version: string,
             polarMeasureValue: PolarMeasureValue;
 
@@ -36,23 +36,19 @@ export class RainPolarMeasureValue extends AbstractPolarMeasureValue implements 
             polarMeasureValue = obj.polarMeasureValue;
         }
 
-        if (typeof obj.measureValuePolarContainers !== 'undefined') {
-            polarMeasureValue = new PolarMeasureValue({measureValuePolarContainers: obj.measureValuePolarContainers});
-        }
-
         return new RainPolarMeasureValue({polarMeasureValue, version});
     }
 
-    public toJSON(stringify = false): any {
-        const json: any = super.toJSON(stringify);
+    public toJSON(options = {
+        stringify: false
+    }): any {
+        const json: any = super.toJSON(options);
         json.version = this.version;
         return json;
     }
 
     public toJSONWithPolarStringified(): any {
-        const json: any = super.toJSONWithPolarStringified();
-        json.version = this.version;
-        return json;
+        return this.toJSON({stringify: true});
     }
 
     public getVersion(): string {

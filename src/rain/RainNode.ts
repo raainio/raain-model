@@ -190,6 +190,27 @@ export class RainNode extends RaainNode {
         return center;
     }
 
+    public getLimitPoints(): [LatLng, LatLng] {
+        let limitPoints: [LatLng, LatLng];
+        this.setDefaultLatLng(this['radars']);
+        if (this.latLngRectsAsJSON && this.latLngRectsAsJSON !== '[]') {
+            const rects = JSON.parse(this.latLngRectsAsJSON);
+            let latMax: number, lngMax: number, latMin: number, lngMin: number;
+            for (const rect of rects) {
+                const rectA = rect[0];
+                const rectB = rect[1];
+                latMax = Math.max(rectA.lat, rectB.lat, typeof latMax !== 'undefined' ? latMax : rectA.lat);
+                lngMin = Math.min(rectA.lng, rectB.lng, typeof lngMin !== 'undefined' ? lngMin : rectA.lng);
+                latMin = Math.min(rectA.lat, rectB.lat, typeof latMin !== 'undefined' ? latMin : rectB.lat);
+                lngMax = Math.max(rectA.lng, rectB.lng, typeof lngMax !== 'undefined' ? lngMax : rectB.lng);
+            }
+
+            limitPoints = [new LatLng({lat: latMin, lng: lngMin}), new LatLng({lat: latMax, lng: lngMax})];
+        }
+
+        return limitPoints;
+    }
+
     protected getLinkType(): string {
         return RainNode.TYPE;
     }

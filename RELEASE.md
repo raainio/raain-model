@@ -15,3 +15,4 @@
 - 2.2.x : BuildCompares refactored.
 - 2.3.x : Angle/Axis refactored.
 - 2.4.x : PeopleNode move role to roles.
+- 2.5.x : Polar and Cartesian limits (count + offsets). PolarMap added to manipulate index.

@@ -1,5 +1,6 @@
 import {CartesianValue} from './CartesianValue';
 import {CartesianMeasureValue} from './CartesianMeasureValue';
+import {LatLng} from './LatLng';
 
 export class RadarCartesianMeasureValue extends CartesianMeasureValue {
 
@@ -11,6 +12,7 @@ export class RadarCartesianMeasureValue extends CartesianMeasureValue {
         cartesianPixelWidth: { lat: number, lng: number },
         angle: number,
         axis: number,
+        limitPoints: [LatLng, LatLng],
     }) {
 
         super(json);
@@ -18,17 +20,14 @@ export class RadarCartesianMeasureValue extends CartesianMeasureValue {
         this.axis = json.axis;
     }
 
-    toJSON(stringify = false): any {
-        const json: any = super.toJSON(stringify);
+    toJSON(options = {stringify: false}): any {
+        const json: any = super.toJSON(options);
         json.angle = this.angle;
         json.axis = this.axis;
         return json;
     }
 
     toJSONWithCartesianValuesStringified(): any {
-        const json: any = super.toJSONWithCartesianValuesStringified();
-        json.angle = this.angle;
-        json.axis = this.axis;
-        return json;
+        return this.toJSON({stringify: true});
     }
 }

@@ -2,26 +2,62 @@ import {MeasureValuePolarContainer} from './MeasureValuePolarContainer';
 import {IPolarMeasureValue} from './IPolarMeasureValue';
 import {PolarValue} from './PolarValue';
 import {AbstractPolarMeasureValue} from './AbstractPolarMeasureValue';
+import hash from 'hash-it';
 
 export class PolarMeasureValue implements IPolarMeasureValue {
 
-    private measureValuePolarContainers: MeasureValuePolarContainer[];
+    protected measureValuePolarContainers: MeasureValuePolarContainer[];
+    protected azimuthsCount: number;
+    protected polarEdgesCount: number;
 
     constructor(json: {
-        measureValuePolarContainers: MeasureValuePolarContainer[] | string
-    }) {
+        measureValuePolarContainers: MeasureValuePolarContainer[] | string,
+        azimuthsCount?: number,
+        polarEdgesCount?: number,
+    } | string) {
+
+        if (typeof json === 'string') {
+            json = JSON.parse(json) as {
+                measureValuePolarContainers: MeasureValuePolarContainer[] | string,
+                azimuthsCount: number,
+                polarEdgesCount: number,
+            };
+        }
+
         if (typeof json.measureValuePolarContainers === 'string') {
+
             this.setPolarsAsString(json.measureValuePolarContainers);
-            return;
-        }
 
-        if (json.measureValuePolarContainers instanceof AbstractPolarMeasureValue
+        } else if (json.measureValuePolarContainers instanceof AbstractPolarMeasureValue
             || json.measureValuePolarContainers instanceof PolarMeasureValue) {
+
             this.setPolarsAsContainer(json.measureValuePolarContainers.getPolars());
-            return;
+
+        } else {
+            this.setPolarsAsContainer(json.measureValuePolarContainers);
         }
 
-        this.setPolarsAsContainer(json.measureValuePolarContainers);
+        if (!(json?.azimuthsCount >= 0) || !(json?.polarEdgesCount >= 0)) {
+            // throw new Error('PolarMeasureValue needs valid azimuthsCount & polarEdgesCount');
+            this.countUnknown();
+        } else {
+            this.azimuthsCount = json.azimuthsCount;
+            this.polarEdgesCount = json.polarEdgesCount;
+        }
+    }
+
+    getAzimuthsCount(): number {
+        if (this.azimuthsCount < 0) {
+            this.count();
+        }
+        return this.azimuthsCount;
+    }
+
+    getPolarEdgesCount(): number {
+        if (this.polarEdgesCount < 0) {
+            this.count();
+        }
+        return this.polarEdgesCount;
     }
 
     getPolarsStringified(): string {
@@ -49,74 +85,205 @@ export class PolarMeasureValue implements IPolarMeasureValue {
             // console.warn('setPolarsAsString pb: ', e, typeof s, s);
             this.measureValuePolarContainers = [];
         }
+
+        this.countUnknown();
     }
 
-    setPolarsAsContainer(measureValuePolarContainers: MeasureValuePolarContainer[]): void {
+    setPolarsAsContainer(measureValuePolarContainers: MeasureValuePolarContainer[],
+                         options = {resetCount: true}): void {
         let parsed: any = measureValuePolarContainers ? measureValuePolarContainers : [];
         if (!('length' in parsed)) {
             parsed = [];
         }
         this.measureValuePolarContainers = parsed;
+
+        if (options.resetCount) {
+            this.countUnknown();
+        }
     }
 
-    getPolarValue(json: { azimuthIndex: number, edgeIndex: number, strict?: boolean }): PolarValue {
-        let azimuthIndex = json.azimuthIndex;
-        if (!json.strict) {
-            azimuthIndex = this.updateIndex(this.measureValuePolarContainers, json.azimuthIndex);
-        }
-        const azimuthContainer = this.measureValuePolarContainers[azimuthIndex];
-        if (!azimuthContainer) {
+    getPolarValue(json: { azimuthInDegrees: number, distanceInMeters: number }): PolarValue {
+
+        if (json.azimuthInDegrees < 0 || json.azimuthInDegrees > 360) {
+            console.warn('### raain-model > getPolarValue : strange azimuth:', json.azimuthInDegrees);
             return null;
         }
 
-        let edgeIndex = json.edgeIndex;
-        if (!json.strict) {
-            edgeIndex = this.updateIndex(azimuthContainer.polarEdges, json.edgeIndex);
-        }
-        const edgeValue = azimuthContainer.polarEdges[edgeIndex];
-        if (typeof edgeValue === 'undefined') {
-            return null;
+        let edgeValue = 0;
+        let distance = this.getDefaultDistance();
+
+        const measureValuePolarContainersFound = this.measureValuePolarContainers
+            .filter(c => c.azimuth === json.azimuthInDegrees);
+        if (measureValuePolarContainersFound.length === 1) {
+
+            const measureValuePolarContainer = measureValuePolarContainersFound[0];
+            distance = measureValuePolarContainer.distance;
+            const edgeIndex = (json.distanceInMeters / distance) - 1 - measureValuePolarContainer.edgeOffset;
+
+            if (0 <= edgeIndex && edgeIndex < measureValuePolarContainer.polarEdges.length) {
+                edgeValue = measureValuePolarContainer.polarEdges[edgeIndex];
+            }
         }
 
         return new PolarValue({
             value: edgeValue,
-            polarAzimuthInDegrees: azimuthContainer.azimuth,
-            polarDistanceInMeters: azimuthContainer.distance * edgeIndex
+            polarAzimuthInDegrees: json.azimuthInDegrees,
+            polarDistanceInMeters: json.distanceInMeters
         });
     }
 
-    setPolarValue(json: {
-        azimuthIndex: number,
-        edgeIndex: number,
-        value: number
-    }): void {
-        const azimuthIndex = this.updateIndex(this.measureValuePolarContainers, json.azimuthIndex);
-        const azimuthContainer = this.measureValuePolarContainers[azimuthIndex];
-        if (!azimuthContainer) {
+    setPolarValue(json: { azimuthInDegrees: number, distanceInMeters: number, value: number }): void {
+
+        if (json.azimuthInDegrees < 0 || json.azimuthInDegrees > 360) {
+            console.warn('### raain-model > setPolarValue : strange azimuth:', json.azimuthInDegrees);
             return null;
         }
-        const edgeIndex = this.updateIndex(azimuthContainer.polarEdges, json.edgeIndex);
-        azimuthContainer.polarEdges[edgeIndex] = json.value;
+
+        let distance = this.getDefaultDistance();
+        const azimuth = json.azimuthInDegrees;
+        const found = this.measureValuePolarContainers.filter(c => c.azimuth === azimuth);
+        if (found.length === 1) {
+            const measureValuePolarContainer = found[0];
+            distance = measureValuePolarContainer.distance;
+            const edgeIndex = (json.distanceInMeters / distance) - 1 - measureValuePolarContainer.edgeOffset;
+
+            if (0 <= edgeIndex && edgeIndex < measureValuePolarContainer.polarEdges.length) {
+                measureValuePolarContainer.polarEdges[edgeIndex] = json.value;
+            } else {
+                console.warn('### raain-model > setPolarValue : extending polarEdges');
+                let diff = edgeIndex - measureValuePolarContainer.polarEdges.length;
+                if (edgeIndex < 0) {
+                    diff = -1 - edgeIndex;
+                    measureValuePolarContainer.edgeOffset += edgeIndex;
+                }
+
+                const arrayWithNullValuesToAdd = new Array(diff).fill(0);
+
+                if (edgeIndex < 0) {
+                    measureValuePolarContainer.polarEdges = [json.value].concat(
+                        arrayWithNullValuesToAdd.concat(measureValuePolarContainer.polarEdges));
+                } else if (edgeIndex > 0) {
+                    measureValuePolarContainer.polarEdges = measureValuePolarContainer.polarEdges.concat(
+                        arrayWithNullValuesToAdd.concat([json.value]));
+                }
+            }
+        } else if (found.length === 0) {
+            console.warn('### raain-model > setPolarValue : extending measureValuePolarContainers');
+            const polarEdges = [json.value];
+            const edgeOffset = json.distanceInMeters / distance - 1;
+            this.measureValuePolarContainers.push(new MeasureValuePolarContainer({azimuth, distance, polarEdges, edgeOffset}));
+        }
+    }
+
+    iterate(onEachValue: (
+        polarValue: PolarValue,
+        azimuthIndex: number,
+        edgeIndex: number,
+        valueSetter: (newValue: number) => void
+    ) => void) {
+
+        for (const measureValuePolarContainer of this.measureValuePolarContainers) {
+            const azimuth = measureValuePolarContainer.azimuth;
+            const distance = measureValuePolarContainer.distance;
+            const polarEdges = measureValuePolarContainer.polarEdges;
+
+            const azimuthIndex = azimuth * this.getAzimuthsCount() / 360;
+            for (const [edgeIndex, value] of polarEdges.entries()) {
+
+                const edgeAbsoluteIndex = edgeIndex + measureValuePolarContainer.edgeOffset;
+
+                const valueSetter = (newValue: number) => {
+                    polarEdges[edgeIndex] = newValue;
+                };
+
+                onEachValue(
+                    new PolarValue({
+                        value,
+                        polarAzimuthInDegrees: azimuth,
+                        polarDistanceInMeters: distance * (edgeAbsoluteIndex + 1)
+                    }),
+                    azimuthIndex,
+                    edgeAbsoluteIndex,
+                    valueSetter);
+            }
+        }
     }
 
     public toJSON() {
         return {
-            measureValuePolarContainers: this.measureValuePolarContainers
+            measureValuePolarContainers: this.getPolars(),
+            azimuthsCount: this.getAzimuthsCount(),
+            polarEdgesCount: this.getPolarEdgesCount(),
         };
     }
 
     public toJSONWithPolarStringified() {
         return {
-            measureValuePolarContainers: this.getPolarsStringified()
+            measureValuePolarContainers: this.getPolarsStringified(),
+            azimuthsCount: this.getAzimuthsCount(),
+            polarEdgesCount: this.getPolarEdgesCount(),
         };
     }
 
-    protected updateIndex(array: Array<any>, index: number): number {
-        if (array.length <= index) {
-            index = index - array.length;
-        } else if (index < 0) {
-            index = array.length + index;
+    public getFiltered(options = {
+        nullValues: true,
+        ordered: false
+    }): PolarMeasureValue {
+
+        const azimuthsCount = this.getAzimuthsCount();
+        const polarEdgesCount = this.getPolarEdgesCount();
+
+        let measureValuePolarContainers = [];
+        for (const measureValuePolarContainer of this.measureValuePolarContainers) {
+            const filteredMeasureValuePolarContainer = measureValuePolarContainer.getFiltered(options);
+            if (options.nullValues && filteredMeasureValuePolarContainer.getNotNullValuesCount()) {
+                measureValuePolarContainers.push(filteredMeasureValuePolarContainer);
+            }
         }
-        return index;
+
+        if (options.ordered) {
+            measureValuePolarContainers = measureValuePolarContainers.sort((a, b) => a.azimuth - b.azimuth);
+        }
+
+        return new PolarMeasureValue({measureValuePolarContainers, azimuthsCount, polarEdgesCount});
+    }
+
+    public getValuesCount(): number {
+        return this.getAzimuthsCount() * this.getPolarEdgesCount();
+    }
+
+    public getNotNullValuesCount(): number {
+        let count = 0;
+        for (const [a, measureValuePolarContainer] of this.getPolars().entries()) {
+            count += measureValuePolarContainer.getNotNullValuesCount();
+        }
+        return count;
+    }
+
+    public getDefaultDistance() {
+        let distance = 1000;
+        if (this.measureValuePolarContainers.length > 0) {
+            distance = this.measureValuePolarContainers[0].distance;
+        }
+        return distance;
+    }
+
+    public getHash(): string {
+        return '' + hash(this.getPolars());
+    }
+
+    protected count() {
+        const measureValuePolarContainers = this.getPolars();
+        this.azimuthsCount = measureValuePolarContainers.length;
+        if (this.azimuthsCount > 0) {
+            this.polarEdgesCount = measureValuePolarContainers[0].polarEdges.length;
+        } else {
+            this.polarEdgesCount = 0;
+        }
+    }
+
+    protected countUnknown() {
+        this.azimuthsCount = -1;
+        this.polarEdgesCount = -1;
     }
 }

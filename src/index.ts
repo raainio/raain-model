@@ -29,10 +29,11 @@ export * from './rain/RainComputationQuality';
 export * from './rain/RainComputation';
 export * from './rain/RainComputationMap';
 
-export * from './polar/GaugePolarMeasureValue';
 export * from './polar/MeasureValuePolarContainer';
 export * from './polar/PolarMeasureValue';
+export * from './polar/PolarMeasureValueMap';
 export * from './polar/PolarValue';
+export * from './polar/PolarFilter';
 export * from './polar/RadarPolarMeasureValue';
 export * from './polar/RainPolarMeasureValue';
 export * from './polar/IPolarMeasureValue';
