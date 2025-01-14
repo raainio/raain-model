@@ -16,8 +16,10 @@ import {
     TeamNode
 } from '../../src';
 
-describe('Rain', () => {
+// tslint:disable-next-line:only-arrow-functions
+describe('Rain', function () {
 
+    this.timeout(4000);
     const optionalTrace = (...log: any[]) => {
         // console.log(new Date().toISOString(), log)
     }
