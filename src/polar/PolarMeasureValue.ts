@@ -2,7 +2,6 @@ import {MeasureValuePolarContainer} from './MeasureValuePolarContainer';
 import {IPolarMeasureValue} from './IPolarMeasureValue';
 import {PolarValue} from './PolarValue';
 import {AbstractPolarMeasureValue} from './AbstractPolarMeasureValue';
-import hash from 'hash-it';
 
 export class PolarMeasureValue implements IPolarMeasureValue {
 
@@ -268,7 +267,7 @@ export class PolarMeasureValue implements IPolarMeasureValue {
         return distance;
     }
 
-    public getHash(): string {
+    public getHash(hash: (any) => number | string): string {
         return '' + hash(this.getPolars());
     }
 

@@ -1,5 +1,7 @@
 import {expect} from 'chai';
 import {MeasureValuePolarContainer, PolarFilter, PolarMeasureValue, PolarMeasureValueMap, PolarValue} from '../../src';
+import hash from 'hash-it';
+
 
 describe('Polar', () => {
 
@@ -88,8 +90,8 @@ describe('Polar', () => {
             nullValues: true,
             ordered: true
         });
-        expect(polarMeasureValue.getHash()).eq('9755238054020');
-        expect(filteredPolarMeasureValue.getHash()).eq('8101260843292');
+        expect(polarMeasureValue.getHash(hash)).eq('9755238054020');
+        expect(filteredPolarMeasureValue.getHash(hash)).eq('8101260843292');
 
         expect(filteredPolarMeasureValue.getAzimuthsCount()).eq(azTotal);
         expect(filteredPolarMeasureValue.getPolarEdgesCount()).eq(distTotal);
