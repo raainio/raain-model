@@ -267,7 +267,10 @@ export class PolarMeasureValue implements IPolarMeasureValue {
         return distance;
     }
 
-    public getHash(hash: (any) => number | string): string {
+    public getHash(hash?: (arg0: any) => number | string): string {
+        if (!hash) {
+            return '' + this.getPolars();
+        }
         return '' + hash(this.getPolars());
     }
 

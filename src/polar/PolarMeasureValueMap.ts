@@ -177,9 +177,11 @@ export class PolarMeasureValueMap {
         const defaultDistanceBetweenInEdgeInMeters = this.polarMeasureValue.getDefaultDistance();
 
         const azimuthMin = typeof polarFilter.azimuthMin !== 'undefined' ? polarFilter.azimuthMin : 0;
-        const azimuthMax = typeof polarFilter.azimuthMax !== 'undefined' ? polarFilter.azimuthMax : azimuthsCount - 1;
+        const azimuthMax = typeof polarFilter.azimuthMax !== 'undefined' ?
+            Math.min(polarFilter.azimuthMax, azimuthsCount - 1) : azimuthsCount - 1;
         const edgeMin = typeof polarFilter.edgeMin !== 'undefined' ? polarFilter.edgeMin : 0;
-        const edgeMax = typeof polarFilter.edgeMax !== 'undefined' ? polarFilter.edgeMax : polarEdgesCount - 1;
+        const edgeMax = typeof polarFilter.edgeMax !== 'undefined' ?
+            Math.min(polarFilter.edgeMax, polarEdgesCount - 1) : polarEdgesCount - 1;
 
         const newMeasureValuePolarContainers = [];
         for (let azimuthIndex = azimuthMin; azimuthIndex <= azimuthMax; azimuthIndex++) {
