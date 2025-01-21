@@ -19,5 +19,4 @@ export interface ICartesianMeasureValue {
 
     setCartesianValue(json: { lat: number, lng: number, value: number }): void;
 
-    getCartesianPixelWidth(): LatLng;
 }

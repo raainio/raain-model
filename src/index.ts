@@ -40,6 +40,7 @@ export * from './polar/IPolarMeasureValue';
 
 export * from './cartesian/LatLng';
 export * from './cartesian/CartesianValue';
+export * from './cartesian/CartesianTools';
 export * from './cartesian/CartesianMeasureValue';
 export * from './cartesian/RadarCartesianMeasureValue';
 export * from './cartesian/RainCartesianMeasureValue';

@@ -5,22 +5,19 @@ import {LatLng} from './LatLng';
 export class CartesianMeasureValue implements ICartesianMeasureValue {
 
     protected cartesianValues: CartesianValue[];
-    protected cartesianPixelWidth: LatLng;
     protected limitPoints: [LatLng, LatLng];
 
     constructor(json: {
                     cartesianValues: string | CartesianValue[],
-                    cartesianPixelWidth: { lat: number, lng: number } | LatLng,
                     limitPoints?: [LatLng, LatLng]
                 }
     ) {
 
-        if (!json?.cartesianValues || !json?.cartesianPixelWidth) {
-            throw new Error('CartesianMeasureValue needs cartesianValues && cartesianPixelWidth');
+        if (!json?.cartesianValues) {
+            throw new Error('CartesianMeasureValue needs cartesianValues');
         }
 
         this.setCartesianValuesAsAny(json.cartesianValues);
-        this.setCartesianPixelWidth(json.cartesianPixelWidth);
         if (json.limitPoints?.length === 2) {
             this.setLimitPoints(json.limitPoints[0], json.limitPoints[1]);
         }
@@ -29,17 +26,10 @@ export class CartesianMeasureValue implements ICartesianMeasureValue {
     static From(obj: ICartesianMeasureValue | any): CartesianMeasureValue {
         const created = new CartesianMeasureValue({
             cartesianValues: [],
-            cartesianPixelWidth: {lat: 0, lng: 0}
         });
 
         if (typeof obj.cartesianValues !== 'undefined') {
             created.setCartesianValuesAsAny(obj.cartesianValues);
-        }
-
-        if (typeof obj.cartesianPixelWidth !== 'undefined' &&
-            typeof obj.cartesianPixelWidth.lat !== 'undefined' &&
-            typeof obj.cartesianPixelWidth.lng !== 'undefined') {
-            created.setCartesianPixelWidth(obj.cartesianPixelWidth);
         }
 
         if (Array.isArray(obj.limitPoints) && obj.limitPoints.length === 2) {
@@ -84,7 +74,6 @@ export class CartesianMeasureValue implements ICartesianMeasureValue {
 
         return {
             cartesianValues,
-            cartesianPixelWidth: this.getCartesianPixelWidth(),
             limitPoints: this.getLimitPoints(),
         };
     }
@@ -121,14 +110,6 @@ export class CartesianMeasureValue implements ICartesianMeasureValue {
 
     setCartesianValue(json: { lat: number, lng: number, value: number }): void {
         this.cartesianValues.push(new CartesianValue(json));
-    }
-
-    getCartesianPixelWidth(): LatLng {
-        return this.cartesianPixelWidth;
-    }
-
-    setCartesianPixelWidth(latLng: { lat: number, lng: number } | LatLng): void {
-        this.cartesianPixelWidth = new LatLng(latLng);
     }
 
     getLimitPoints(options = {forceCompute: false}): [LatLng, LatLng] {

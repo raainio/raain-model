@@ -1,4 +1,4 @@
-import {QualityTools} from '../quality/tools/QualityTools';
+import {CartesianTools} from './CartesianTools';
 
 export class LatLng {
 
@@ -28,13 +28,13 @@ export class LatLng {
     }
 
     rounded(scale: LatLng) {
-        this.lat = QualityTools.RoundLatLng(this.lat, scale.lat, true);
-        this.lng = QualityTools.RoundLatLng(this.lng, scale.lng, true);
+        this.lat = CartesianTools.RoundLatLng(this.lat, scale.lat, true);
+        this.lng = CartesianTools.RoundLatLng(this.lng, scale.lng, true);
     }
 
     limitPrecision(precision = 12) {
-        this.lat = QualityTools.LimitWithPrecision(this.lat, precision);
-        this.lng = QualityTools.LimitWithPrecision(this.lng, precision);
+        this.lat = CartesianTools.LimitWithPrecision(this.lat, precision);
+        this.lng = CartesianTools.LimitWithPrecision(this.lng, precision);
     }
 
     toJSON() {

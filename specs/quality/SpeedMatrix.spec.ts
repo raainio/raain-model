@@ -1,5 +1,5 @@
 import {expect} from 'chai';
-import {CartesianValue, Position, QualityPoint, QualityTools, RainComputationQuality, SpeedMatrix, SpeedMatrixContainer} from '../../src';
+import {CartesianTools, CartesianValue, Position, QualityPoint, RainComputationQuality, SpeedMatrix, SpeedMatrixContainer} from '../../src';
 
 describe('SpeedMatrix', () => {
 
@@ -94,7 +94,7 @@ describe('SpeedMatrix', () => {
         };
         const qualityPoint1 = new QualityPoint(JSON.parse(JSON.stringify(qp)));
         const qualityPoints1: QualityPoint[] = [qualityPoint1];
-        const roundScale: Position = new Position({x: QualityTools.DEFAULT_SCALE, y: QualityTools.DEFAULT_SCALE});
+        const roundScale: Position = new Position({x: CartesianTools.DEFAULT_SCALE, y: CartesianTools.DEFAULT_SCALE});
 
         const flattenPositionRange = {xMin: -4, xMax: 4, yMin: -4, yMax: 4};
         const speedMatrix1 = new SpeedMatrix('0', '', qualityPoints1, speed, 1, flattenPositionRange, roundScale);

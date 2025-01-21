@@ -4,7 +4,7 @@ import {QualityTools} from './tools/QualityTools';
 import {Position} from './position/Position';
 import {QualityPoint} from './QualityPoint';
 import {CartesianValue} from '../cartesian/CartesianValue';
-import {LatLng} from '../cartesian/LatLng';
+import {CartesianTools} from '../cartesian/CartesianTools';
 
 export class SpeedMatrix {
 
@@ -25,7 +25,7 @@ export class SpeedMatrix {
             yMin: -SpeedMatrix.DEFAULT_MATRIX_RANGE,
             yMax: SpeedMatrix.DEFAULT_MATRIX_RANGE
         },
-        public roundScale: Position = new Position({x: QualityTools.DEFAULT_SCALE, y: QualityTools.DEFAULT_SCALE})
+        public roundScale: Position = new Position({x: CartesianTools.DEFAULT_SCALE, y: CartesianTools.DEFAULT_SCALE})
     ) {
     }
 
@@ -271,10 +271,7 @@ export class SpeedMatrix {
             const lat = qualityPoint.getRainLat() - qualityPoint.gaugeCartesianValue.lat;
             const lng = qualityPoint.getRainLng() - qualityPoint.gaugeCartesianValue.lng;
             const cartesianValue = new CartesianValue({value, lat, lng});
-            const position = QualityTools.MapLatLngToPosition(cartesianValue, false, new LatLng({
-                lat: QualityTools.DEFAULT_SCALE,
-                lng: QualityTools.DEFAULT_SCALE
-            }));
+            const position = QualityTools.MapLatLngToPosition(cartesianValue);
 
             const positionX = Math.round((position.x / this.roundScale.x) - this.flattenPositionRange.xMin);
             const positionY = Math.round((position.y / this.roundScale.y) - this.flattenPositionRange.yMin);

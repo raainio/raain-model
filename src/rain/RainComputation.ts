@@ -2,9 +2,10 @@ import {RaainNode} from '../organization/RaainNode';
 import {Link} from '../organization/Link';
 import {RainPolarMeasureValue} from '../polar/RainPolarMeasureValue';
 import {RainCartesianMeasureValue} from '../cartesian/RainCartesianMeasureValue';
-import {RainComputationAbstract} from './RainComputationAbstract';
+import {MergeStrategy, RainComputationAbstract} from './RainComputationAbstract';
 import {LatLng} from '../cartesian/LatLng';
 import {RainMeasure} from './RainMeasure';
+import {CartesianTools} from '../cartesian/CartesianTools';
 
 /**
  *  api/rains/:rainId/computations/:computationId
@@ -49,15 +50,17 @@ export class RainComputation extends RainComputationAbstract {
     }
 
     mergeCartesianResults(options: {
-        mergeCartesianPixelWidth: LatLng,
+        mergeStrategy: MergeStrategy,
         mergeLimitPoints: [LatLng, LatLng],
+        cartesianTools: CartesianTools,
         removeNullValues?: boolean,
-    }) {
+    }): RainMeasure[] {
+
         this.buildLatLngMatrix(options);
-        const values = this.results;
+
         return this.mergeRainMeasures([new RainMeasure({
             id: this.id,
-            values,
+            values: this.results,
             date: this.date
         })], options);
     }

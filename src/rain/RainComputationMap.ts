@@ -1,9 +1,9 @@
-import {RainComputationAbstract} from './RainComputationAbstract';
+import {MergeStrategy, RainComputationAbstract} from './RainComputationAbstract';
 import {Link} from '../organization/Link';
 import {RainMeasure} from './RainMeasure';
 import {RaainNode} from '../organization/RaainNode';
 import {LatLng} from '../cartesian/LatLng';
-import {QualityTools} from '../quality/tools/QualityTools';
+import {CartesianTools} from '../cartesian/CartesianTools';
 
 /**
  *  api/rains/:id/computations/:computationId?format=map&...
@@ -33,7 +33,7 @@ export class RainComputationMap extends RainComputationAbstract {
         radars?: Link[] | RaainNode[],
     }) {
         super(json);
-        this.setMapData(json.map);
+        this.setMapData(json.map, {mergeStrategy: MergeStrategy.NONE});
     }
 
     public toJSON(): any {
@@ -45,19 +45,29 @@ export class RainComputationMap extends RainComputationAbstract {
         return json;
     }
 
-    public setMapData(mapData: RainMeasure[] | string, options = {
-        mergeCartesian: false,
-        mergeCartesianPixelWidth: new LatLng({lat: QualityTools.DEFAULT_SCALE, lng: QualityTools.DEFAULT_SCALE}),
-        mergeLimitPoints: [new LatLng({lat: 0, lng: 0}), new LatLng({lat: 0, lng: 0})] as [LatLng, LatLng],
-        removeNullValues: false,
+    public setMapData(mapData: RainMeasure[] | string, options: {
+        mergeStrategy: MergeStrategy,
+        cartesianTools?: CartesianTools,
+        mergeLimitPoints?: [LatLng, LatLng],
+        removeNullValues?: boolean,
     }) {
         if (!mapData) {
             return;
         }
 
-        if (typeof (mapData) !== 'string' && options?.mergeCartesian) {
-            this.buildLatLngMatrix(options);
-            mapData = this.mergeRainMeasures(mapData as RainMeasure[], options);
+        if (typeof (mapData) !== 'string' && options.mergeStrategy !== MergeStrategy.NONE
+            && options?.cartesianTools && options?.mergeLimitPoints) {
+
+            this.buildLatLngMatrix({
+                cartesianTools: options.cartesianTools,
+                mergeLimitPoints: options.mergeLimitPoints
+            });
+
+            mapData = this.mergeRainMeasures(mapData as RainMeasure[], {
+                mergeLimitPoints: options.mergeLimitPoints,
+                removeNullValues: !!options.removeNullValues,
+                mergeStrategy: options.mergeStrategy,
+            });
         }
 
         let map = mapData;

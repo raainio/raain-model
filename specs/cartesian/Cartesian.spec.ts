@@ -34,18 +34,15 @@ describe('Cartesian', () => {
         });
         const cartesianMeasureValue = new CartesianMeasureValue({
             cartesianValues: [cartesianValue1, cartesianValue2],
-            cartesianPixelWidth: {lat: 1.002, lng: 13.0024}
         });
         const radarCartesianMeasureValue = new RadarCartesianMeasureValue({
             cartesianValues: [cartesianValue1, cartesianValue2],
-            cartesianPixelWidth: new LatLng({lat: 1, lng: 2}),
             angle: 4,
             axis: 0,
             limitPoints: undefined
         });
         expect(radarCartesianMeasureValue.angle).eq(4);
         expect(radarCartesianMeasureValue.getCartesianValues().length).eq(2);
-        expect(radarCartesianMeasureValue.getCartesianPixelWidth().lng).eq(2);
         expect(radarCartesianMeasureValue.getLimitPoints({forceCompute: true})[0].lat).eq(10);
         expect(radarCartesianMeasureValue.getLimitPoints()[0].lng).eq(19.9998);
         expect(radarCartesianMeasureValue.getLimitPoints()[1].lat).eq(10.002);
@@ -72,12 +69,10 @@ describe('Cartesian', () => {
 
         const rainCartesianMeasureValue = new RainCartesianMeasureValue({
             cartesianValues: [cartesianValue1, cartesianValue2],
-            cartesianPixelWidth: new LatLng({lat: 1, lng: 2}),
             version: '',
             limitPoints: [new LatLng({lat: 0, lng: 1}), new LatLng({lat: 12, lng: 20})]
         });
         expect(rainCartesianMeasureValue.getCartesianValues().length).eq(2);
-        expect(rainCartesianMeasureValue.getCartesianPixelWidth().lng).eq(2);
         expect(rainCartesianMeasureValue.getLimitPoints()[0].lat).eq(0);
         expect(rainCartesianMeasureValue.getLimitPoints()[0].lng).eq(1);
         expect(rainCartesianMeasureValue.getLimitPoints()[1].lat).eq(12);

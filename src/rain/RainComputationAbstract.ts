@@ -4,11 +4,25 @@ import {RadarNode} from '../radar/RadarNode';
 import {RainNode} from './RainNode';
 import {RadarMeasure} from '../radar/RadarMeasure';
 import {LatLng} from '../cartesian/LatLng';
-import {QualityTools} from '../quality/tools/QualityTools';
 import {RainMeasure} from './RainMeasure';
 import {CartesianMeasureValue} from '../cartesian/CartesianMeasureValue';
 import {RainCartesianMeasureValue} from '../cartesian/RainCartesianMeasureValue';
 import {CartesianValue} from '../cartesian/CartesianValue';
+import {CartesianTools} from '../cartesian/CartesianTools';
+
+export enum MergeStrategy {
+    NONE = 'none',
+    SUM = 'sum',
+    AVERAGE = 'average',
+    MAX = 'max',
+}
+
+interface MergeLatLng {
+    sum: number;
+    max: number;
+    count: number;
+    latLng: LatLng;
+}
 
 /**
  *  not used directly
@@ -26,9 +40,9 @@ export class RainComputationAbstract extends RaainNode {
     public name: string;
 
     protected mergeTools: {
-        cartesianPixelWidth: LatLng;
-        latsLngs: number[][],
-        limitPoints: LatLng[]
+        cartesianTools: CartesianTools;
+        latsLngs: MergeLatLng[][];
+        limitPoints: LatLng[];
     };
 
     constructor(json: {
@@ -138,46 +152,67 @@ export class RainComputationAbstract extends RaainNode {
         this.addLinks(RainComputationAbstract._getRadarMeasureLinks(linksToAdd));
     }
 
-    protected getLinkType(): string {
-        throw Error('abstract');
-    }
-
-    protected buildLatLngMatrix(options: {
-        mergeCartesianPixelWidth: LatLng,
+    public getBuiltMergeTools(rainMeasures: RainMeasure[], options: {
+        cartesianTools: CartesianTools,
         mergeLimitPoints: LatLng[]
     }) {
-        const latsLngs: number[][] = [];
-        const lngCount = Math.round((options.mergeLimitPoints[1].lng - options.mergeLimitPoints[0].lng)
-            / options.mergeCartesianPixelWidth.lng) + 1;
-        for (let lat = options.mergeLimitPoints[0].lat;
-             lat <= options.mergeLimitPoints[1].lat;
-             lat += options.mergeCartesianPixelWidth.lat) {
-            lat = QualityTools.RoundLatLng(lat, options.mergeCartesianPixelWidth.lat);
-            latsLngs.push(new Array(lngCount).fill(0));
-        }
-
-        this.mergeTools = {latsLngs, cartesianPixelWidth: options.mergeCartesianPixelWidth, limitPoints: options.mergeLimitPoints};
+        this.buildLatLngMatrix(options);
+        this.buildMergeTools(rainMeasures);
         return this.mergeTools;
     }
 
-    protected mergeRainMeasures(rainMeasures: RainMeasure[],
-                                options: {
-                                    mergeLimitPoints: [LatLng, LatLng],
-                                    removeNullValues?: boolean
-                                }): RainMeasure[] {
-        let rainMeasuresMerged = [];
-        let lastCartesianRainMeasure: RainMeasure;
+    public getMergeLatLngIndex(cartesianValue: CartesianValue) {
+
+        const latLng = this.mergeTools.cartesianTools.getLatLngFromEarthMap(cartesianValue);
+        const latLngScale = this.mergeTools.cartesianTools.getScaleLatLngFromEarth(latLng);
+
+        const latIndex = Math.round((latLng.lat - this.mergeTools.limitPoints[0].lat) / latLngScale.lat);
+        const lngIndex = Math.round((latLng.lng - this.mergeTools.limitPoints[0].lng) / latLngScale.lng);
+
+        return [latIndex, lngIndex];
+    }
+
+    protected buildLatLngMatrix(options: {
+        cartesianTools: CartesianTools,
+        mergeLimitPoints: LatLng[]
+    }) {
+        const latsLngs: MergeLatLng[][] = [];
+        const downPoint = options.cartesianTools.getLatLngFromEarthMap(options.mergeLimitPoints[0]);
+        const topPoint = options.cartesianTools.getLatLngFromEarthMap(options.mergeLimitPoints[1]);
+        const scaleLat = options.cartesianTools.getScaleLatLng(downPoint);
+
+        for (let lat = downPoint.lat; lat <= topPoint.lat; lat += scaleLat.lat) {
+            lat = CartesianTools.LimitWithPrecision(lat);
+            const latLng = new LatLng({lat, lng: downPoint.lng});
+            const scaleLng = options.cartesianTools.getScaleLatLng(latLng);
+            const lngCount = Math.round((topPoint.lng - downPoint.lng) / scaleLng.lng) + 1;
+            const lngs = [];
+            for (let i = 0; i < lngCount; i++) {
+                const initValue: MergeLatLng = {sum: 0, max: 0, count: 0, latLng: undefined};
+                lngs.push(initValue);
+            }
+            latsLngs.push(lngs);
+        }
+
+        this.mergeTools = {latsLngs, cartesianTools: options.cartesianTools, limitPoints: [downPoint, topPoint]};
+        return this.mergeTools;
+    }
+
+    protected buildMergeTools(rainMeasures: RainMeasure[]) {
         for (const rainMeasure of rainMeasures) {
             for (const value of rainMeasure.values) {
-                if (typeof value['cartesianValues'] !== 'undefined' && typeof value['cartesianPixelWidth'] !== 'undefined') {
-                    lastCartesianRainMeasure = rainMeasure;
+                if (typeof value['cartesianValues'] !== 'undefined') {
                     const cartesianMeasureValue = new CartesianMeasureValue(value as any);
                     const cartesianValues = cartesianMeasureValue.getCartesianValues();
                     for (const cartesianValue of cartesianValues) {
                         const latLngIndex = this.getMergeLatLngIndex(cartesianValue);
                         if (latLngIndex[0] >= 0 && latLngIndex[1] >= 0 && latLngIndex[0] < this.mergeTools.latsLngs.length &&
                             latLngIndex[1] < this.mergeTools.latsLngs[latLngIndex[0]].length) {
-                            this.mergeTools.latsLngs[latLngIndex[0]][latLngIndex[1]] += cartesianValue.value;
+                            this.mergeTools.latsLngs[latLngIndex[0]][latLngIndex[1]].latLng = CartesianTools.CreateLatLng(cartesianValue);
+                            this.mergeTools.latsLngs[latLngIndex[0]][latLngIndex[1]].sum += cartesianValue.value;
+                            this.mergeTools.latsLngs[latLngIndex[0]][latLngIndex[1]].max = Math.max(
+                                cartesianValue.value, this.mergeTools.latsLngs[latLngIndex[0]][latLngIndex[1]].max);
+                            this.mergeTools.latsLngs[latLngIndex[0]][latLngIndex[1]].count++;
                         } else {
                             // throw new Error(`Wrong mergeRainMeasure ${latLngIndex[0]} ${latLngIndex[1]}`);
                         }
@@ -185,56 +220,52 @@ export class RainComputationAbstract extends RaainNode {
                 }
             }
         }
+    }
 
-        if (!lastCartesianRainMeasure) {
+    protected getLinkType(): string {
+        throw Error('abstract');
+    }
+
+    protected mergeRainMeasures(rainMeasures: RainMeasure[],
+                                options: {
+                                    mergeStrategy: MergeStrategy,
+                                    mergeLimitPoints: [LatLng, LatLng],
+                                    removeNullValues?: boolean,
+                                }): RainMeasure[] {
+
+        if (rainMeasures.length === 0) {
             return [];
         }
 
-        let cartesianValuesMerged = this.buildMergeCartesianValues();
-        if (options.removeNullValues) {
-            cartesianValuesMerged = cartesianValuesMerged.filter(c => !!c.value);
-        }
+        this.buildMergeTools(rainMeasures);
 
-        const rm = new RainMeasure(lastCartesianRainMeasure.toJSON());
+        const firstCartesianRainMeasure = rainMeasures[0];
+        const cartesianValuesMerged = this.buildMergeCartesianValues(options.mergeStrategy, options.removeNullValues);
+
+        const rm = new RainMeasure(firstCartesianRainMeasure.toJSON());
         rm.values = [new RainCartesianMeasureValue({
             cartesianValues: cartesianValuesMerged,
-            cartesianPixelWidth: this.mergeTools.cartesianPixelWidth,
-            version: lastCartesianRainMeasure.getVersion(),
+            version: firstCartesianRainMeasure.getVersion(),
             limitPoints: options.mergeLimitPoints,
         })];
-        rainMeasuresMerged = [rm];
 
-        return rainMeasuresMerged;
+        return [rm];
     }
 
-    protected getMergeLatLngIndex(cartesianValue: CartesianValue) {
-
-        const latMin = Math.round((this.mergeTools.limitPoints[0].lat) / this.mergeTools.cartesianPixelWidth.lat);
-        const lngMin = Math.round((this.mergeTools.limitPoints[0].lng) / this.mergeTools.cartesianPixelWidth.lng);
-        const latToCompare = Math.round(cartesianValue.lat / this.mergeTools.cartesianPixelWidth.lat);
-        const lngToCompare = Math.round(cartesianValue.lng / this.mergeTools.cartesianPixelWidth.lng);
-
-        return [latToCompare - latMin, lngToCompare - lngMin];
-    }
-
-    protected getMergeLatLng(latIndex: number, lngIndex: number) {
-
-        const latMin = this.mergeTools.limitPoints[0].lat;
-        const lngMin = this.mergeTools.limitPoints[0].lng;
-        const latToCompare = latIndex * this.mergeTools.cartesianPixelWidth.lat;
-        const lngToCompare = lngIndex * this.mergeTools.cartesianPixelWidth.lng;
-
-        return [latToCompare + latMin, lngToCompare + lngMin];
-    }
-
-    protected buildMergeCartesianValues() {
+    protected buildMergeCartesianValues(mergeStrategy: MergeStrategy, removeNullValues = false) {
         const cartesianValuesMerged: CartesianValue[] = [];
         for (const [latIndex, latValues] of this.mergeTools.latsLngs.entries()) {
-            for (const [lngIndex, value] of latValues.entries()) {
-                if (value) {
-                    const latLng = this.getMergeLatLng(latIndex, lngIndex);
-                    const lat = QualityTools.RoundLatLng(latLng[0], this.mergeTools.cartesianPixelWidth.lat, true);
-                    const lng = QualityTools.RoundLatLng(latLng[1], this.mergeTools.cartesianPixelWidth.lng, true);
+            for (const [lngIndex, mergeValue] of latValues.entries()) {
+                let value = mergeValue.sum;
+                if (mergeStrategy === MergeStrategy.AVERAGE) {
+                    value = mergeValue.count ? value / mergeValue.count : -1;
+                } else if (mergeStrategy === MergeStrategy.MAX) {
+                    value = mergeValue.max;
+                }
+
+                if (mergeValue.count && !(removeNullValues && !value)) {
+                    const lat = mergeValue.latLng.lat;
+                    const lng = mergeValue.latLng.lng;
                     cartesianValuesMerged.push(new CartesianValue({value, lat, lng}));
                 }
             }

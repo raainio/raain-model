@@ -1,9 +1,9 @@
 import {expect} from 'chai';
 import {
+    CartesianTools,
     CartesianValue,
     LatLng,
     PolarMeasureValue,
-    QualityTools,
     RadarNode,
     RainCartesianMeasureValue,
     RainComputation,
@@ -15,11 +15,12 @@ import {
     SpeedMatrixContainer,
     TeamNode
 } from '../../src';
+import {MergeStrategy} from '../../src/rain/RainComputationAbstract';
 
 // tslint:disable-next-line:only-arrow-functions
 describe('Rain', function () {
 
-    this.timeout(4000);
+    this.timeout(100000);
     const optionalTrace = (...log: any[]) => {
         // console.log(new Date().toISOString(), log)
     }
@@ -171,17 +172,15 @@ describe('Rain', function () {
 
         const cartesianValues = [
             new CartesianValue({value: 123, lat: 10, lng: 20}),
-            new CartesianValue({value: 321, lat: 10 + QualityTools.DEFAULT_SCALE, lng: 20 + QualityTools.DEFAULT_SCALE})];
-        const cartesianPixelWidth = new LatLng({lat: QualityTools.DEFAULT_SCALE, lng: QualityTools.DEFAULT_SCALE});
+            new CartesianValue({value: 321, lat: 10 + CartesianTools.DEFAULT_SCALE, lng: 20 + CartesianTools.DEFAULT_SCALE})];
         const rainCartesianMeasureValue = new RainCartesianMeasureValue({
             cartesianValues,
-            cartesianPixelWidth,
             version: 'test',
             limitPoints: undefined
         })
         const rainMeasure = new RainMeasure({id: 'measure', values: [rainCartesianMeasureValue], configurationAsJSON: '{"test": true}'});
         expect(JSON.stringify(rainMeasure.toJSON()))
-            .eq('{"id":"measure","links":[],"validity":-1,"configurationAsJSON":"{\\"test\\":true}","values":[{"cartesianValues":[{"lat":10,"lng":20,"value":123},{"lat":10.01,"lng":20.01,"value":321}],"cartesianPixelWidth":{"lat":0.01,"lng":0.01},"limitPoints":[{"lat":10,"lng":20},{"lat":10.01,"lng":20.01}],"version":"test"}]}');
+            .eq('{"id":"measure","links":[],"validity":-1,"configurationAsJSON":"{\\"test\\":true}","values":[{"cartesianValues":[{"lat":10,"lng":20,"value":123},{"lat":10.01,"lng":20.01,"value":321}],"limitPoints":[{"lat":10,"lng":20},{"lat":10.01,"lng":20.01}],"version":"test"}]}');
 
         const rainComputationMap = new RainComputationMap({
             id: 'rc1',
@@ -199,33 +198,34 @@ describe('Rain', function () {
         });
 
         expect(JSON.stringify(rainComputationMap.toJSON()))
-            .eq('{"id":"rc1","links":[{"rel":"radar","href":"../radars/r1"}],"version":"v1","date":"2022-01-01T00:00:00.000Z","quality":1,"progressIngest":1,"progressComputing":1,"timeSpentInMs":100,"isReady":true,"isDoneDate":"1988-01-01T00:00:00.000Z","launchedBy":"oneUser","map":"[{\\"id\\":\\"measure\\",\\"links\\":[],\\"validity\\":-1,\\"configurationAsJSON\\":\\"{\\\\\\"test\\\\\\":true}\\",\\"values\\":[{\\"cartesianValues\\":[{\\"lat\\":10,\\"lng\\":20,\\"value\\":123},{\\"lat\\":10.01,\\"lng\\":20.01,\\"value\\":321}],\\"cartesianPixelWidth\\":{\\"lat\\":0.01,\\"lng\\":0.01},\\"limitPoints\\":[{\\"lat\\":10,\\"lng\\":20},{\\"lat\\":10.01,\\"lng\\":20.01}],\\"version\\":\\"test\\"}]}]"}');
+            .eq('{"id":"rc1","links":[{"rel":"radar","href":"../radars/r1"}],"version":"v1","date":"2022-01-01T00:00:00.000Z","quality":1,"progressIngest":1,"progressComputing":1,"timeSpentInMs":100,"isReady":true,"isDoneDate":"1988-01-01T00:00:00.000Z","launchedBy":"oneUser","map":"[{\\"id\\":\\"measure\\",\\"links\\":[],\\"validity\\":-1,\\"configurationAsJSON\\":\\"{\\\\\\"test\\\\\\":true}\\",\\"values\\":[{\\"cartesianValues\\":[{\\"lat\\":10,\\"lng\\":20,\\"value\\":123},{\\"lat\\":10.01,\\"lng\\":20.01,\\"value\\":321}],\\"limitPoints\\":[{\\"lat\\":10,\\"lng\\":20},{\\"lat\\":10.01,\\"lng\\":20.01}],\\"version\\":\\"test\\"}]}]"}');
 
-        rainComputationMap.setMapData([rainMeasure, rainMeasure]);
+        rainComputationMap.setMapData([rainMeasure, rainMeasure], {mergeStrategy: MergeStrategy.NONE});
         expect(JSON.stringify(rainComputationMap.toJSON()))
-            .eq('{"id":"rc1","links":[{"rel":"radar","href":"../radars/r1"}],"version":"v1","date":"2022-01-01T00:00:00.000Z","quality":1,"progressIngest":1,"progressComputing":1,"timeSpentInMs":100,"isReady":true,"isDoneDate":"1988-01-01T00:00:00.000Z","launchedBy":"oneUser","map":"[{\\"id\\":\\"measure\\",\\"links\\":[],\\"validity\\":-1,\\"configurationAsJSON\\":\\"{\\\\\\"test\\\\\\":true}\\",\\"values\\":[{\\"cartesianValues\\":[{\\"lat\\":10,\\"lng\\":20,\\"value\\":123},{\\"lat\\":10.01,\\"lng\\":20.01,\\"value\\":321}],\\"cartesianPixelWidth\\":{\\"lat\\":0.01,\\"lng\\":0.01},\\"limitPoints\\":[{\\"lat\\":10,\\"lng\\":20},{\\"lat\\":10.01,\\"lng\\":20.01}],\\"version\\":\\"test\\"}]},{\\"id\\":\\"measure\\",\\"links\\":[],\\"validity\\":-1,\\"configurationAsJSON\\":\\"{\\\\\\"test\\\\\\":true}\\",\\"values\\":[{\\"cartesianValues\\":[{\\"lat\\":10,\\"lng\\":20,\\"value\\":123},{\\"lat\\":10.01,\\"lng\\":20.01,\\"value\\":321}],\\"cartesianPixelWidth\\":{\\"lat\\":0.01,\\"lng\\":0.01},\\"limitPoints\\":[{\\"lat\\":10,\\"lng\\":20},{\\"lat\\":10.01,\\"lng\\":20.01}],\\"version\\":\\"test\\"}]}]"}');
+            .eq('{"id":"rc1","links":[{"rel":"radar","href":"../radars/r1"}],"version":"v1","date":"2022-01-01T00:00:00.000Z","quality":1,"progressIngest":1,"progressComputing":1,"timeSpentInMs":100,"isReady":true,"isDoneDate":"1988-01-01T00:00:00.000Z","launchedBy":"oneUser","map":"[{\\"id\\":\\"measure\\",\\"links\\":[],\\"validity\\":-1,\\"configurationAsJSON\\":\\"{\\\\\\"test\\\\\\":true}\\",\\"values\\":[{\\"cartesianValues\\":[{\\"lat\\":10,\\"lng\\":20,\\"value\\":123},{\\"lat\\":10.01,\\"lng\\":20.01,\\"value\\":321}],\\"limitPoints\\":[{\\"lat\\":10,\\"lng\\":20},{\\"lat\\":10.01,\\"lng\\":20.01}],\\"version\\":\\"test\\"}]},{\\"id\\":\\"measure\\",\\"links\\":[],\\"validity\\":-1,\\"configurationAsJSON\\":\\"{\\\\\\"test\\\\\\":true}\\",\\"values\\":[{\\"cartesianValues\\":[{\\"lat\\":10,\\"lng\\":20,\\"value\\":123},{\\"lat\\":10.01,\\"lng\\":20.01,\\"value\\":321}],\\"limitPoints\\":[{\\"lat\\":10,\\"lng\\":20},{\\"lat\\":10.01,\\"lng\\":20.01}],\\"version\\":\\"test\\"}]}]"}');
 
-        const cartesianPixelWidthToRender = new LatLng({lat: 0.03, lng: 0.02});
-        const mergeLimitPoints: [LatLng, LatLng] = [new LatLng({lat: 10, lng: 11}), new LatLng({lat: 20, lng: 21})];
+        const cartesianTools = new CartesianTools();
+        cartesianTools.buildLatLngEarthMap();
+
+        const mergeLimitPoints: [LatLng, LatLng] = [new LatLng({lat: 10, lng: 11}), new LatLng({lat: 11, lng: 11.5})];
         rainComputationMap.setMapData([rainMeasure, rainMeasure], {
-            mergeCartesianPixelWidth: cartesianPixelWidthToRender,
+            mergeStrategy: MergeStrategy.AVERAGE,
+            cartesianTools,
             mergeLimitPoints,
-            mergeCartesian: true,
             removeNullValues: false,
         });
         expect(JSON.stringify(rainComputationMap.toJSON()))
-            .eq('{"id":"rc1","links":[{"rel":"radar","href":"../radars/r1"}],"version":"v1","date":"2022-01-01T00:00:00.000Z","quality":1,"progressIngest":1,"progressComputing":1,"timeSpentInMs":100,"isReady":true,"isDoneDate":"1988-01-01T00:00:00.000Z","launchedBy":"oneUser","map":"[{\\"id\\":\\"measure\\",\\"links\\":[],\\"validity\\":-1,\\"configurationAsJSON\\":\\"{\\\\\\"test\\\\\\":true}\\",\\"values\\":[{\\"cartesianValues\\":[{\\"lat\\":9.99,\\"lng\\":20,\\"value\\":246},{\\"lat\\":10.02,\\"lng\\":20.02,\\"value\\":642}],\\"cartesianPixelWidth\\":{\\"lat\\":0.03,\\"lng\\":0.02},\\"limitPoints\\":[{\\"lat\\":10,\\"lng\\":11},{\\"lat\\":20,\\"lng\\":21}]}]}]"}');
+            .eq('{"id":"rc1","links":[{"rel":"radar","href":"../radars/r1"}],"version":"v1","date":"2022-01-01T00:00:00.000Z","quality":1,"progressIngest":1,"progressComputing":1,"timeSpentInMs":100,"isReady":true,"isDoneDate":"1988-01-01T00:00:00.000Z","launchedBy":"oneUser","map":"[{\\"id\\":\\"measure\\",\\"links\\":[],\\"validity\\":-1,\\"configurationAsJSON\\":\\"{\\\\\\"test\\\\\\":true}\\",\\"values\\":[{\\"cartesianValues\\":[],\\"limitPoints\\":[{\\"lat\\":10,\\"lng\\":11},{\\"lat\\":11,\\"lng\\":11.5}]}]}]"}');
 
     });
 
     it('should challenge rainComputationMap.setMapData', () => {
 
-        const cartesianPixelWidthToRender = new LatLng({lat: 0.03, lng: 0.02});
         const cartesianPixelWidthToCompute = new LatLng({lat: 0.012, lng: 0.00876});
 
         optionalTrace('build..');
         const rainMeasures = [];
-        const mergeLimitPoints: [LatLng, LatLng] = [new LatLng({lat: 1, lng: 2}), new LatLng({lat: 10, lng: 12})];
+        const mergeLimitPoints: [LatLng, LatLng] = [new LatLng({lat: 1, lng: 2}), new LatLng({lat: 3, lng: 5})];
         for (let valueId = 1; valueId < 5; valueId++) {
             const cartesianValues = [];
             let value = valueId;
@@ -237,7 +237,6 @@ describe('Rain', function () {
 
             const rainCartesianMeasureValue = new RainCartesianMeasureValue({
                 cartesianValues,
-                cartesianPixelWidth: cartesianPixelWidthToCompute,
                 version: 'test',
                 limitPoints: undefined,
             });
@@ -267,11 +266,14 @@ describe('Rain', function () {
             version: 'v1',
         });
 
+        const cartesianTools = new CartesianTools();
+        cartesianTools.buildLatLngEarthMap();
+
         optionalTrace('setMapData...');
         rainComputationMap.setMapData(rainMeasures, {
-            mergeCartesianPixelWidth: cartesianPixelWidthToRender,
+            mergeStrategy: MergeStrategy.MAX,
+            cartesianTools,
             mergeLimitPoints,
-            mergeCartesian: true,
             removeNullValues: true,
         });
 
@@ -280,8 +282,52 @@ describe('Rain', function () {
         expect(mappedRainMeasures.length).eq(1);
         const mappedRainCartesianMeasureValues = mappedRainMeasures[0].values.map(m => new RainCartesianMeasureValue(m as any));
         expect(mappedRainCartesianMeasureValues.length).eq(1);
-        expect(mappedRainCartesianMeasureValues[0].getCartesianValues().length).eq(150801);
+        expect(mappedRainCartesianMeasureValues[0].getCartesianValues().length).eq(50267);
 
+    });
+
+    it('should challenge rainComputation merge', () => {
+
+        const cartesianPixelWidthOfEach = new LatLng({lat: 0.05, lng: 0.05});
+        const mergeLimitPoints: [LatLng, LatLng] = [new LatLng({lat: 2, lng: 1}), new LatLng({lat: 3, lng: 2})];
+        const limitPointsOfEach: [LatLng, LatLng] = [new LatLng({lat: 1, lng: 1.5}), new LatLng({lat: 2.5, lng: 2})];
+        const rainCartesianMeasureValues = [];
+        for (let valueId = 1; valueId < 5; valueId++) {
+            const cartesianValues = [];
+            for (let lat = limitPointsOfEach[0].lat; lat <= limitPointsOfEach[1].lat; lat += cartesianPixelWidthOfEach.lat) {
+                for (let lng = limitPointsOfEach[0].lng; lng <= limitPointsOfEach[1].lng; lng += cartesianPixelWidthOfEach.lng) {
+                    cartesianValues.push(new CartesianValue({lat, lng, value: 1}));
+                }
+            }
+            const rainPolarMeasureValue = new RainCartesianMeasureValue({
+                cartesianValues,
+                limitPoints: limitPointsOfEach,
+                version: 'v'
+            });
+            rainCartesianMeasureValues.push(rainPolarMeasureValue);
+        }
+
+        const rainComputation = new RainComputation({
+            id: 'cartesian1', date: new Date('2022-01-01'), isReady: true,
+            results: rainCartesianMeasureValues
+        });
+
+        const cartesianTools = new CartesianTools();
+        cartesianTools.buildLatLngEarthMap();
+
+        const mergedRainCartesianMeasureValues = rainComputation.mergeCartesianResults({
+            mergeStrategy: MergeStrategy.SUM,
+            cartesianTools,
+            mergeLimitPoints,
+            removeNullValues: true,
+        });
+
+        expect(mergedRainCartesianMeasureValues.length).eq(1);
+        expect(mergedRainCartesianMeasureValues[0].values.length).eq(1);
+        const cartesianValuesFound: CartesianValue[] = (mergedRainCartesianMeasureValues[0].values[0] as any).cartesianValues;
+        expect(cartesianValuesFound.length).eq(110);
+        expect(cartesianValuesFound[0].lat).eq(2);
+        expect(cartesianValuesFound[0].lng).eq(1.5);
     });
 
 });

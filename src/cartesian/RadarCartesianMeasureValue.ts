@@ -9,7 +9,6 @@ export class RadarCartesianMeasureValue extends CartesianMeasureValue {
 
     constructor(json: {
         cartesianValues: string | CartesianValue[],
-        cartesianPixelWidth: { lat: number, lng: number },
         angle: number,
         axis: number,
         limitPoints: [LatLng, LatLng],
