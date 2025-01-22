@@ -1,5 +1,5 @@
 import {IPolarMeasureValue} from './IPolarMeasureValue';
-import {IVersion} from '../organization/IVersion';
+import {IVersion} from '../organization';
 import {AbstractPolarMeasureValue} from './AbstractPolarMeasureValue';
 import {PolarMeasureValue} from './PolarMeasureValue';
 

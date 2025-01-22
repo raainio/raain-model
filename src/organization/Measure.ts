@@ -1,6 +1,6 @@
-import {IPolarMeasureValue} from '../polar/IPolarMeasureValue';
+import {IPolarMeasureValue} from '../polar';
 import {RaainNode} from './RaainNode';
-import {ICartesianMeasureValue} from '../cartesian/ICartesianMeasureValue';
+import {ICartesianMeasureValue} from '../cartesian';
 
 export class Measure extends RaainNode {
     public date: Date;

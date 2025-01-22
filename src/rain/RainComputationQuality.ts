@@ -1,7 +1,6 @@
 import {RainComputationAbstract} from './RainComputationAbstract';
-import {Link} from '../organization/Link';
-import {RaainNode} from '../organization/RaainNode';
-import {SpeedMatrixContainer} from '../quality/SpeedMatrixContainer';
+import {Link, RaainNode} from '../organization';
+import {SpeedMatrixContainer} from '../quality';
 import {RainComputation} from './RainComputation';
 
 

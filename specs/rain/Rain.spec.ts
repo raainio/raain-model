@@ -3,6 +3,7 @@ import {
     CartesianTools,
     CartesianValue,
     LatLng,
+    MergeStrategy,
     PolarMeasureValue,
     RadarNode,
     RainCartesianMeasureValue,
@@ -15,7 +16,6 @@ import {
     SpeedMatrixContainer,
     TeamNode
 } from '../../src';
-import {MergeStrategy} from '../../src/rain/RainComputationAbstract';
 
 // tslint:disable-next-line:only-arrow-functions
 describe('Rain', function () {

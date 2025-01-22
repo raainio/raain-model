@@ -1,6 +1,6 @@
-import {Measure} from '../organization/Measure';
-import {IPolarMeasureValue} from '../polar/IPolarMeasureValue';
-import {ICartesianMeasureValue} from '../cartesian/ICartesianMeasureValue';
+import {Measure} from '../organization';
+import {IPolarMeasureValue} from '../polar';
+import {ICartesianMeasureValue} from '../cartesian';
 
 /**
  *  api/rains/:id/computations/:id?format=map => RainComputationMap getMapData() => RainMeasure[]

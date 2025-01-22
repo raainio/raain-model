@@ -1,4 +1,4 @@
-import {IVersion} from '../organization/IVersion';
+import {IVersion} from '../organization';
 import {CartesianValue} from './CartesianValue';
 import {CartesianMeasureValue} from './CartesianMeasureValue';
 import {LatLng} from './LatLng';

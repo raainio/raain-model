@@ -1,8 +1,6 @@
 import {RadarMeasure} from './RadarMeasure';
 import {RadarNode} from './RadarNode';
-import {Link} from '../organization/Link';
-import {RaainNode} from '../organization/RaainNode';
-import {TeamNode} from '../organization/TeamNode';
+import {Link, RaainNode, TeamNode} from '../organization';
 
 /**
  *  api/radars/:radarId?format=map&...

@@ -1,28 +1,9 @@
-import {RaainNode} from '../organization/RaainNode';
-import {Link} from '../organization/Link';
-import {RadarNode} from '../radar/RadarNode';
+import {Link, RaainNode} from '../organization';
+import {RadarMeasure, RadarNode} from '../radar';
 import {RainNode} from './RainNode';
-import {RadarMeasure} from '../radar/RadarMeasure';
-import {LatLng} from '../cartesian/LatLng';
+import {CartesianMeasureValue, CartesianTools, CartesianValue, LatLng, RainCartesianMeasureValue} from '../cartesian';
 import {RainMeasure} from './RainMeasure';
-import {CartesianMeasureValue} from '../cartesian/CartesianMeasureValue';
-import {RainCartesianMeasureValue} from '../cartesian/RainCartesianMeasureValue';
-import {CartesianValue} from '../cartesian/CartesianValue';
-import {CartesianTools} from '../cartesian/CartesianTools';
-
-export enum MergeStrategy {
-    NONE = 'none',
-    SUM = 'sum',
-    AVERAGE = 'average',
-    MAX = 'max',
-}
-
-interface MergeLatLng {
-    sum: number;
-    max: number;
-    count: number;
-    latLng: LatLng;
-}
+import {MergeLatLng, MergeStrategy} from './MergeStrategy';
 
 /**
  *  not used directly

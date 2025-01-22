@@ -1,10 +1,8 @@
-import {RaainNode} from '../organization/RaainNode';
-import {Link} from '../organization/Link';
-import {RadarNode} from '../radar/RadarNode';
+import {Link, RaainNode, TeamNode} from '../organization';
+import {RadarNode} from '../radar';
 import {RainComputation} from './RainComputation';
-import {GaugeNode} from '../gauge/GaugeNode';
-import {TeamNode} from '../organization/TeamNode';
-import {LatLng} from '../cartesian/LatLng';
+import {GaugeNode} from '../gauge';
+import {LatLng} from '../cartesian';
 
 /**
  * api/rains/:id

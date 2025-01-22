@@ -1,8 +1,6 @@
-import {Link} from '../organization/Link';
+import {Link, RaainNode, TeamNode} from '../organization';
 import {GaugeNode} from './GaugeNode';
 import {GaugeMeasure} from './GaugeMeasure';
-import {RaainNode} from '../organization/RaainNode';
-import {TeamNode} from '../organization/TeamNode';
 
 /**
  * api/gauges/:id?format=map&begin=...

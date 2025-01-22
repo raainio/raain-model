@@ -1,6 +1,4 @@
-import {RaainNode} from '../organization/RaainNode';
-import {Link} from '../organization/Link';
-import {TeamNode} from '../organization/TeamNode';
+import {Link, RaainNode, TeamNode} from '../organization';
 
 /**
  *  api/gauges/:id

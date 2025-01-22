@@ -1,11 +1,6 @@
 import {LatLng} from './LatLng';
 import {CartesianValue} from './CartesianValue';
-
-export interface EarthMap {
-    latitudeScale: number,
-    latitudes: number[],
-    latitudeLongitudeScales: number[],
-}
+import {EarthMap} from './EarthMap';
 
 export class CartesianTools {
 

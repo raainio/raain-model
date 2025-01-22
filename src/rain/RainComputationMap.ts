@@ -1,9 +1,8 @@
-import {MergeStrategy, RainComputationAbstract} from './RainComputationAbstract';
-import {Link} from '../organization/Link';
+import {RainComputationAbstract} from './RainComputationAbstract';
+import {Link, RaainNode} from '../organization';
 import {RainMeasure} from './RainMeasure';
-import {RaainNode} from '../organization/RaainNode';
-import {LatLng} from '../cartesian/LatLng';
-import {CartesianTools} from '../cartesian/CartesianTools';
+import {CartesianTools, LatLng} from '../cartesian';
+import {MergeStrategy} from './MergeStrategy';
 
 /**
  *  api/rains/:id/computations/:computationId?format=map&...
