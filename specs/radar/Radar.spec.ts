@@ -116,7 +116,9 @@ describe('Radar', () => {
         }
 
         // for (let move = 0; move < 90; move++) {
+        testOneFake(0);
         testOneFake(45);
+        testOneFake(90);
         // await sleep(1000);
         // }
     });

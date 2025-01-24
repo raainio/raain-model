@@ -33,7 +33,7 @@ export class CartesianTools {
 
     public static CreateLatLng(latLng: { lat: number, lng: number }) {
         const created = new LatLng(latLng);
-        created.setPrecision()
+        created.setPrecision();
         return created;
     }
 

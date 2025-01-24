@@ -52,7 +52,7 @@ export class RadarPolarMeasureValue extends AbstractPolarMeasureValue implements
             const absAz = Math.abs(az - movementFrom0To90);
             const absDis = Math.abs(dis - movementFrom0To90);
             if (absAz < tolerance && absDis < tolerance) {
-                val = 56 - Math.random() * 10;
+                val = 56 - Math.random() * 40;
             }
             return val;
         };

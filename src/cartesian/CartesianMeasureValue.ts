@@ -142,21 +142,22 @@ export class CartesianMeasureValue implements ICartesianMeasureValue {
         let p2Lng: number;
 
         for (const cartesianValue of this.cartesianValues) {
-            if (!p1Lat || cartesianValue.lat < p1Lat) {
+            if (typeof p1Lat === 'undefined' || cartesianValue.lat < p1Lat) {
                 p1Lat = cartesianValue.lat;
             }
-            if (!p1Lng || cartesianValue.lng < p1Lng) {
+            if (typeof p1Lng === 'undefined' || cartesianValue.lng < p1Lng) {
                 p1Lng = cartesianValue.lng;
             }
-            if (!p2Lat || p2Lat < cartesianValue.lat) {
+            if (typeof p2Lat === 'undefined' || p2Lat < cartesianValue.lat) {
                 p2Lat = cartesianValue.lat;
             }
-            if (!p2Lng || p2Lng < cartesianValue.lng) {
+            if (typeof p2Lng === 'undefined' || p2Lng < cartesianValue.lng) {
                 p2Lng = cartesianValue.lng;
             }
         }
 
-        if (p1Lat && p1Lng && p2Lat && p2Lng) {
+        if (typeof p1Lat !== 'undefined' && typeof p1Lng !== 'undefined' &&
+            typeof p2Lat !== 'undefined' && typeof p2Lng !== 'undefined') {
             this.setLimitPoints(new LatLng({lat: p1Lat, lng: p1Lng}),
                 new LatLng({lat: p2Lat, lng: p2Lng}));
         }
