@@ -5,6 +5,7 @@ export class RaainNode implements IVersion {
 
     public id: string;
     public version: string;
+
     private links: Link[];
 
     constructor(json: {

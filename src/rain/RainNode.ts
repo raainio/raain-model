@@ -169,7 +169,9 @@ export class RainNode extends RaainNode {
     public getCenter(): LatLng {
 
         let center = new LatLng({lat: 0, lng: 0});
-        this.setDefaultLatLng(this['radars']);
+
+        this.setDefaultLatLng(this['radars'])
+
         if (this.latLngRectsAsJSON && this.latLngRectsAsJSON !== '[]') {
             const rects = JSON.parse(this.latLngRectsAsJSON);
             let latMax: number, lngMax: number, latMin: number, lngMin: number;
@@ -190,7 +192,9 @@ export class RainNode extends RaainNode {
 
     public getLimitPoints(): [LatLng, LatLng] {
         let limitPoints: [LatLng, LatLng];
+
         this.setDefaultLatLng(this['radars']);
+
         if (this.latLngRectsAsJSON && this.latLngRectsAsJSON !== '[]') {
             const rects = JSON.parse(this.latLngRectsAsJSON);
             let latMax: number, lngMax: number, latMin: number, lngMin: number;
@@ -214,7 +218,7 @@ export class RainNode extends RaainNode {
     }
 
     private setDefaultLatLng(radars: any[]) {
-        // put a default latLngRectsAsJSON
+        // TODO put a default latLngRectsAsJSON based on cartesianTools earth ?
         if (radars?.length && (!this.latLngRectsAsJSON || this.latLngRectsAsJSON === '[]')) {
             const latLngRects = [];
             for (const radarNode of radars) {

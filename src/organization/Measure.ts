@@ -6,7 +6,7 @@ export class Measure extends RaainNode {
     public date: Date;
     //   -> why array ? because you have different angle/axis from the Radar
     public values: IPolarMeasureValue[] | ICartesianMeasureValue[] | number[];
-    public validity: number
+    public validity: number;
 
     // internal
     private configurationAsJSON: string;
@@ -17,6 +17,7 @@ export class Measure extends RaainNode {
                     date?: Date,
                     validity?: number,
                     configurationAsJSON?: string,
+                    version?: string,
                 }
     ) {
         super(json);

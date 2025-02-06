@@ -119,44 +119,22 @@ export class PolarMeasureValueMap {
                 edgeIndex: number,
                 valueSetter: (newValue: number) => void
             ) => void,
-            polarFilter?: PolarFilter) {
+            options?: {
+                iterateOnEachEdge?: boolean,
+                polarFilter?: PolarFilter
+            }) {
 
-        const azimuthMin = typeof polarFilter?.azimuthMin !== 'undefined' ? polarFilter.azimuthMin : 0;
-        const azimuthMax = typeof polarFilter?.azimuthMax !== 'undefined' ? polarFilter.azimuthMax
+        const azimuthMin = typeof options?.polarFilter?.azimuthMin !== 'undefined' ? options?.polarFilter.azimuthMin : 0;
+        const azimuthMax = typeof options?.polarFilter?.azimuthMax !== 'undefined' ? options?.polarFilter.azimuthMax
             : this.polarMeasureValue.getAzimuthsCount();
-        const edgeMin = typeof polarFilter?.edgeMin !== 'undefined' ? polarFilter.edgeMin : 0;
-        const edgeMax = typeof polarFilter?.edgeMax !== 'undefined' ? polarFilter.edgeMax
+        const edgeMin = typeof options?.polarFilter?.edgeMin !== 'undefined' ? options?.polarFilter.edgeMin : 0;
+        const edgeMax = typeof options?.polarFilter?.edgeMax !== 'undefined' ? options?.polarFilter.edgeMax
             : this.polarMeasureValue.getPolarEdgesCount();
 
-        for (const measureValuePolarContainer of this.builtMeasureValuePolarContainers) {
-            const azimuthInDegrees = measureValuePolarContainer.azimuth;
-            const polarEdges = measureValuePolarContainer.polarEdges;
-            const azimuthAbsoluteIndex = Math.round(azimuthInDegrees * this.polarMeasureValue.getAzimuthsCount() / 360);
-            if (azimuthAbsoluteIndex < azimuthMin) continue;
-            if (azimuthMax < azimuthAbsoluteIndex) break;
-
-            for (const [edgeIndex, value] of polarEdges.entries()) {
-
-                const updated = this.updatedEdge(edgeIndex, measureValuePolarContainer, {reverse: true});
-                const edgeAbsoluteIndex = updated.edgeIndex;
-                const distanceInMeters = updated.distanceInMeters;
-                if (edgeAbsoluteIndex < edgeMin) continue;
-                if (edgeMax < edgeAbsoluteIndex) break;
-
-                const valueSetter = (newValue: number) => {
-                    polarEdges[edgeIndex] = newValue;
-                };
-
-                onEachValue(
-                    new PolarValue({
-                        value,
-                        polarAzimuthInDegrees: azimuthInDegrees,
-                        polarDistanceInMeters: distanceInMeters
-                    }),
-                    azimuthAbsoluteIndex,
-                    edgeAbsoluteIndex,
-                    valueSetter);
-            }
+        if (options?.iterateOnEachEdge) {
+            this.iterateOnEachEdge(azimuthMin, azimuthMax, edgeMin, edgeMax, onEachValue);
+        } else {
+            this.iterateOnEachAzimuth(azimuthMin, azimuthMax, edgeMin, edgeMax, onEachValue);
         }
     }
 
@@ -283,5 +261,92 @@ export class PolarMeasureValueMap {
         edgeIndex = Math.round(edgeIndex);
 
         return {edgeIndex, distanceInMeters};
+    }
+
+    protected iterateOnEachAzimuth(azimuthMin: number, azimuthMax: number,
+                                   edgeMin: number, edgeMax: number,
+                                   onEachValue: (
+                                       polarValue: PolarValue,
+                                       azimuthIndex: number,
+                                       edgeIndex: number,
+                                       valueSetter: (newValue: number) => void
+                                   ) => void) {
+
+        for (const measureValuePolarContainer of this.builtMeasureValuePolarContainers) {
+            const azimuthInDegrees = measureValuePolarContainer.azimuth;
+            const polarEdges = measureValuePolarContainer.polarEdges;
+            const azimuthAbsoluteIndex = Math.round(azimuthInDegrees * this.polarMeasureValue.getAzimuthsCount() / 360);
+            if (azimuthAbsoluteIndex < azimuthMin) continue;
+            if (azimuthMax < azimuthAbsoluteIndex) break;
+
+            for (const [edgeIndex, value] of polarEdges.entries()) {
+
+                const updated = this.updatedEdge(edgeIndex, measureValuePolarContainer, {reverse: true});
+                const edgeAbsoluteIndex = updated.edgeIndex;
+                const distanceInMeters = updated.distanceInMeters;
+                if (edgeAbsoluteIndex < edgeMin) continue;
+                if (edgeMax < edgeAbsoluteIndex) break;
+
+                const valueSetter = (newValue: number) => {
+                    polarEdges[edgeIndex] = newValue;
+                };
+
+                onEachValue(
+                    new PolarValue({
+                        value,
+                        polarAzimuthInDegrees: azimuthInDegrees,
+                        polarDistanceInMeters: distanceInMeters
+                    }),
+                    azimuthAbsoluteIndex,
+                    edgeAbsoluteIndex,
+                    valueSetter);
+            }
+        }
+    }
+
+    protected iterateOnEachEdge(azimuthMin: number, azimuthMax: number,
+                                edgeMin: number, edgeMax: number,
+                                onEachValue: (
+                                    polarValue: PolarValue,
+                                    azimuthIndex: number,
+                                    edgeIndex: number,
+                                    valueSetter: (newValue: number) => void
+                                ) => void) {
+
+        for (let edge = edgeMin; edge <= edgeMax; edge++) {
+            for (const measureValuePolarContainer of this.builtMeasureValuePolarContainers) {
+                const azimuthInDegrees = measureValuePolarContainer.azimuth;
+                const polarEdges = measureValuePolarContainer.polarEdges;
+                const azimuthAbsoluteIndex = Math.round(azimuthInDegrees * this.polarMeasureValue.getAzimuthsCount() / 360);
+                if (azimuthAbsoluteIndex < azimuthMin) continue;
+                if (azimuthMax < azimuthAbsoluteIndex) break;
+
+                for (const [edgeIndex, value] of polarEdges.entries()) {
+
+                    const updated = this.updatedEdge(edgeIndex, measureValuePolarContainer, {reverse: true});
+                    const edgeAbsoluteIndex = updated.edgeIndex;
+                    const distanceInMeters = updated.distanceInMeters;
+
+                    if (edge === edgeAbsoluteIndex) {
+                        const valueSetter = (newValue: number) => {
+                            polarEdges[edgeIndex] = newValue;
+                        };
+
+                        onEachValue(
+                            new PolarValue({
+                                value,
+                                polarAzimuthInDegrees: azimuthInDegrees,
+                                polarDistanceInMeters: distanceInMeters
+                            }),
+                            azimuthAbsoluteIndex,
+                            edgeAbsoluteIndex,
+                            valueSetter);
+                    }
+                    if (edge < edgeAbsoluteIndex) {
+                        break;
+                    }
+                }
+            }
+        }
     }
 }
