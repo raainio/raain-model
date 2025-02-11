@@ -50,4 +50,12 @@ export class Measure extends RaainNode {
         }
         return json;
     }
+
+    public getConfiguration(): any {
+        try {
+            return JSON.parse(this.configurationAsJSON);
+        } catch (e) {
+        }
+        return null;
+    }
 }

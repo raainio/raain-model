@@ -32,6 +32,7 @@ describe('Gauge', () => {
 
         const gaugeMeasure = new GaugeMeasure({id: 'measure', values: [10, 11], configurationAsJSON: JSON.stringify(measureConf)});
         expect(JSON.stringify(gaugeMeasure.toJSON())).eq('{"id":"measure","links":[],"validity":-1,"configurationAsJSON":"{\\"rainId\\":\\"rainId\\",\\"type\\":\\"type\\",\\"trust\\":true,\\"gaugeId\\":\\"test\\",\\"angle\\":12,\\"speed\\":10}","values":[10,11]}');
+        expect(gaugeMeasure.getConfiguration().trust).eq(true);
 
     });
 
