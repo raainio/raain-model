@@ -1,4 +1,4 @@
-import {LatLng} from '../../cartesian/LatLng';
+import {LatLng} from '../../cartesian';
 import {Position} from '../position/Position';
 
 export class QualityTools {
@@ -23,7 +23,6 @@ export class QualityTools {
         }
         return p;
     }
-
 
     public static MapLatLngToPosition(latLng: LatLng): Position {
         const x = latLng.lng;

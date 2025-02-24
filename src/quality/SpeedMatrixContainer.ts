@@ -93,7 +93,7 @@ export class SpeedMatrixContainer {
             const qualityPoints: QualityPoint[] = compareTimeline.reduce((p, a) => p.concat(a.qualityPoints), []);
             for (const qualityPoint of qualityPoints) {
                 const key = qualityPoint.gaugeDate.toISOString() + '_' + qualityPoint.gaugeId;
-                if (!minDeltaPerDate_GaugeId[key]) {
+                if (typeof minDeltaPerDate_GaugeId[key] === 'undefined') {
                     minDeltaPerDate_GaugeId[key] = qualityPoint.getDelta();
                 }
                 minDeltaPerDate_GaugeId[key] = Math.min(minDeltaPerDate_GaugeId[key], qualityPoint.getDelta());
@@ -107,7 +107,7 @@ export class SpeedMatrixContainer {
                 for (let i = timeline.qualityPoints.length - 1; i >= 0; i--) {
                     const qualityPoint = timeline.qualityPoints[i];
                     const key = qualityPoint.gaugeDate.toISOString() + '_' + qualityPoint.gaugeId;
-                    if (!qualityPointToUsePerDate_GaugeId[key] && minDeltaPerDate_GaugeId[key]
+                    if (!qualityPointToUsePerDate_GaugeId[key] && typeof minDeltaPerDate_GaugeId[key] !== 'undefined'
                         && minDeltaPerDate_GaugeId[key] === qualityPoint.getDelta()) {
                         qualityPointToUsePerDate_GaugeId[key] = qualityPoint;
                     } else {
@@ -121,7 +121,8 @@ export class SpeedMatrixContainer {
 
         // compute cumulative based on unique points
         const qualityPointPerGaugeId = {};
-        for (const qp of Object.values(qualityPointToUsePerDate_GaugeId)) {
+        const qps = Object.values(qualityPointToUsePerDate_GaugeId);
+        for (const qp of qps) {
             const qualityPoint = qp as QualityPoint;
             if (!qualityPointPerGaugeId[qualityPoint.gaugeId]) {
                 qualityPointPerGaugeId[qualityPoint.gaugeId] = QualityPoint.CreateFromJSON(qualityPoint);

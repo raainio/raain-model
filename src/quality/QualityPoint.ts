@@ -1,4 +1,4 @@
-import {CartesianValue} from '../cartesian/CartesianValue';
+import {CartesianValue} from '../cartesian';
 
 export class QualityPoint {
 
