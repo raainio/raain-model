@@ -234,8 +234,13 @@ export class PolarMeasureValue implements IPolarMeasureValue {
 
         let measureValuePolarContainers = [];
         for (const measureValuePolarContainer of this.measureValuePolarContainers) {
-            const filteredMeasureValuePolarContainer = measureValuePolarContainer.getFiltered(options);
-            if (options.nullValues && filteredMeasureValuePolarContainer.getNotNullValuesCount()) {
+            let filteredMeasureValuePolarContainer = measureValuePolarContainer;
+            if (measureValuePolarContainer.getFiltered && filteredMeasureValuePolarContainer.getNotNullValuesCount) {
+                filteredMeasureValuePolarContainer = measureValuePolarContainer.getFiltered(options);
+                if (options.nullValues && filteredMeasureValuePolarContainer.getNotNullValuesCount()) {
+                    measureValuePolarContainers.push(filteredMeasureValuePolarContainer);
+                }
+            } else {
                 measureValuePolarContainers.push(filteredMeasureValuePolarContainer);
             }
         }
