@@ -13,10 +13,13 @@ export class Link {
     }
 
     public static isCloneable(object: any): boolean {
-        return object && object.rel && object.href;
+        return object?.rel && object?.href;
     }
 
-    public static clone(object: any): Link {
+    public static clone(object: any): Link | null {
+        if (!object?.rel || !object?.href) {
+            return null;
+        }
         return new Link(object.rel, object.href);
     }
 

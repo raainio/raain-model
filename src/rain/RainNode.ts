@@ -147,9 +147,9 @@ export class RainNode extends RaainNode {
         json['team'] = this.team?.id || this.team;
         json['latLngRectsAsJSON'] = this.latLngRectsAsJSON;
         json['configurationAsJSON'] = this.configurationAsJSON;
-        json['radars'] = this.getLinks().filter(l => l.getLinkType() === RadarNode.TYPE).map(l => l.getId());
-        json['gauges'] = this.getLinks().filter(l => l.getLinkType() === GaugeNode.TYPE).map(l => l.getId());
-        json['lastCompletedComputations'] = this.getLinks().filter(l => l.getLinkType() === RainComputation.TYPE).map(l => l.getId());
+        json['radars'] = this.links.filter(l => l.getLinkType() === RadarNode.TYPE).map(l => l.getId());
+        json['gauges'] = this.links.filter(l => l.getLinkType() === GaugeNode.TYPE).map(l => l.getId());
+        json['lastCompletedComputations'] = this.links.filter(l => l.getLinkType() === RainComputation.TYPE).map(l => l.getId());
         return json;
     }
 

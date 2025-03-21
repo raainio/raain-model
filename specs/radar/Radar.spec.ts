@@ -91,7 +91,9 @@ describe('Radar', () => {
             contacts: []
         });
         const radarNode = new RadarNode({
-            id: 'RadarNode looks OK.', name: 'name', links: [radarMeasure],
+            id: 'RadarNode looks OK.',
+            name: 'name',
+            links: [radarMeasure],
             latitude: 1, longitude: 1,
             team: team1
         });

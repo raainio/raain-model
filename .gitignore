@@ -28,6 +28,8 @@ $RECYCLE.BIN/
 Old/
 dist/
 
+docs/
+
 .DS_Store
 Thumbs.db
 

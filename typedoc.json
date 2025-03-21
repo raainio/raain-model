@@ -1,0 +1,31 @@
+{
+  "entryPoints": [
+    "src"
+  ],
+  "out": "docs",
+  "exclude": [
+    "**/*.spec.ts",
+    "**/*.test.ts"
+  ],
+  "excludePrivate": true,
+  "excludeProtected": true,
+  "theme": "default",
+  "name": "RadarToRain Model Documentation",
+  "excludeExternals": true,
+  "hideGenerator": true,
+  "categorizeByGroup": true,
+  "categoryOrder": [
+    "*",
+    "Rain",
+    "Radar",
+    "Cartesian",
+    "Organization",
+    "Polar",
+    "Quality",
+    "Speed"
+  ],
+  "sort": [
+    "source-order"
+  ],
+  "searchInComments": true
+}
