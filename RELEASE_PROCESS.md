@@ -1,5 +1,13 @@
 # Release Process Documentation
 
+⚠️ IMPORTANT: DO NOT PUSH ANY CHANGES OR TAGS UNTIL EXPLICITLY ASKED TO "RELEASE"
+This includes:
+- No git push
+- No git push --tags
+- No npm publish
+- No manual releases
+Wait for the explicit "release" command before pushing anything.
+
 ## Patch Version Release Steps
 
 ### Prerequisites
@@ -73,8 +81,11 @@
 
 ### Common Pitfalls to Avoid
 
+- Don't push any changes before receiving explicit "release" command
 - Don't create tags with placeholder version numbers (X.Y.Z)
-- Don't forget to push both commits and tags
+- Don't forget to push both commits and tags (only after "release" command)
+- Don't manually publish to npm
+- Don't bypass CI process
 
 ### Recovery Procedures
 
