@@ -5,7 +5,8 @@
 [![TypeScript](https://img.shields.io/badge/TypeScript-4.9.5-blue.svg)](https://www.typescriptlang.org/)
 [![Build Status](https://github.com/raainio/raain-model/actions/workflows/ci.yml/badge.svg)](https://github.com/raainio/raain-model/actions)
 
-> A TypeScript library for radar-based rain measurement and analysis, used in [radartorain.com](https://api.radartorain.com) services.
+> A TypeScript library for radar-based rain measurement and analysis, used in [radartorain.com](https://radartorain.com)
+> services.
 
 ## 🌟 Features
 
@@ -27,7 +28,7 @@ yarn add raain-model
 ## 📖 Quick Start
 
 ```typescript
-import { RainComputationMap, RainNode, RadarNode } from 'raain-model';
+import {RainComputationMap, RainNode, RadarNode} from 'raain-model';
 
 // Create a radar node
 const radarNode = new RadarNode({
@@ -57,7 +58,8 @@ const computation = new RainComputationMap({
 
 ## 📚 Documentation
 
-For detailed documentation and examples, visit our [documentation site](https://api.sandbox.radartorain.com/docs).
+Visit [documentation](https://raainio.github.io/raain-model)
+and [swagger](https://api.sandbox.radartorain.com/v2/docs).
 
 ### Key Components
 

@@ -118,6 +118,7 @@ describe('Rain', function () {
         expect(rainNode.getLinksCount()).eq(2);
         expect(rainNode.getLinksCount(RadarNode.TYPE)).eq(1);
         expect(rainNode.getLinkIds().toString()).eq('r1,rc1');
+        expect(rainNode.getLink('radar', 0).getId()).eq('r1');
 
         const rainComputation = new RainComputation({
             id: 'rc1',

@@ -26,10 +26,6 @@ import {IVersion} from './IVersion';
 export class RaainNode implements IVersion {
     /** Unique identifier for the node */
     public id: string;
-
-    /** Array of HATEOAS links associated with the node */
-    protected _links: Link[];
-
     /** Version string of the node */
     public version: string;
 
@@ -51,8 +47,29 @@ export class RaainNode implements IVersion {
         }
 
         this.id = json.id;
-        this.links =  json.links ? json.links : [];
+        this.links = json.links ? json.links : [];
         this.version = json.version ? json.version : undefined;
+    }
+
+    /** Array of HATEOAS links associated with the node */
+    protected _links: Link[];
+
+    /**
+     * Gets all links associated with the node.
+     *
+     * @returns Array of HATEOAS links
+     */
+    public get links(): Link[] {
+        return this._links;
+    }
+
+    /**
+     * Sets the links for the node.
+     *
+     * @param links - Array of links to set
+     */
+    public set links(links: Link[] | RaainNode[]) {
+        this._links = RaainNode._getPurifiedLinks(links);
     }
 
     private static _getPurifiedLinks(linksToPurify: any[]): Link[] {
@@ -118,33 +135,25 @@ export class RaainNode implements IVersion {
         return json;
     }
 
-    /**
-     * Gets all links associated with the node.
-     *
-     * @returns Array of HATEOAS links
-     */
-    public get links(): Link[] {
-        return this._links;
+    public getLinks(linkType?: string): Link[] {
+        if (!this._links) {
+            return [];
+        }
+        if (!linkType) {
+            return this._links;
+        }
+        // return this.links.filter(l => l && l.rel && linkType === l.rel);
+        return this._links.filter(l => l.getLinkType() === linkType);
+
     }
 
-    /**
-     * Sets the links for the node.
-     * 
-     * @param links - Array of links to set
-     */
-    public set links(links: Link[] | RaainNode[]) {
-        this._links = RaainNode._getPurifiedLinks(links);
-    }
-
-    /**
-     * Gets the ID from a link by its relationship type.
-     *
-     * @param rel - Relationship type of the link
-     * @returns The ID from the link, or undefined if not found
-     */
-    public getLinkId(rel: string): string | undefined {
-        const link = this._links.find(l => l.getLinkType() === rel);
-        return link ? link.getId() : undefined;
+    public getLink(linkType: string, index?: number): Link {
+        index = !index ? 0 : index;
+        const linksFound = this.getLinks(linkType);
+        if (linksFound.length <= index) {
+            return null;
+        }
+        return linksFound[index];
     }
 
     /**

@@ -62,7 +62,12 @@ export class QualityPoint {
     }
 
     getDelta(): number {
-        return Math.abs(this.getRainValue() - this.getGaugeValue());
+        const rain = this.getRainValue();
+        const gauge = this.getGaugeValue();
+        if (typeof rain !== 'number' || typeof gauge !== 'number') {
+            return undefined;
+        }
+        return Math.abs(rain - gauge);
     }
 
     getRatio(): number {

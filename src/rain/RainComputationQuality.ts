@@ -89,9 +89,9 @@ export class RainComputationQuality extends RainComputationAbstract {
             json['qualitySpeedMatrixContainer'] = this.qualitySpeedMatrixContainer;
         }
 
-        const rainComputation = this.getLinkId(RainComputation.TYPE);
-        if (rainComputation) {
-            json['rainComputation'] = rainComputation;
+        const rainComputationLink = this.getLink(RainComputation.TYPE);
+        if (rainComputationLink) {
+            json['rainComputation'] = rainComputationLink.getId();
         }
 
         if (this.error) {
