@@ -61,18 +61,21 @@ export class GaugeNode extends RaainNode {
         latitude: number,
         longitude: number,
         name: string,
-        team: TeamNode,
+        team: string | TeamNode,
         description?: string,
         links?: Link[] | RaainNode[],
         version?: string,
-        configurationAsJSON?: any,
+        configurationAsJSON?: string,
     }) {
         super(json);
         this.latitude = json.latitude;
         this.longitude = json.longitude;
         this.name = json.name;
         this.description = json.description;
-        this.team = json.team;
+        this.team = json.team as TeamNode;
+        if (typeof json.team === 'string') {
+            this.team = new TeamNode({id: json.team});
+        }
         this.setConfiguration(json.configurationAsJSON);
     }
 

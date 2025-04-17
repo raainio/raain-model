@@ -22,12 +22,12 @@ export class RadarNode extends RaainNode {
         latitude: number,
         longitude: number,
         name: string,
-        team: TeamNode,
+        team: string | TeamNode,
         description?: string,
         technicalInfos?: string,
         links?: Link[] | RaainNode[],
         version?: string,
-        configurationAsJSON?: any,
+        configurationAsJSON?: string,
     }) {
         super(json);
         this.latitude = json.latitude;
@@ -35,7 +35,10 @@ export class RadarNode extends RaainNode {
         this.name = json.name;
         this.description = json.description;
         this.technicalInfos = json.technicalInfos;
-        this.team = json.team;
+        this.team = json.team as TeamNode;
+        if (typeof json.team === 'string') {
+            this.team = new TeamNode({id: json.team});
+        }
         this.setConfiguration(json.configurationAsJSON);
     }
 

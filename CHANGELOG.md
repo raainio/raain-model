@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [3.0.4] - 2025-04-17
+
+### Changed
+
+- Improved type safety by changing configurationAsJSON parameter from `any` to `string` in RainNode
+- Updated .gitignore to exclude .output.txt file
+
 ## [3.0.3] - 2025-04-17
 
 ### Added
@@ -238,7 +245,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Initial release
 - First extracts from RAAIN services
 
-[Unreleased]: https://github.com/raainio/raain-model/compare/v3.0.3...HEAD
+[Unreleased]: https://github.com/raainio/raain-model/compare/v3.0.4...HEAD
+
+[3.0.4]: https://github.com/raainio/raain-model/compare/v3.0.3...v3.0.4
 
 [3.0.3]: https://github.com/raainio/raain-model/compare/v3.0.2...v3.0.3
 

@@ -18,10 +18,10 @@ export class RadarNodeMap extends RadarNode {
         map: RadarMeasure[] | string,
         name: string,
         description: string,
-        team: TeamNode,
+        team: string | TeamNode,
         links?: Link[] | RaainNode[],
         version?: string,
-        configurationAsJSON?: any,
+        configurationAsJSON?: string,
     }) {
         super(json);
         this.date = new Date(json.date);
@@ -61,9 +61,11 @@ export class RadarNodeMap extends RadarNode {
     }
 
     public getMapData(): RadarMeasure[] {
-        if (!this.map) {
-            return [];
+        try {
+            const parsed = JSON.parse(this.map);
+            return parsed.map((m: any) => new RadarMeasure(m));
+        } catch (_) {
         }
-        return JSON.parse(this.map);
+        return [];
     }
 }

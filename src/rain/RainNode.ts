@@ -33,7 +33,7 @@ export class RainNode extends RaainNode {
         radars?: string[] | RadarNode[],
         gauges?: string[] | GaugeNode[],
         latLngRectsAsJSON?: string,
-        configurationAsJSON?: any,
+        configurationAsJSON?: string,
         lastCompletedComputations?: string[] | RainComputation[],
     }) {
         super(json);

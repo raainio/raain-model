@@ -15,8 +15,8 @@ export class GaugeNodeMap extends GaugeNode {
         longitude: number,
         name: string,
         description: string,
-        team: TeamNode,
-        configurationAsJSON?: any,
+        team: string | TeamNode,
+        configurationAsJSON?: string,
         map?: string,
         links?: Link[] | RaainNode[],
         version?: string,
@@ -43,15 +43,17 @@ export class GaugeNodeMap extends GaugeNode {
             if (typeof (mapData) !== 'string') {
                 map = JSON.stringify(mapData);
             }
-        } catch (e) {
+        } catch (_) {
         }
         this.map = map.toString();
     }
 
     public getMapData(): GaugeMeasure[] {
-        if (!this.map) {
-            return [];
+        try {
+            const parsed = JSON.parse(this.map);
+            return parsed.map((m: any) => new GaugeMeasure(m));
+        } catch (_) {
         }
-        return JSON.parse(this.map);
+        return [];
     }
 }

@@ -3,6 +3,7 @@ import {Link, RaainNode} from '../organization';
 import {RainMeasure} from './RainMeasure';
 import {CartesianTools, LatLng} from '../cartesian';
 import {MergeStrategy} from './MergeStrategy';
+import {RadarMeasure} from '../radar';
 
 /**
  * Represents a map-based rain computation result.
@@ -130,9 +131,11 @@ export class RainComputationMap extends RainComputationAbstract {
     }
 
     public getMapData(): RainMeasure[] {
-        if (!this.map) {
-            return [];
+        try {
+            const parsed = JSON.parse(this.map);
+            return parsed.map((m: any) => new RadarMeasure(m));
+        } catch (_) {
         }
-        return JSON.parse(this.map);
+        return [];
     }
 }

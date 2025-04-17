@@ -286,7 +286,7 @@ describe('Rain', function () {
         });
 
         optionalTrace('setMapData done');
-        const mappedRainMeasures = rainComputationMap.getMapData().map(m => new RainMeasure(m as any));
+        const mappedRainMeasures = rainComputationMap.getMapData();
         expect(mappedRainMeasures.length).eq(1);
         const mappedRainCartesianMeasureValues = mappedRainMeasures[0].values.map(m => new RainCartesianMeasureValue(m as any));
         expect(mappedRainCartesianMeasureValues.length).eq(1);

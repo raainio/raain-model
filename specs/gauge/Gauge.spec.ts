@@ -1,5 +1,5 @@
 import {expect} from 'chai';
-import {GaugeMeasure, GaugeNode, TeamNode} from '../../src';
+import {GaugeMeasure, GaugeNode, GaugeNodeMap, TeamNode} from '../../src';
 
 describe('Gauge', () => {
 
@@ -33,6 +33,15 @@ describe('Gauge', () => {
         const gaugeMeasure = new GaugeMeasure({id: 'measure', values: [10, 11], configurationAsJSON: JSON.stringify(measureConf)});
         expect(JSON.stringify(gaugeMeasure.toJSON())).eq('{"id":"measure","links":[],"validity":-1,"configurationAsJSON":"{\\"rainId\\":\\"rainId\\",\\"type\\":\\"type\\",\\"trust\\":true,\\"gaugeId\\":\\"test\\",\\"angle\\":12,\\"speed\\":10}","values":[10,11]}');
         expect(gaugeMeasure.getConfiguration().trust).eq(true);
+
+        const json = gaugeNode.toJSON();
+        const gaugeNodeMap = new GaugeNodeMap({...json});
+        gaugeNodeMap.setMapData([gaugeMeasure]);
+        const mappedMeasures = gaugeNodeMap.getMapData();
+        expect(mappedMeasures.length).eq(1);
+        const values = (mappedMeasures[0].values as number[]);
+        expect(values.length).eq(2);
+
 
     });
 
