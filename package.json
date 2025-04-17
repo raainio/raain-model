@@ -1,6 +1,6 @@
 {
   "name": "raain-model",
-  "version": "3.0.2",
+  "version": "3.0.3",
   "author": "contact@radartorain.com",
   "homepage": "https://github.com/raainio/raain-model",
   "description": "radartorain.com api model",
@@ -29,7 +29,7 @@
   },
   "scripts": {
     "build": "npm run build-dist",
-    "build-version": "VERSION=\"$(npm version patch --no-git-tag-version)\"",
+    "build-version": "VERSION=\"$(npm version patch --no-git-tag-version)\" && npm i",
     "build-dist": "rm -rf dist/ && npx tsc && cp package.json dist/ && cp *.md dist/",
     "test": "mocha --require ts-node/register 'specs/**/**.spec.ts'",
     "docs": "typedoc --out docs src/",
