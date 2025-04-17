@@ -97,3 +97,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ## 📅 Changelog
 
 See [Changelog](./CHANGELOG.md) for version history and changes.
+
+## 🚢 Release Process
+
+This project follows a structured release process. For detailed information about how releases are managed, please see the [Release Process Documentation](./RELEASE_PROCESS.md).

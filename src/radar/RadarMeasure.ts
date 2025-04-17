@@ -1,4 +1,4 @@
-import {Measure} from '../organization';
+import {Link, Measure} from '../organization';
 import {IPolarMeasureValue} from '../polar';
 import {ICartesianMeasureValue} from '../cartesian';
 import {RadarNode} from './RadarNode';
@@ -21,7 +21,7 @@ export class RadarMeasure extends Measure {
     ) {
         super(json);
         if (json.radar) {
-            this.addLinks([new RadarNode({id: json.radar, latitude: NaN, longitude: NaN, team: null, name: null})]);
+            this.addLinks(this.getRadarLinks([json.radar]));
         }
     }
 
@@ -37,6 +37,25 @@ export class RadarMeasure extends Measure {
         }
 
         return json;
+    }
+
+    protected getRadarLinks(linksToPurify: any[]): any[] {
+        if (!linksToPurify || linksToPurify.length === 0) {
+            return [];
+        }
+
+        return linksToPurify.map(l => {
+            if (l instanceof Link) {
+                return l;
+            } else if (l && l['_id']) {
+                return new RadarNode({id: l['_id'].toString(), latitude: 0, longitude: 0, name: l.name, team: l.team});
+            } else if (l && l.id) {
+                return new RadarNode({
+                    id: l.id.toString(),// 'hex'
+                    latitude: 0, longitude: 0, name: l.name, team: l.team
+                });
+            }
+        });
     }
 
     protected getLinkType(): string {

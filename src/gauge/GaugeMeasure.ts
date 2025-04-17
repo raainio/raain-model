@@ -1,4 +1,4 @@
-import {Measure} from '../organization';
+import {Link, Measure} from '../organization';
 import {IPolarMeasureValue} from '../polar';
 import {ICartesianMeasureValue} from '../cartesian';
 import {GaugeNode} from './GaugeNode';
@@ -23,7 +23,7 @@ export class GaugeMeasure extends Measure {
     ) {
         super(json);
         if (json.gauge) {
-            this.addLinks([new GaugeNode({id: json.gauge, latitude: NaN, longitude: NaN, team: null, name: null})]);
+            this.addLinks(this.getGaugeLinks([json.gauge]));
         }
     }
 
@@ -34,6 +34,25 @@ export class GaugeMeasure extends Measure {
             json['gauge'] = gaugeLink.getId();
         }
         return json;
+    }
+
+    protected getGaugeLinks(linksToPurify: any[]): any[] {
+        if (!linksToPurify || linksToPurify.length === 0) {
+            return [];
+        }
+
+        return linksToPurify.map(l => {
+            if (l instanceof Link) {
+                return l;
+            } else if (l && l['_id']) {
+                return new GaugeNode({id: l['_id'].toString(), latitude: 0, longitude: 0, name: l.name, team: l.team});
+            } else if (l && l.id) {
+                return new GaugeNode({
+                    id: l.id.toString(),// 'hex'
+                    latitude: 0, longitude: 0, name: l.name, team: l.team
+                });
+            }
+        });
     }
 
     protected getLinkType(): string {

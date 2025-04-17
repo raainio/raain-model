@@ -1,12 +1,8 @@
 # Release Process Documentation
 
-⚠️ IMPORTANT: DO NOT PUSH ANY CHANGES OR TAGS UNTIL EXPLICITLY ASKED TO "RELEASE"
-This includes:
-- No git push
-- No git push --tags
+⚠️ IMPORTANT: Released are done by GitHub CI
 - No npm publish
 - No manual releases
-Wait for the explicit "release" command before pushing anything.
 
 ## Patch Version Release Steps
 

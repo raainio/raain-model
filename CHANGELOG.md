@@ -7,6 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [3.0.2] - 2025-04-17
+
+### Added
+
+- Enhanced link handling in GaugeMeasure and RadarMeasure
+- Added Release Process documentation in README.md
+
+### Changed
+
+- Improved node creation in GaugeMeasure and RadarMeasure with proper link handling
+- Updated documentation in .memory-bank folder
+- Clarified release process documentation
+
 ## [3.0.1] - 2025-04-17
 
 ### Added
@@ -212,7 +225,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Initial release
 - First extracts from RAAIN services
 
-[Unreleased]: https://github.com/raainio/raain-model/compare/v3.0.1...HEAD
+[Unreleased]: https://github.com/raainio/raain-model/compare/v3.0.2...HEAD
+
+[3.0.2]: https://github.com/raainio/raain-model/compare/v3.0.1...v3.0.2
 
 [3.0.1]: https://github.com/raainio/raain-model/compare/v2.6.11...v3.0.1
 
