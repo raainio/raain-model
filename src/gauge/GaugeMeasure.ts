@@ -27,7 +27,7 @@ export class GaugeMeasure extends Measure {
         }
     }
 
-    public toJSON(options?: any): any {
+    public toJSON(options?: { removeValues?: boolean }) {
         const json = super.toJSON(options);
         const gaugeLink = this.getLink(GaugeNode.TYPE);
         if (gaugeLink) {

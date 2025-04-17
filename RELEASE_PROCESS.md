@@ -35,6 +35,20 @@ Wait for the explicit "release" command before pushing anything.
     - specs/*.md files
     - CHANGELOG.md
 
+3. **Update Version Number**
+   ```bash
+   npm run build-version
+   ```
+   This command automatically increments the patch version in package.json.
+
+4. **Update CHANGELOG.md**
+   - Move items from [Unreleased] section to a new version section
+   - Run the update-changelog script to automatically add the current system date in ISO format (YYYY-MM-DD):
+     ```bash
+     npm run update-changelog
+     ```
+   - Update the version comparison links at the bottom of the file
+
 5. **Version Control**
    ```bash
    git add .
@@ -43,9 +57,43 @@ Wait for the explicit "release" command before pushing anything.
    git push
    git push --tags
    ```
-   Replace X.Y.Z with the actual version number and provide a clear explanation of changes.
+   Replace X.Y.Z with the actual version number from package.json and provide a clear explanation of changes.
 
-## For all Version Release Steps (Patch or Release)
+## Minor and Major Version Release Steps
+
+For minor (feature) and major (breaking change) version releases, follow the same steps as for patch releases, with these differences:
+
+### Minor Version (Features)
+
+1. Use the following command instead of `npm run build-version`:
+   ```bash
+   npm version minor --no-git-tag-version
+   ```
+
+2. In the commit message, use:
+   ```bash
+   git commit -m "release: minor version X.Y.0 with [explanation of new features]"
+   ```
+
+3. Ensure all new features are properly documented in the CHANGELOG.md
+
+### Major Version (Breaking Changes)
+
+1. Use the following command instead of `npm run build-version`:
+   ```bash
+   npm version major --no-git-tag-version
+   ```
+
+2. In the commit message, use:
+   ```bash
+   git commit -m "release: major version X.0.0 with [explanation of breaking changes]"
+   ```
+
+3. Ensure all breaking changes are clearly documented in the CHANGELOG.md
+4. Update the README.md to reflect any changes in usage patterns
+5. Consider creating a migration guide for users upgrading from the previous major version
+
+## For all Version Release Steps (Patch, Minor, or Major)
 
 ### Important Notes
 
@@ -56,6 +104,18 @@ Wait for the explicit "release" command before pushing anything.
 ### Post-Release Verification
 
 - Verify the release is properly tagged
+- Test the build process:
+  ```bash
+  npm run build
+  ```
+- Verify the built package can be installed:
+  ```bash
+  cd dist
+  npm pack
+  # This creates a .tgz file that can be installed locally
+  # Install in a test project to verify it works:
+  # npm install /path/to/raain-model-X.Y.Z.tgz
+  ```
 
 ### Version Management Best Practices
 
@@ -113,10 +173,26 @@ If merge conflicts occur:
 - Return to the root directory for git operations
 - Use absolute paths when necessary to avoid confusion
 
+### CI/CD Integration
+
+This project uses GitHub Actions for continuous integration and deployment. The CI workflow is defined in `.github/workflows/ci.yml` and is triggered on pushes to the master branch. The workflow includes:
+
+- Running tests
+- Building the project
+- Generating documentation and deploying to GitHub Pages
+- Publishing the package to npm
+
+To ensure successful CI/CD:
+- Always verify that tests pass locally before pushing to master
+- Check the GitHub Actions tab after pushing to monitor the workflow
+- Address any CI failures immediately
+- Ensure you have the necessary secrets configured (NPM_TOKEN) for npm publishing
+
 ### Future Improvements
 
 - Consider automating version consistency checks
 - Add pre-commit hooks for version validation
 - Implement automated changelog updates
 - Add automated testing of the release process
-- Consider implementing a release automation script 
+- Consider implementing a release automation script
+- Enhance the CI/CD pipeline with additional checks and deployments

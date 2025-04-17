@@ -48,21 +48,17 @@ describe('Radar', () => {
         const radarPolarMeasureValue2 = new RadarPolarMeasureValue({polarMeasureValue: radarPolarMeasureValue1, angle: 1, axis: 0});
         expect(radarPolarMeasureValue2.getAzimuthsCount()).equal(720);
         expect(radarPolarMeasureValue2.getPolarEdgesCount()).equal(250);
-        expect(JSON.stringify(radarPolarMeasureValue2.toJSON({stringify: true})))
-            .eq(JSON.stringify(radarPolarMeasureValue1.toJSON({stringify: true})));
-        expect(JSON.stringify(radarPolarMeasureValue2.toJSON({stringify: true})))
+        expect(JSON.stringify(radarPolarMeasureValue2.toJSONWithPolarStringified()))
+            .eq(JSON.stringify(radarPolarMeasureValue1.toJSONWithPolarStringified()));
+        expect(JSON.stringify(radarPolarMeasureValue2.toJSONWithPolarStringified()))
             .eq('{"polarMeasureValue":"{\\"measureValuePolarContainers\\":\\"[{\\\\\\"azimuth\\\\\\":0,\\\\\\"distance\\\\\\":1,\\\\\\"polarEdges\\\\\\":[33,45.5],\\\\\\"edgeOffset\\\\\\":0}]\\",\\"azimuthsCount\\":720,\\"polarEdgesCount\\":250}","angle":1,"axis":0}');
 
-        const radarPolarMeasureValue3 = new RadarPolarMeasureValue({
-            polarMeasureValue: radarPolarMeasureValue1.toJSONWithPolarStringified(),
-            angle: 1,
-            axis: 0
-        });
+        const radarPolarMeasureValue3 = new RadarPolarMeasureValue(radarPolarMeasureValue1.toJSONWithPolarStringified());
         expect(radarPolarMeasureValue3.getAzimuthsCount()).equal(720);
         expect(radarPolarMeasureValue3.getPolarEdgesCount()).equal(250);
-        expect(JSON.stringify(radarPolarMeasureValue3.toJSON({stringify: true})))
-            .eq(JSON.stringify(radarPolarMeasureValue1.toJSON({stringify: true})));
-        expect(JSON.stringify(radarPolarMeasureValue3.toJSON({stringify: true})))
+        expect(JSON.stringify(radarPolarMeasureValue3.toJSONWithPolarStringified()))
+            .eq(JSON.stringify(radarPolarMeasureValue1.toJSONWithPolarStringified()));
+        expect(JSON.stringify(radarPolarMeasureValue3.toJSONWithPolarStringified()))
             .eq('{"polarMeasureValue":"{\\"measureValuePolarContainers\\":\\"[{\\\\\\"azimuth\\\\\\":0,\\\\\\"distance\\\\\\":1,\\\\\\"polarEdges\\\\\\":[33,45.5],\\\\\\"edgeOffset\\\\\\":0}]\\",\\"azimuthsCount\\":720,\\"polarEdgesCount\\":250}","angle":1,"axis":0}');
 
         const radarMeasure = new RadarMeasure({id: 'measureId', values: [polarMeasureValue], date: new Date(100000)});

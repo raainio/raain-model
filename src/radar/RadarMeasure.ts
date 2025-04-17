@@ -25,11 +25,15 @@ export class RadarMeasure extends Measure {
         }
     }
 
-    public toJSON(options?: any): any {
+    public toJSON(options?: { removeValues?: boolean }) {
         const json = super.toJSON(options);
         const radarLink = this.getLink(RadarNode.TYPE);
+
         if (radarLink) {
-            json['radar'] = radarLink.getId();
+            return {
+                ...json,
+                radar: radarLink.getId()
+            };
         }
 
         return json;

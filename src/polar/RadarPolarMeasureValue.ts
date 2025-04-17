@@ -88,16 +88,21 @@ export class RadarPolarMeasureValue extends AbstractPolarMeasureValue implements
         return radarPolarMeasureValues;
     }
 
-    public toJSON(options = {
-        stringify: false
-    }): any {
-        const json = super.toJSON(options);
-        json.angle = this.angle;
-        json.axis = this.axis;
-        return json;
+    public toJSON() {
+        const json = super.toJSON();
+        return {
+            ...json,
+            angle: this.angle,
+            axis: this.axis,
+        };
     }
 
-    public toJSONWithPolarStringified(): any {
-        return this.toJSON({stringify: true});
+    public toJSONWithPolarStringified() {
+        const json = super.toJSONWithPolarStringified();
+        return {
+            ...json,
+            angle: this.angle,
+            axis: this.axis,
+        };
     }
 }

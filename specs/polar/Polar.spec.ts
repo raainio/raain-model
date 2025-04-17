@@ -28,6 +28,11 @@ describe('Polar', () => {
         expect(polarMeasureValue.getAzimuthsCount()).eq(720);
         expect(polarMeasureValue.getPolarEdgesCount()).eq(250);
 
+        const polarMeasureValue2 = new PolarMeasureValue(polarMeasureValue.toJSON());
+        expect(JSON.stringify(polarMeasureValue2.toJSON())).eq('{"measureValuePolarContainers":[{"azimuth":0,"distance":1000,"polarEdges":[33,45.5],"edgeOffset":0}],"azimuthsCount":720,"polarEdgesCount":250}');
+        const polarMeasureValue3 = new PolarMeasureValue(polarMeasureValue.toJSONWithPolarStringified());
+        expect(JSON.stringify(polarMeasureValue3.toJSON())).eq(JSON.stringify(polarMeasureValue.toJSON()));
+
     });
 
     it('should iterate and filter', () => {

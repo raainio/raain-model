@@ -14,15 +14,11 @@ export class RainComputation extends RainComputationAbstract {
 
     public static TYPE = 'rain-computation';
 
-    // why "results" ? because "values" came from Measure.values, "results" came from computation
-    // why array ? because you can have different angle/axis from the Radar
-    public results: RainPolarMeasureValue[] | RainCartesianMeasureValue[];
-
     constructor(json: {
         id: string,
         date: Date,
         isReady: boolean,
-        results: RainPolarMeasureValue[] | RainCartesianMeasureValue[],
+        results: string[] | RainPolarMeasureValue[] | RainCartesianMeasureValue[],
         links?: Link[] | RaainNode[],
         version?: string,
         quality?: number,
@@ -31,53 +27,33 @@ export class RainComputation extends RainComputationAbstract {
         timeSpentInMs?: number,
         isDoneDate?: Date,
         launchedBy?: string,
-        rain?: Link | RaainNode,
-        radars?: Link[] | RaainNode[],
+        rain?: string | Link | RaainNode,
+        radars?: string[] | Link[] | RaainNode[],
 
     }) {
         super(json);
-        this.setResults(json.results);
+        this.results = json.results;
     }
 
-    public toJSON(options = {
-        stringify: false
-    }): any {
-        const json = super.toJSON();
-        json['results'] = this.results.map(r => r.toJSON(options));
-        return json;
+    // why "results" ? because "values" came from Measure.values, "results" came from computation
+    // why array ? because you can have different angle/axis from the Radar
+    protected _results: RainPolarMeasureValue[] | RainCartesianMeasureValue[];
+
+    public get results() {
+        return this._results;
     }
 
-    mergeCartesianResults(options: {
-        mergeStrategy: MergeStrategy,
-        mergeLimitPoints: [LatLng, LatLng],
-        cartesianTools: CartesianTools,
-        removeNullValues?: boolean,
-    }): RainMeasure[] {
-
-        this.buildLatLngMatrix(options);
-
-        return this.mergeRainMeasures([new RainMeasure({
-            id: this.id,
-            values: this.results,
-            date: this.date
-        })], options);
-    }
-
-    protected getLinkType(): string {
-        return RainComputation.TYPE;
-    }
-
-    private setResults(results: string[] | RainPolarMeasureValue[] | RainCartesianMeasureValue[]) {
+    public set results(results: string[] | RainPolarMeasureValue[] | RainCartesianMeasureValue[]) {
         if (typeof results === 'string') {
             results = JSON.parse(results);
         }
 
         if (!results || results.length === 0 || !Array.isArray(results)) {
-            this.results = [];
+            this._results = [];
             return;
         }
 
-        this.results = results.map(r => {
+        this._results = results.map(r => {
             if (typeof r === 'string' && r.indexOf('polarMeasureValue') >= 0) {
                 return new RainPolarMeasureValue(JSON.parse(r));
             } else if (r.polarMeasureValue) {
@@ -91,6 +67,34 @@ export class RainComputation extends RainComputationAbstract {
                 return r;
             }
         });
+    }
+
+    public toJSON(options = {stringify: false}) {
+        const json = super.toJSON();
+        return {
+            ...json,
+            results: this._results.map(r => r.toJSON(options))
+        };
+    }
+
+    mergeCartesianResults(options: {
+        mergeStrategy: MergeStrategy,
+        mergeLimitPoints: [LatLng, LatLng],
+        cartesianTools: CartesianTools,
+        removeNullValues?: boolean,
+    }): RainMeasure[] {
+
+        this.buildLatLngMatrix(options);
+
+        return this.mergeRainMeasures([new RainMeasure({
+            id: this.id,
+            values: this._results,
+            date: this.date
+        })], options);
+    }
+
+    protected getLinkType(): string {
+        return RainComputation.TYPE;
     }
 
 }

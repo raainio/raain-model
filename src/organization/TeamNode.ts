@@ -1,6 +1,10 @@
 import {PeopleNode} from './PeopleNode';
 import {RaainNode} from './RaainNode';
 
+export interface ITeamNode {
+}
+
+
 /**
  * Represents a team in the RAAIN system.
  * This class manages team members and their contracts.
@@ -21,34 +25,13 @@ import {RaainNode} from './RaainNode';
  */
 export class TeamNode extends RaainNode {
 
-    /** Type identifier for team nodes */
-    public static TYPE = 'team';
+    public static readonly TYPE = 'team';
 
-    /** Unique identifier for the team */
-    public id: any | string;
-
-    /** Name of the team */
     public name: string;
-
-    /** Description of the team */
     public description: string;
-
-    /** Array of contract types associated with the team */
     public contracts: string[];
-
-    /** Array of team members */
     public contacts: PeopleNode[];
 
-    /**
-     * Creates a new TeamNode instance.
-     *
-     * @param json - Configuration object
-     * @param json.id - Unique identifier
-     * @param json.name - Optional name of the team
-     * @param json.description - Optional description
-     * @param json.contracts - Optional array of contract types
-     * @param json.contacts - Optional array of team members
-     */
     constructor(json: {
         id: any | string,
         name?: string,
@@ -58,26 +41,21 @@ export class TeamNode extends RaainNode {
     }) {
         super(json);
 
-        this.id = json.id;
         this.name = json.name;
         this.description = json.description;
         this.contracts = json.contracts;
         this.contacts = json.contacts;
     }
 
-    /**
-     * Converts the team node to a JSON object.
-     *
-     * @returns A JSON object containing the team's data
-     */
-    public toJSON(): any {
+    public toJSON() {
+        const json = super.toJSON();
         return {
-            id: this.id,
+            ...json,
             name: this.name,
             description: this.description,
             contracts: this.contracts,
             contacts: this.contacts,
-        } as any;
+        };
     }
 
     /**

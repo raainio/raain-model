@@ -2,7 +2,7 @@
 
 [![npm version](https://badge.fury.io/js/raain-model.svg)](https://badge.fury.io/js/raain-model)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![TypeScript](https://img.shields.io/badge/TypeScript-4.9.5-blue.svg)](https://www.typescriptlang.org/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.0.4-blue.svg)](https://www.typescriptlang.org/)
 [![Build Status](https://github.com/raainio/raain-model/actions/workflows/ci.yml/badge.svg)](https://github.com/raainio/raain-model/actions)
 
 > A TypeScript library for radar-based rain measurement and analysis, used in [radartorain.com](https://radartorain.com)
@@ -61,6 +61,17 @@ const computation = new RainComputationMap({
 Visit [documentation](https://raainio.github.io/raain-model)
 and [swagger](https://api.sandbox.radartorain.com/v2/docs).
 
+### Memory Bank
+
+This project uses a Memory Bank for comprehensive documentation and context retention. The Memory Bank is located in the `.memory-bank` directory and contains the following files:
+
+- `projectbrief.md`: Overview of the project, core requirements, and goals
+- `productContext.md`: Why the project exists, problems it solves, and how it works
+- `systemPatterns.md`: System architecture, key technical decisions, and design patterns
+- `techContext.md`: Technologies used, development setup, and technical constraints
+- `activeContext.md`: Current work focus, recent changes, and next steps
+- `progress.md`: What works, what's left to build, and known issues
+
 ### Key Components
 
 - `RainNode`: Core class for rain measurement nodes
@@ -79,20 +90,10 @@ npm test
 npm run test:coverage
 ```
 
-## 🤝 Contributing
-
-We welcome contributions! Please see our [Contributing Guide](CONTRIBUTING.md) for details.
-
 ## 📝 License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-## 📅 Release Notes
+## 📅 Changelog
 
-See [Release notes](./RELEASE.md) for version history and changes.
-
-## 🔗 Links
-
-- [Website](https://radartorain.com)
-- [API Documentation](https://api.sandbox.radartorain.com/docs)
-- [GitHub Issues](https://github.com/raainio/raain-model/issues)
+See [Changelog](./CHANGELOG.md) for version history and changes.

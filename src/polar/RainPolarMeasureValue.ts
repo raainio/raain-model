@@ -39,16 +39,20 @@ export class RainPolarMeasureValue extends AbstractPolarMeasureValue implements 
         return new RainPolarMeasureValue({polarMeasureValue, version});
     }
 
-    public toJSON(options = {
-        stringify: false
-    }): any {
-        const json: any = super.toJSON(options);
-        json.version = this.version;
-        return json;
+    public toJSON() {
+        const json = super.toJSON();
+        return {
+            ...json,
+            version: this.version
+        };
     }
 
-    public toJSONWithPolarStringified(): any {
-        return this.toJSON({stringify: true});
+    public toJSONWithPolarStringified() {
+        const json = super.toJSONWithPolarStringified();
+        return {
+            ...json,
+            version: this.version
+        };
     }
 
     public getVersion(): string {

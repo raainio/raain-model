@@ -7,7 +7,7 @@ import {MergeStrategy} from './MergeStrategy';
 /**
  * Represents a map-based rain computation result.
  * This class extends RainComputationAbstract to provide map-specific functionality for rain data processing.
- * 
+ *
  * @example
  * ```typescript
  * const computation = new RainComputationMap({
@@ -17,7 +17,7 @@ import {MergeStrategy} from './MergeStrategy';
  *   map: [] // Your rain measurement data here
  * });
  * ```
- * 
+ *
  * @remarks
  * This class is used in the following API endpoints:
  * - api/rains/:id/computations/:computationId?format=map
@@ -25,7 +25,7 @@ import {MergeStrategy} from './MergeStrategy';
  */
 export class RainComputationMap extends RainComputationAbstract {
 
-    /** 
+    /**
      * The map data stored as a stringified JSON array of RainMeasure objects.
      * This format allows for efficient storage and transmission of large datasets.
      */
@@ -33,7 +33,7 @@ export class RainComputationMap extends RainComputationAbstract {
 
     /**
      * Creates a new RainComputationMap instance.
-     * 
+     *
      * @param json - The configuration object containing all necessary parameters
      * @param json.id - Unique identifier for the computation
      * @param json.date - Timestamp of the computation
@@ -63,8 +63,8 @@ export class RainComputationMap extends RainComputationAbstract {
         timeSpentInMs?: number,
         isDoneDate?: Date,
         launchedBy?: string,
-        rain?: Link | RaainNode,
-        radars?: Link[] | RaainNode[],
+        rain?: string | Link | RaainNode,
+        radars?: string[] | Link[] | RaainNode[],
     }) {
         super(json);
         this.setMapData(json.map, {mergeStrategy: MergeStrategy.NONE});
@@ -72,31 +72,30 @@ export class RainComputationMap extends RainComputationAbstract {
 
     /**
      * Converts the computation to a JSON object.
-     * 
+     *
      * @returns A JSON object containing all relevant data
      * @remarks
      * This method overrides the parent class's toJSON method to handle the map property
      * and remove the results property which is not used in this implementation.
      */
-    public toJSON(): any {
+    public toJSON() {
         const json = super.toJSON();
-        if (this.map) {
-            json['map'] = this.map;
-            delete json['results'];
-        }
-        return json;
+        return {
+            ...json,
+            map: this.map
+        };
     }
 
     /**
      * Sets the map data with optional merging capabilities.
-     * 
+     *
      * @param mapData - The rain measurement data to set
      * @param options - Configuration options for data processing
      * @param options.mergeStrategy - Strategy to use when merging data
      * @param options.cartesianTools - Optional tools for coordinate transformations
      * @param options.mergeLimitPoints - Optional boundary points for merging
      * @param options.removeNullValues - Whether to remove null values during merge
-     * 
+     *
      * @remarks
      * This method handles both string and array inputs, and can perform merging
      * operations based on the provided options. The data is always stored internally

@@ -39,16 +39,24 @@ export class Measure extends RaainNode {
         }
     }
 
-    public toJSON(options: { removeValues?: boolean } = {}): any {
+    public toJSON(options: { removeValues?: boolean } = {}) {
         const json = super.toJSON();
-        json['date'] = this.date?.toISOString();
-        json['validity'] = this.validity;
-        json['configurationAsJSON'] = this.configurationAsJSON;
-
-        if (!options?.removeValues) {
-            json['values'] = this.values;
+        const extendedJson = {
+            ...json,
+            date: this.date,
+            validity: this.validity,
+            configurationAsJSON: this.configurationAsJSON,
+            values: [] as IPolarMeasureValue[] | ICartesianMeasureValue[] | number[]
         }
-        return json;
+
+        if (options?.removeValues) {
+            return extendedJson;
+        }
+
+        return {
+            ...extendedJson,
+            values: this.values
+        };
     }
 
     public getConfiguration(): any {

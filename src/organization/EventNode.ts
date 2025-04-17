@@ -29,7 +29,7 @@ export class EventNode {
         this.modified = json.modified;
     }
 
-    public toJSON(): any {
+    public toJSON() {
         return {
             id: this.id,
             title: this.title,
@@ -38,6 +38,6 @@ export class EventNode {
             description: this.description,
             created: this.created,
             modified: this.modified,
-        } as any;
+        };
     }
 }

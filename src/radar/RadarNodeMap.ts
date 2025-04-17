@@ -28,13 +28,21 @@ export class RadarNodeMap extends RadarNode {
         this.setMapData(json.map);
     }
 
-    public toJSON(): any {
+    public toJSON() {
         const json = super.toJSON();
+        const extendedJson = {
+            ...json,
+            date: this.date
+        };
+
         if (this.map) {
-            json['map'] = this.map;
+            return {
+                ...extendedJson,
+                map: this.map
+            };
         }
-        json['date'] = this.date.toISOString();
-        return json;
+
+        return extendedJson;
     }
 
     public setMapData(mapData: RadarMeasure[] | string) {

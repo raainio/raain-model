@@ -122,8 +122,12 @@ export class RaainNode implements IVersion {
      *
      * @returns A JSON object containing the node's data
      */
-    public toJSON(): any {
-        const json: any = {
+    public toJSON() {
+        const json: {
+            id: string,
+            links: Link[],
+            version?: string,
+        } = {
             id: this.id,
             links: this.links
         };

@@ -25,10 +25,12 @@ export class GaugeNodeMap extends GaugeNode {
         this.setMapData(json.map);
     }
 
-    public toJSON(): any {
+    public toJSON() {
         const json = super.toJSON();
-        json.map = this.map;
-        return json;
+        return {
+            ...json,
+            map: this.map
+        };
     }
 
     public setMapData(mapData: GaugeMeasure[] | string) {

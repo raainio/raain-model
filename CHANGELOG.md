@@ -7,6 +7,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [3.0.1] - 2025-04-17
+
+### Added
+
+- Major version upgrade to 3.0.0
+- Enhanced TypeScript 5.0.4 support
+- Improved documentation and API references
+- Additional test coverage
+
+### Changed
+
+- Refactored core components for better performance
+- Updated dependencies to latest versions
+- Improved error handling and type safety
+
+### Technical Details
+
+- Optimized data structures for radar and rain processing
+- Enhanced coordinate transformation algorithms
+- Improved quality metrics calculation
+
 ## [2.6.11] - 2025-03-22
 
 ### Added
@@ -191,7 +212,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Initial release
 - First extracts from RAAIN services
 
-[Unreleased]: https://github.com/raainio/raain-model/compare/v2.6.10...HEAD
+[Unreleased]: https://github.com/raainio/raain-model/compare/v3.0.1...HEAD
+
+[3.0.1]: https://github.com/raainio/raain-model/compare/v2.6.11...v3.0.1
 
 [2.6.11]: https://github.com/raainio/raain-model/compare/v2.6.9...v2.6.11
 

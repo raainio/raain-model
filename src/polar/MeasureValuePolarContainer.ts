@@ -22,13 +22,13 @@ export class MeasureValuePolarContainer {
         this.edgeOffset = json.edgeOffset ? json.edgeOffset : 0;
     }
 
-    public toJSON(): any {
+    public toJSON() {
         return {
             azimuth: this.azimuth,
             distance: this.distance,
             polarEdges: this.polarEdges,
             edgeOffset: this.edgeOffset,
-        } as any;
+        };
     }
 
     getPolarEdgesCount() {

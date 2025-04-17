@@ -48,6 +48,12 @@ describe('Cartesian', () => {
         expect(radarCartesianMeasureValue.getLimitPoints()[1].lat).eq(10.002);
         expect(radarCartesianMeasureValue.getLimitPoints()[1].lng).eq(20);
 
+        const radarCartesianMeasureValue2 = new RadarCartesianMeasureValue(radarCartesianMeasureValue.toJSON());
+        const radarCartesianMeasureValue3 = new RadarCartesianMeasureValue(radarCartesianMeasureValue
+            .toJSONWithCartesianValuesStringified());
+        expect(JSON.stringify(radarCartesianMeasureValue2.toJSON())).eq('{"cartesianValues":[{"lat":10,"lng":20,"value":123},{"lat":10.002,"lng":19.9998,"value":321}],"limitPoints":[{"lat":10,"lng":19.9998},{"lat":10.002,"lng":20}],"angle":4,"axis":0}');
+        expect(JSON.stringify(radarCartesianMeasureValue3.toJSON())).eq(JSON.stringify(radarCartesianMeasureValue.toJSON()));
+
         const gaugeNode = new GaugeNode({
             id: 'GaugeNode looks OK.',
             name: 'name',

@@ -94,21 +94,17 @@ export class AbstractPolarMeasureValue implements IPolarMeasureValue {
         return this.polarMeasureValue.getPolarEdgesCount();
     }
 
-    public toJSON(options = {
-        stringify: false
-    }): any {
-
-        let polarMeasureValue: any = this.polarMeasureValue;
-        if (options?.stringify) {
-            polarMeasureValue = JSON.stringify(this.polarMeasureValue.toJSONWithPolarStringified());
-        }
-
+    public toJSON() {
         return {
-            polarMeasureValue,
+            polarMeasureValue: this.polarMeasureValue,
         };
     }
 
-    public toJSONWithPolarStringified(): any {
-        return this.toJSON({stringify: true});
+    public toJSONWithPolarStringified() {
+        const json = this.toJSON();
+        return {
+            ...json,
+            polarMeasureValue: JSON.stringify(this.polarMeasureValue.toJSONWithPolarStringified())
+        };
     }
 }

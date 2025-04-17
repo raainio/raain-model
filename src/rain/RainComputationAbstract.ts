@@ -31,6 +31,7 @@ export class RainComputationAbstract extends RaainNode {
         date: Date,
         isReady: boolean,
 
+        name?: string,
         links?: Link[] | RaainNode[],
         version?: string,
         quality?: number,
@@ -39,12 +40,13 @@ export class RainComputationAbstract extends RaainNode {
         timeSpentInMs?: number,
         isDoneDate?: Date,
         launchedBy?: string,
-        rain?: Link | RaainNode,
-        radars?: Link[] | RaainNode[],
+        rain?: string | Link | RaainNode,
+        radars?: string[] | Link[] | RaainNode[],
 
     }) {
         super(json);
 
+        this.name = json.name ?? '';
         this.date = json.date ? new Date(json.date) : null;
         this.quality = json.quality >= 0 ? json.quality : -1;
         this.progressIngest = json.progressIngest >= 0 ? json.progressIngest : -1;
@@ -91,12 +93,14 @@ export class RainComputationAbstract extends RaainNode {
                 return new RadarMeasure({id: l['_id'].toString(), values: []});
             } else if (l && l.id) {
                 return new RadarMeasure({id: l.id.toString(), values: []}); // 'hex'
+            } else if (typeof l === 'string') {
+                return new RadarMeasure({id: l, values: []});
             }
         });
     }
 
     private static _getRainLink(linkToPurify: RaainNode): RainNode {
-        if (!linkToPurify || !linkToPurify.id) {
+        if (!linkToPurify?.id) {
             return null;
         }
 
@@ -107,29 +111,52 @@ export class RainComputationAbstract extends RaainNode {
         });
     }
 
-    public toJSON(): any {
+    public toJSON(): {
+        id: string,
+        links: Link[],
+        version?: string,
+        isReady: boolean,
+        name: string,
+        date: Date,
+        quality: number,
+        progressIngest: number,
+        progressComputing: number,
+        timeSpentInMs: number,
+        isDoneDate: Date,
+        launchedBy: string,
+        rain: string,
+        radars: string[],
+    } {
         const json = super.toJSON();
-        json['date'] = this.date.toISOString();
-        json['quality'] = this.quality;
-        json['progressIngest'] = this.progressIngest;
-        json['progressComputing'] = this.progressComputing;
-        json['timeSpentInMs'] = this.timeSpentInMs;
-        json['isReady'] = this.isReady;
-        json['isDoneDate'] = this.isDoneDate?.toISOString();
-        json['launchedBy'] = this.launchedBy;
-        json['name'] = this.name;
-        return json;
+        const rainLinks = this.links.filter(l => l.getLinkType() === RainNode.TYPE).map(l => l.getId());
+        const rainLink = rainLinks.length === 1 ? rainLinks[0] : '';
+        const radarLinks = this.links.filter(l => l.getLinkType() === RadarNode.TYPE).map(l => l.getId());
+
+        return {
+            ...json,
+            date: this.date,
+            quality: this.quality,
+            progressIngest: this.progressIngest,
+            progressComputing: this.progressComputing,
+            timeSpentInMs: this.timeSpentInMs,
+            isReady: this.isReady,
+            isDoneDate: this.isDoneDate,
+            launchedBy: this.launchedBy,
+            name: this.name,
+            rain: rainLink,
+            radars: radarLinks,
+        };
     }
 
-    public addRadarLinks(linksToAdd: Link[] | RaainNode[]): void {
+    public addRadarLinks(linksToAdd: string[] | Link[] | RaainNode[]): void {
         this.addLinks(RainComputationAbstract._getRadarLinks(linksToAdd));
     }
 
-    public replaceRainLink(linksToAdd: Link | RaainNode | any): void {
+    public replaceRainLink(linksToAdd: string | Link | RaainNode | any): void {
         this.addLinks([RainComputationAbstract._getRainLink(linksToAdd)]);
     }
 
-    public addRadarMeasureLinks(linksToAdd: Link[] | any[]): void {
+    public addRadarMeasureLinks(linksToAdd: string[] | Link[] | any[]): void {
         this.addLinks(RainComputationAbstract._getRadarMeasureLinks(linksToAdd));
     }
 

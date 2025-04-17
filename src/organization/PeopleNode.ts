@@ -21,7 +21,7 @@ export class PeopleNode {
         this.name = json.name;
     }
 
-    public toJSON(): any {
+    public toJSON() {
         return {
             id: this.id,
             roles: this.roles,

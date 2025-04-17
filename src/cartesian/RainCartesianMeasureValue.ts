@@ -20,13 +20,15 @@ export class RainCartesianMeasureValue extends CartesianMeasureValue implements 
         return this.version;
     }
 
-    toJSON(options = {stringify: false}): any {
-        const json: any = super.toJSON(options);
-        json.version = this.getVersion();
-        return json;
+    toJSON(options = {stringify: false}) {
+        const json = super.toJSON(options);
+        return {
+            ...json,
+            version: this.getVersion()
+        };
     }
 
-    toJSONWithCartesianValuesStringified(): any {
+    toJSONWithCartesianValuesStringified() {
         return this.toJSON({stringify: true});
     }
 }

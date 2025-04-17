@@ -104,7 +104,9 @@ describe('Rain', function () {
             team: team1
         });
         expect(rainNode.id).eq('RainNode looks OK.');
-        expect(JSON.stringify(rainNode.toJSON())).eq('' +
+
+        const rainNodeCopy = new RainNode(rainNode.toJSON());
+        expect(JSON.stringify(rainNodeCopy.toJSON())).eq('' +
             '{"id":"RainNode looks OK.",' +
             '"links":[' +
             '{"rel":"radar","href":"../radars/r1"},' +
@@ -167,8 +169,12 @@ describe('Rain', function () {
                 '"progressIngest":-1,' +
                 '"progressComputing":-1,' +
                 '"isReady":true,' +
+                '"name":"",' +
+                '"rain":"",' +
+                '"radars":["r1"],' +
                 '"qualitySpeedMatrixContainer":{"qualityPoints":[],"trustedIndicators":[],"flattenMatrices":[],"speed":{"angleInDegrees":0,"pixelsPerPeriod":0},"matrices":[]},' +
-                '"rainComputation":"rc1"' +
+                '"rainComputation":"rc1",' +
+                '"error":""' +
                 '}');
 
         const cartesianValues = [
@@ -198,12 +204,13 @@ describe('Rain', function () {
             version: 'v1',
         });
 
-        expect(JSON.stringify(rainComputationMap.toJSON()))
-            .eq('{"id":"rc1","links":[{"rel":"radar","href":"../radars/r1"}],"version":"v1","date":"2022-01-01T00:00:00.000Z","quality":1,"progressIngest":1,"progressComputing":1,"timeSpentInMs":100,"isReady":true,"isDoneDate":"1988-01-01T00:00:00.000Z","launchedBy":"oneUser","map":"[{\\"id\\":\\"measure\\",\\"links\\":[],\\"validity\\":-1,\\"configurationAsJSON\\":\\"{\\\\\\"test\\\\\\":true}\\",\\"values\\":[{\\"cartesianValues\\":[{\\"lat\\":10,\\"lng\\":20,\\"value\\":123},{\\"lat\\":10.01,\\"lng\\":20.01,\\"value\\":321}],\\"limitPoints\\":[{\\"lat\\":10,\\"lng\\":20},{\\"lat\\":10.01,\\"lng\\":20.01}],\\"version\\":\\"test\\"}]}]"}');
+        const rainComputationMap2 = new RainComputationMap(rainComputationMap.toJSON());
+        expect(JSON.stringify(rainComputationMap2.toJSON()))
+            .eq('{"id":"rc1","links":[{"rel":"radar","href":"../radars/r1"}],"version":"v1","date":"2022-01-01T00:00:00.000Z","quality":1,"progressIngest":1,"progressComputing":1,"timeSpentInMs":100,"isReady":true,"isDoneDate":"1988-01-01T00:00:00.000Z","launchedBy":"oneUser","name":"","rain":"","radars":["r1"],"map":"[{\\"id\\":\\"measure\\",\\"links\\":[],\\"validity\\":-1,\\"configurationAsJSON\\":\\"{\\\\\\"test\\\\\\":true}\\",\\"values\\":[{\\"cartesianValues\\":[{\\"lat\\":10,\\"lng\\":20,\\"value\\":123},{\\"lat\\":10.01,\\"lng\\":20.01,\\"value\\":321}],\\"limitPoints\\":[{\\"lat\\":10,\\"lng\\":20},{\\"lat\\":10.01,\\"lng\\":20.01}],\\"version\\":\\"test\\"}]}]"}');
 
         rainComputationMap.setMapData([rainMeasure, rainMeasure], {mergeStrategy: MergeStrategy.NONE});
         expect(JSON.stringify(rainComputationMap.toJSON()))
-            .eq('{"id":"rc1","links":[{"rel":"radar","href":"../radars/r1"}],"version":"v1","date":"2022-01-01T00:00:00.000Z","quality":1,"progressIngest":1,"progressComputing":1,"timeSpentInMs":100,"isReady":true,"isDoneDate":"1988-01-01T00:00:00.000Z","launchedBy":"oneUser","map":"[{\\"id\\":\\"measure\\",\\"links\\":[],\\"validity\\":-1,\\"configurationAsJSON\\":\\"{\\\\\\"test\\\\\\":true}\\",\\"values\\":[{\\"cartesianValues\\":[{\\"lat\\":10,\\"lng\\":20,\\"value\\":123},{\\"lat\\":10.01,\\"lng\\":20.01,\\"value\\":321}],\\"limitPoints\\":[{\\"lat\\":10,\\"lng\\":20},{\\"lat\\":10.01,\\"lng\\":20.01}],\\"version\\":\\"test\\"}]},{\\"id\\":\\"measure\\",\\"links\\":[],\\"validity\\":-1,\\"configurationAsJSON\\":\\"{\\\\\\"test\\\\\\":true}\\",\\"values\\":[{\\"cartesianValues\\":[{\\"lat\\":10,\\"lng\\":20,\\"value\\":123},{\\"lat\\":10.01,\\"lng\\":20.01,\\"value\\":321}],\\"limitPoints\\":[{\\"lat\\":10,\\"lng\\":20},{\\"lat\\":10.01,\\"lng\\":20.01}],\\"version\\":\\"test\\"}]}]"}');
+            .eq('{"id":"rc1","links":[{"rel":"radar","href":"../radars/r1"}],"version":"v1","date":"2022-01-01T00:00:00.000Z","quality":1,"progressIngest":1,"progressComputing":1,"timeSpentInMs":100,"isReady":true,"isDoneDate":"1988-01-01T00:00:00.000Z","launchedBy":"oneUser","name":"","rain":"","radars":["r1"],"map":"[{\\"id\\":\\"measure\\",\\"links\\":[],\\"validity\\":-1,\\"configurationAsJSON\\":\\"{\\\\\\"test\\\\\\":true}\\",\\"values\\":[{\\"cartesianValues\\":[{\\"lat\\":10,\\"lng\\":20,\\"value\\":123},{\\"lat\\":10.01,\\"lng\\":20.01,\\"value\\":321}],\\"limitPoints\\":[{\\"lat\\":10,\\"lng\\":20},{\\"lat\\":10.01,\\"lng\\":20.01}],\\"version\\":\\"test\\"}]},{\\"id\\":\\"measure\\",\\"links\\":[],\\"validity\\":-1,\\"configurationAsJSON\\":\\"{\\\\\\"test\\\\\\":true}\\",\\"values\\":[{\\"cartesianValues\\":[{\\"lat\\":10,\\"lng\\":20,\\"value\\":123},{\\"lat\\":10.01,\\"lng\\":20.01,\\"value\\":321}],\\"limitPoints\\":[{\\"lat\\":10,\\"lng\\":20},{\\"lat\\":10.01,\\"lng\\":20.01}],\\"version\\":\\"test\\"}]}]"}');
 
         const cartesianTools = new CartesianTools();
         cartesianTools.buildLatLngEarthMap();
@@ -216,7 +223,7 @@ describe('Rain', function () {
             removeNullValues: false,
         });
         expect(JSON.stringify(rainComputationMap.toJSON()))
-            .eq('{"id":"rc1","links":[{"rel":"radar","href":"../radars/r1"}],"version":"v1","date":"2022-01-01T00:00:00.000Z","quality":1,"progressIngest":1,"progressComputing":1,"timeSpentInMs":100,"isReady":true,"isDoneDate":"1988-01-01T00:00:00.000Z","launchedBy":"oneUser","map":"[{\\"id\\":\\"measure\\",\\"links\\":[],\\"validity\\":-1,\\"configurationAsJSON\\":\\"{\\\\\\"test\\\\\\":true}\\",\\"values\\":[{\\"cartesianValues\\":[],\\"limitPoints\\":[{\\"lat\\":10,\\"lng\\":11},{\\"lat\\":11,\\"lng\\":11.5}]}]}]"}');
+            .eq('{"id":"rc1","links":[{"rel":"radar","href":"../radars/r1"}],"version":"v1","date":"2022-01-01T00:00:00.000Z","quality":1,"progressIngest":1,"progressComputing":1,"timeSpentInMs":100,"isReady":true,"isDoneDate":"1988-01-01T00:00:00.000Z","launchedBy":"oneUser","name":"","rain":"","radars":["r1"],"map":"[{\\"id\\":\\"measure\\",\\"links\\":[],\\"validity\\":-1,\\"configurationAsJSON\\":\\"{\\\\\\"test\\\\\\":true}\\",\\"values\\":[{\\"cartesianValues\\":[],\\"limitPoints\\":[{\\"lat\\":10,\\"lng\\":11},{\\"lat\\":11,\\"lng\\":11.5}]}]}]"}');
 
     });
 

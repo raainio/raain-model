@@ -80,25 +80,25 @@ export class RainComputationQuality extends RainComputationAbstract {
 
     }
 
-    public toJSON(arg?: any): any {
+    public toJSON(arg?: any) {
         const json = super.toJSON();
+        const extendedJson = {
+            ...json,
+            qualitySpeedMatrixContainer: this.qualitySpeedMatrixContainer as any,
+            rainComputation: '',
+            error: this.error ?? ''
+        }
 
-        if (this.qualitySpeedMatrixContainer && this.qualitySpeedMatrixContainer.toJSON) {
-            json['qualitySpeedMatrixContainer'] = this.qualitySpeedMatrixContainer.toJSON(arg);
-        } else if (this.qualitySpeedMatrixContainer) {
-            json['qualitySpeedMatrixContainer'] = this.qualitySpeedMatrixContainer;
+        if (this.qualitySpeedMatrixContainer?.toJSON) {
+            extendedJson.qualitySpeedMatrixContainer = this.qualitySpeedMatrixContainer.toJSON(arg);
         }
 
         const rainComputationLink = this.getLink(RainComputation.TYPE);
         if (rainComputationLink) {
-            json['rainComputation'] = rainComputationLink.getId();
+            extendedJson.rainComputation = rainComputationLink.getId();
         }
 
-        if (this.error) {
-            json['error'] = this.error;
-        }
-
-        return json;
+        return extendedJson;
     }
 
     protected mergeStillComputed(v1: any, v2: any): any {

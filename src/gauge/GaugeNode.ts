@@ -111,15 +111,18 @@ export class GaugeNode extends RaainNode {
      *
      * @returns A JSON object containing the gauge node's data
      */
-    public toJSON(): any {
+    public toJSON() {
         const json = super.toJSON();
-        json['name'] = this.name;
-        json['description'] = this.description;
-        json['latitude'] = this.latitude;
-        json['longitude'] = this.longitude;
-        json['team'] = this.team?.id || this.team;
-        json['configurationAsJSON'] = this.configurationAsJSON;
-        return json;
+
+        return {
+            ...json,
+            name: this.name,
+            description: this.description,
+            latitude: this.latitude,
+            longitude: this.longitude,
+            team: this.team?.id || this.team,
+            configurationAsJSON: this.configurationAsJSON
+        };
     }
 
     /**

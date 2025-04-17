@@ -1,6 +1,6 @@
 {
   "name": "raain-model",
-  "version": "2.6.11",
+  "version": "3.0.1",
   "author": "contact@radartorain.com",
   "homepage": "https://github.com/raainio/raain-model",
   "description": "radartorain.com api model",
@@ -33,6 +33,8 @@
     "build-dist": "rm -rf dist/ && npx tsc && cp package.json dist/ && cp *.md dist/",
     "test": "mocha --require ts-node/register 'specs/**/**.spec.ts'",
     "docs": "typedoc --out docs src/",
-    "docs:serve": "npx serve docs"
+    "docs:serve": "npx serve docs",
+    "update-changelog": "node scripts/update-changelog.js",
+    "verify-changelog": "node scripts/verify-changelog.js"
   }
 }

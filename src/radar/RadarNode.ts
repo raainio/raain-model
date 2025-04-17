@@ -39,16 +39,18 @@ export class RadarNode extends RaainNode {
         this.setConfiguration(json.configurationAsJSON);
     }
 
-    public toJSON(): any {
+    public toJSON() {
         const json = super.toJSON();
-        json['name'] = this.name;
-        json['description'] = this.description;
-        json['technicalInfos'] = this.technicalInfos;
-        json['latitude'] = this.latitude;
-        json['longitude'] = this.longitude;
-        json['team'] = this.team?.id || this.team;
-        json['configurationAsJSON'] = this.configurationAsJSON;
-        return json;
+        return {
+            ...json,
+            name: this.name,
+            description: this.description,
+            technicalInfos: this.technicalInfos,
+            latitude: this.latitude,
+            longitude: this.longitude,
+            team: this.team?.id || this.team,
+            configurationAsJSON: this.configurationAsJSON
+        };
     }
 
     public setConfiguration(configuration: string | any) {
