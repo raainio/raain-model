@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [3.0.5] - 2025-04-25
+
+### Changed
+
+- Modified CI workflow to allow releasing without bumping version
+- Updated version checking to display warnings instead of failing
+- Enhanced tag creation process to check if tag already exists
+
 ## [3.0.4] - 2025-04-17
 
 ### Changed
@@ -245,7 +253,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Initial release
 - First extracts from RAAIN services
 
-[Unreleased]: https://github.com/raainio/raain-model/compare/v3.0.4...HEAD
+[Unreleased]: https://github.com/raainio/raain-model/compare/v3.0.5...HEAD
+
+[3.0.5]: https://github.com/raainio/raain-model/compare/v3.0.4...v3.0.5
 
 [3.0.4]: https://github.com/raainio/raain-model/compare/v3.0.3...v3.0.4
 
