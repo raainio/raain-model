@@ -41,7 +41,7 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./docs
 
-      - name: Create and push tag with version from package.json
+      - name: Create and push tag/changes with version from package.json
         run: |
           VERSION=$(node -p "require('./package.json').version")
           git config --local user.email "action@github.com"
@@ -54,6 +54,7 @@ jobs:
             git add .
             git tag -a "v$VERSION" -m "Release v$VERSION"
             git commit -m "Release v$VERSION"
+            git push
             git push --tags
           fi
 
