@@ -14,35 +14,33 @@ jobs:
         with:
           node-version: '18'
           registry-url: 'https://registry.npmjs.org'
-      - run: npm install
-      - run: npm test
-      - run: npm run build
-      - run: npm run docs
-      - name: Deploy documentation to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v3
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./docs
+
+      - name: Test
+        run: npm install && npm test
+
       - name: Check version against npm
         run: |
           PACKAGE_VERSION=$(node -p "require('./package.json').version")
           NPM_VERSION=$(npm view raain-model version || echo "0.0.0")
 
           if [ "$PACKAGE_VERSION" == "$NPM_VERSION" ]; then
-            echo "Warning: Version $PACKAGE_VERSION already exists on npm. Proceeding with release without version bump."
+            echo "Warning: Version $PACKAGE_VERSION is not greater than npm version $NPM_VERSION. Proceeding with release with version bump."
+            npm run bump
           else
-            # Convert versions to comparable format (remove dots)
-            PACKAGE_VERSION_COMP=$(echo $PACKAGE_VERSION | tr -d '.')
-            NPM_VERSION_COMP=$(echo $NPM_VERSION | tr -d '.')
-
-            # Check if package version is greater than npm version
-            if [ "$PACKAGE_VERSION_COMP" -le "$NPM_VERSION_COMP" ]; then
-              echo "Warning: Version $PACKAGE_VERSION is not greater than npm version $NPM_VERSION. Proceeding with release with version bump."
-              npm run bump
-            else
-              echo "Version check passed: $PACKAGE_VERSION (local) > $NPM_VERSION (npm)"
-            fi
+            # Convert versions to comparable format (remove dots) ?
           fi
+
+
+      - name: Build
+        run: npm run build
+
+      - run: npm run docs
+      - name: Deploy documentation to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./docs
+
       - name: Create and push tag with version from package.json
         run: |
           VERSION=$(node -p "require('./package.json').version")
@@ -56,6 +54,7 @@ jobs:
             git tag -a "v$VERSION" -m "Release v$VERSION"
             git push origin "v$VERSION"
           fi
+
       - run: npm publish
         working-directory: ./dist
         env:
