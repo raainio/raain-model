@@ -118,7 +118,7 @@ these differences:
 ### Version Management Best Practices
 
 - Always check the current version in package.json before starting the release process
-- Use `npm run bump` to increment the version number automatically
+- Use `npm run bump` to increment the version number only if needed
 - Ensure version numbers are consistent across:
     - package.json
     - git tags

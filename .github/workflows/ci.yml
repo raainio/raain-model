@@ -37,7 +37,8 @@ jobs:
 
             # Check if package version is greater than npm version
             if [ "$PACKAGE_VERSION_COMP" -le "$NPM_VERSION_COMP" ]; then
-              echo "Warning: Version $PACKAGE_VERSION is not greater than npm version $NPM_VERSION. Proceeding with release without version bump."
+              echo "Warning: Version $PACKAGE_VERSION is not greater than npm version $NPM_VERSION. Proceeding with release with version bump."
+              npm run bump
             else
               echo "Version check passed: $PACKAGE_VERSION (local) > $NPM_VERSION (npm)"
             fi
