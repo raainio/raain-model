@@ -16,7 +16,7 @@ export class CartesianGaugeHistory {
     }) {
         this.gaugeId = json.gaugeId;
         this.gaugeLabel = json.gaugeLabel;
-        this.date = json.date;
+        this.date = json.date ? new Date(json.date) : undefined;
         this.value = json.value;
         this.configurationAsJSON = json.configurationAsJSON;
     }

@@ -23,7 +23,7 @@ export class PositionHistory extends PositionValue {
 
         this.id = json.id;
         this.label = json.label;
-        this.date = json.date;
+        this.date = json.date ? new Date(json.date) : undefined;
         this.valueFromGauge = json.valueFromGauge;
         this.valueFromRain = json.valueFromRain;
         this.configurationAsJSON = json.configurationAsJSON;

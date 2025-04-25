@@ -23,6 +23,38 @@ jobs:
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./docs
+      - name: Check version against npm
+        run: |
+          PACKAGE_VERSION=$(node -p "require('./package.json').version")
+          NPM_VERSION=$(npm view raain-model version || echo "0.0.0")
+
+          if [ "$PACKAGE_VERSION" == "$NPM_VERSION" ]; then
+            echo "Warning: Version $PACKAGE_VERSION already exists on npm. Proceeding with release without version bump."
+          else
+            # Convert versions to comparable format (remove dots)
+            PACKAGE_VERSION_COMP=$(echo $PACKAGE_VERSION | tr -d '.')
+            NPM_VERSION_COMP=$(echo $NPM_VERSION | tr -d '.')
+
+            # Check if package version is greater than npm version
+            if [ "$PACKAGE_VERSION_COMP" -le "$NPM_VERSION_COMP" ]; then
+              echo "Warning: Version $PACKAGE_VERSION is not greater than npm version $NPM_VERSION. Proceeding with release without version bump."
+            else
+              echo "Version check passed: $PACKAGE_VERSION (local) > $NPM_VERSION (npm)"
+            fi
+          fi
+      - name: Create and push tag with version from package.json
+        run: |
+          VERSION=$(node -p "require('./package.json').version")
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+
+          # Check if tag already exists
+          if git ls-remote --tags origin | grep -q "refs/tags/v$VERSION"; then
+            echo "Tag v$VERSION already exists. Skipping tag creation."
+          else
+            git tag -a "v$VERSION" -m "Release v$VERSION"
+            git push origin "v$VERSION"
+          fi
       - run: npm publish
         working-directory: ./dist
         env:

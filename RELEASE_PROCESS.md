@@ -1,6 +1,7 @@
 # Release Process Documentation
 
 ⚠️ IMPORTANT: Released are done by GitHub CI
+
 - No npm publish
 - No manual releases
 
@@ -33,17 +34,17 @@
 
 3. **Update Version Number**
    ```bash
-   npm run build-version
+   npm run bump
    ```
    This command automatically increments the patch version in package.json.
 
 4. **Update CHANGELOG.md**
-   - Move items from [Unreleased] section to a new version section
-   - Run the update-changelog script to automatically add the current system date in ISO format (YYYY-MM-DD):
-     ```bash
-     npm run update-changelog
-     ```
-   - Update the version comparison links at the bottom of the file
+    - Move items from [Unreleased] section to a new version section
+    - Run the update-changelog script to automatically add the current system date in ISO format (YYYY-MM-DD):
+      ```bash
+      npm run update-changelog
+      ```
+    - Update the version comparison links at the bottom of the file
 
 5. **Version Control**
    ```bash
@@ -57,11 +58,12 @@
 
 ## Minor and Major Version Release Steps
 
-For minor (feature) and major (breaking change) version releases, follow the same steps as for patch releases, with these differences:
+For minor (feature) and major (breaking change) version releases, follow the same steps as for patch releases, with
+these differences:
 
 ### Minor Version (Features)
 
-1. Use the following command instead of `npm run build-version`:
+1. Use the following command instead of `npm run bump`:
    ```bash
    npm version minor --no-git-tag-version
    ```
@@ -75,7 +77,7 @@ For minor (feature) and major (breaking change) version releases, follow the sam
 
 ### Major Version (Breaking Changes)
 
-1. Use the following command instead of `npm run build-version`:
+1. Use the following command instead of `npm run bump`:
    ```bash
    npm version major --no-git-tag-version
    ```
@@ -116,7 +118,7 @@ For minor (feature) and major (breaking change) version releases, follow the sam
 ### Version Management Best Practices
 
 - Always check the current version in package.json before starting the release process
-- Use `npm run build-version` to increment the version number automatically
+- Use `npm run bump` to increment the version number automatically
 - Ensure version numbers are consistent across:
     - package.json
     - git tags
@@ -171,7 +173,8 @@ If merge conflicts occur:
 
 ### CI/CD Integration
 
-This project uses GitHub Actions for continuous integration and deployment. The CI workflow is defined in `.github/workflows/ci.yml` and is triggered on pushes to the master branch. The workflow includes:
+This project uses GitHub Actions for continuous integration and deployment. The CI workflow is defined in
+`.github/workflows/ci.yml` and is triggered on pushes to the master branch. The workflow includes:
 
 - Running tests
 - Building the project
@@ -179,6 +182,7 @@ This project uses GitHub Actions for continuous integration and deployment. The 
 - Publishing the package to npm
 
 To ensure successful CI/CD:
+
 - Always verify that tests pass locally before pushing to master
 - Check the GitHub Actions tab after pushing to monitor the workflow
 - Address any CI failures immediately

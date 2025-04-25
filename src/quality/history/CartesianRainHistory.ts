@@ -9,7 +9,7 @@ export class CartesianRainHistory {
         date: Date,
         computedValue: CartesianValue
     }) {
-        this.date = json.date;
+        this.date = json.date ? new Date(json.date) : undefined;
         this.computedValue = json.computedValue;
     }
 }

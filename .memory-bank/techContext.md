@@ -3,10 +3,12 @@
 ## Technologies Used
 
 ### Core Technologies
+
 - **TypeScript 5.0.4**: Primary programming language, providing strong typing and modern JavaScript features
 - **Node.js**: Runtime environment for development and testing
 
 ### Testing Framework
+
 - **Mocha**: Test runner for executing test suites
 - **Chai**: Assertion library for test validation
 - **Chai-as-promised**: Extension for testing promises
@@ -14,10 +16,12 @@
 - **@testdeck/mocha**: Decorator-based testing for TypeScript
 
 ### Documentation
+
 - **TypeDoc**: Documentation generator for TypeScript projects
 - **Markdown**: Used for project documentation
 
 ### Build Tools
+
 - **npm**: Package manager and script runner
 - **tslint**: Linting tool for TypeScript code
 - **ts-node**: TypeScript execution environment for Node.js
@@ -25,46 +29,58 @@
 ## Development Setup
 
 ### Prerequisites
+
 - Node.js (latest LTS version recommended)
 - npm (comes with Node.js)
 
 ### Installation
+
 ```bash
 npm install
 ```
 
 ### Build Process
+
 ```bash
 npm run build
 ```
+
 This command:
+
 1. Removes the previous dist/ directory
 2. Compiles TypeScript to JavaScript
 3. Copies package.json and markdown files to the dist/ directory
 
 ### Testing
+
 ```bash
 npm test
 ```
+
 Runs all tests in the specs/ directory using Mocha and ts-node.
 
 ### Documentation Generation
+
 ```bash
 npm run docs
 ```
+
 Generates API documentation using TypeDoc in the docs/ directory.
 
 ### Version Management
+
 ```bash
-npm run build-version
+npm run bump
 ```
+
 Increments the patch version in package.json.
 
 ## Technical Constraints
 
 1. **TypeScript Compatibility**: Must maintain compatibility with TypeScript 5.0.4 and above.
 
-2. **Node.js Environment**: Primarily designed for Node.js environments, though the compiled JavaScript can be used in browsers.
+2. **Node.js Environment**: Primarily designed for Node.js environments, though the compiled JavaScript can be used in
+   browsers.
 
 3. **API Stability**: Must maintain backward compatibility for public APIs between minor versions.
 
@@ -79,9 +95,12 @@ Increments the patch version in package.json.
 ## Dependencies
 
 ### Production Dependencies
-None. The library is designed to be dependency-free in production to minimize the footprint and avoid compatibility issues.
+
+None. The library is designed to be dependency-free in production to minimize the footprint and avoid compatibility
+issues.
 
 ### Development Dependencies
+
 - **@testdeck/mocha**: ^0.3.3
 - **@types/chai**: ^4.3.10
 - **@types/mocha**: ^10.0.1
@@ -106,4 +125,5 @@ None. The library is designed to be dependency-free in production to minimize th
 
 4. **Weather Systems**: Can be integrated with broader weather forecasting and analysis systems.
 
-The technical architecture is designed to be modular and flexible, allowing for easy integration with various systems and services while maintaining a clean separation of concerns.
+The technical architecture is designed to be modular and flexible, allowing for easy integration with various systems
+and services while maintaining a clean separation of concerns.

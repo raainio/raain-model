@@ -47,7 +47,7 @@ export class RainComputationAbstract extends RaainNode {
         super(json);
 
         this.name = json.name ?? '';
-        this.date = json.date ? new Date(json.date) : null;
+        this.date = json.date ? new Date(json.date) : undefined;
         this.quality = json.quality >= 0 ? json.quality : -1;
         this.progressIngest = json.progressIngest >= 0 ? json.progressIngest : -1;
         this.progressComputing = json.progressComputing >= 0 ? json.progressComputing : -1;

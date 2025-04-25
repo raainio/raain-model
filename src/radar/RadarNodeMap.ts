@@ -24,7 +24,7 @@ export class RadarNodeMap extends RadarNode {
         configurationAsJSON?: string,
     }) {
         super(json);
-        this.date = new Date(json.date);
+        this.date = json.date ? new Date(json.date) : undefined;
         this.setMapData(json.map);
     }
 
