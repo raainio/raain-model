@@ -51,6 +51,7 @@ jobs:
           if git ls-remote --tags origin | grep -q "refs/tags/v$VERSION"; then
             echo "Tag v$VERSION already exists. Skipping tag creation."
           else
+            git add .
             git tag -a "v$VERSION" -m "Release v$VERSION"
             git commit -m "Release v$VERSION"
             git push origin "v$VERSION"
