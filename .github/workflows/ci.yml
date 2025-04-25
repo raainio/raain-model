@@ -28,8 +28,8 @@ jobs:
             npm run bump
           else
             # Convert versions to comparable format (remove dots) ?
+            echo "Version looks ok"
           fi
-
 
       - name: Build
         run: npm run build
