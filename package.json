@@ -20,6 +20,7 @@
     "bp:use-remote-deps": "node ./scripts/bp/switch-dependencies.js remote && npm run bp:_clean",
     "bp:branch:push": "git add . && git commit -m \"chore: release v$(node -p \"require('./package.json').version\")\" && git push",
     "bp:branch:squash": "node ./scripts/bp/squash-commits.js",
+    "bp:main:package": "git checkout package && git merge main && git push && git checkout main",
     "build": "npm run build-dist",
     "build-dist": "rm -rf dist/ && npx tsc && cp package.json dist/ && cp *.md dist/",
     "test": "nyc mocha --require ts-node/register 'specs/**/**.spec.ts'",
