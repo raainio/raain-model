@@ -63,14 +63,18 @@ and [swagger](https://api.sandbox.radartorain.com/v2/docs).
 
 ### Memory Bank
 
-This project uses a Memory Bank for comprehensive documentation and context retention. The Memory Bank is located in the `.memory-bank` directory and contains the following files:
+This project uses a Memory Bank for comprehensive documentation and context retention. The Memory Bank is located in the
+`.memory-bank` directory and contains the following files:
 
+- `memory-bank-rules.md`: Rules to follow and to consider in all contexts
 - `projectbrief.md`: Overview of the project, core requirements, and goals
 - `productContext.md`: Why the project exists, problems it solves, and how it works
 - `systemPatterns.md`: System architecture, key technical decisions, and design patterns
 - `techContext.md`: Technologies used, development setup, and technical constraints
 - `activeContext.md`: Current work focus, recent changes, and next steps
 - `progress.md`: What works, what's left to build, and known issues
+
+=> !! These files should always be considered as a context and keep up-to-date !!
 
 ### Key Components
 
@@ -97,7 +101,3 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ## 📅 Changelog
 
 See [Changelog](./CHANGELOG.md) for version history and changes.
-
-## 🚢 Release Process
-
-This project follows a structured release process. For detailed information about how releases are managed, please see the [Release Process Documentation](./RELEASE_PROCESS.md).

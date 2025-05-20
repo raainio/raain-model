@@ -13,6 +13,7 @@ export class RadarNode extends RaainNode {
     public latitude: number;
     public longitude: number;
     public team: TeamNode;
+    public open: boolean;
 
     // internal
     private configurationAsJSON: string;
@@ -25,6 +26,7 @@ export class RadarNode extends RaainNode {
         team: string | TeamNode,
         description?: string,
         technicalInfos?: string,
+        open?: boolean,
         links?: Link[] | RaainNode[],
         version?: string,
         configurationAsJSON?: string,
@@ -39,6 +41,7 @@ export class RadarNode extends RaainNode {
         if (typeof json.team === 'string') {
             this.team = new TeamNode({id: json.team});
         }
+        this.open = !!json?.open;
         this.setConfiguration(json.configurationAsJSON);
     }
 

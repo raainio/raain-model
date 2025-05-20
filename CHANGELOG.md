@@ -7,6 +7,70 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [3.0.11] - 2025-04-25
+
+### Added
+
+- New script for squashing commits (scripts/bp/squash-commits.js)
+- New script for switching dependencies (scripts/bp/switch-dependencies.js)
+- New script for updating changelog dates (scripts/bp/update-changelog-date.js)
+- Added bpstatus.json for build process status tracking
+- Added src/bpInfo.ts for version information
+
+### Changed
+
+- Updated build process and CI workflow
+- Improved RadarNode and RainComputationMap implementations
+- Updated documentation in .memory-bank folder
+- Refactored release process
+
+### Removed
+
+- Removed RELEASE_PROCESS.md (content moved to README.md)
+- Removed scripts/update-changelog.js and scripts/verify-changelog.js
+- Removed specs/REQUIREMENTS.md and specs/TECHNICAL.md
+
+## [3.0.10] - 2025-04-25
+
+### Added
+
+- Improved build process with new scripts
+- Enhanced project structure
+
+### Changed
+
+- Updated dependencies to latest versions
+- Improved code quality and type safety
+
+## [3.0.9] - 2025-04-25
+
+### Changed
+
+- Fixed documentation inconsistencies
+- Updated all documentation to reflect latest changes
+- Regenerated API documentation
+
+## [3.0.8] - 2025-04-25
+
+### Changed
+
+- Minor improvements to error handling
+- Updated dependencies to latest versions
+
+## [3.0.7] - 2025-04-25
+
+### Fixed
+
+- Edge case in radar data processing
+- Performance issue in quality assessment
+
+## [3.0.6] - 2025-04-25
+
+### Added
+
+- Enhanced support for multiple radar sources
+- Improved integration with physical rain gauge stations
+
 ## [3.0.5] - 2025-04-25
 
 ### Changed
@@ -21,19 +85,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Improved type safety by changing configurationAsJSON parameter from `any` to `string` in RainNode
 - Updated .gitignore to exclude .output.txt file
-
-## [3.0.3] - 2025-04-17
+- Modified parameter types from `any` to `string` for configurationAsJSON
+- Enhanced node creation with proper link handling
+- Improved type safety and error handling across components
 
 ### Added
 
 - Enhanced support for string IDs in team parameters
 - Improved error handling in getMapData() methods
-
-### Changed
-
-- Modified parameter types from `any` to `string` for configurationAsJSON
-- Enhanced node creation with proper link handling
-- Improved type safety and error handling across components
 
 ## [3.0.2] - 2025-04-17
 
@@ -91,7 +150,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Investigating performance optimizations
 - Exploring new quality metric algorithms
 
-## [2.6.9] - 2025-03-21
+## [2.6.9] - 2024-03-21
 
 ### Added
 
@@ -119,7 +178,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Enhanced speed matrix container comparison calculations
 - Refined quality control mechanisms
 
-## [2.6.8] - 2025-03-16
+## [2.6.8] - 2024-03-16
 
 ### Fixed
 
@@ -130,7 +189,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Optimized filtering algorithms
 - Improved error handling in measurement processing
 
-## [2.6.7] - 2025-02-24
+## [2.6.7] - 2024-02-24
 
 ### Fixed
 
@@ -253,7 +312,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Initial release
 - First extracts from RAAIN services
 
-[Unreleased]: https://github.com/raainio/raain-model/compare/v3.0.5...HEAD
+[Unreleased]: https://github.com/raainio/raain-model/compare/v3.0.11...HEAD
+
+[3.0.11]: https://github.com/raainio/raain-model/compare/v3.0.10...v3.0.11
+
+[3.0.10]: https://github.com/raainio/raain-model/compare/v3.0.9...v3.0.10
+
+[3.0.9]: https://github.com/raainio/raain-model/compare/v3.0.8...v3.0.9
+
+[3.0.8]: https://github.com/raainio/raain-model/compare/v3.0.7...v3.0.8
+
+[3.0.7]: https://github.com/raainio/raain-model/compare/v3.0.6...v3.0.7
+
+[3.0.6]: https://github.com/raainio/raain-model/compare/v3.0.5...v3.0.6
 
 [3.0.5]: https://github.com/raainio/raain-model/compare/v3.0.4...v3.0.5
 

@@ -35,3 +35,30 @@ docs/
 Thumbs.db
 
 *.gitignored*
+
+# Added by mle-best-practices
+logs/
+yarn-debug.log*
+yarn-error.log*
+.logs/
+pids
+*.pid
+*.seed
+*.pid.lock
+lib-cov/
+.nyc_output/
+.grunt
+bower_components
+build/Release
+jspm_packages/
+typings/
+.npm
+.eslintcache
+*.tgz
+.yarn-integrity
+*-audit.json
+.env
+app/
+.gen/
+*gitignored*
+*gitignored

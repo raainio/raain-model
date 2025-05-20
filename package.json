@@ -1,6 +1,6 @@
 {
   "name": "raain-model",
-  "version": "3.0.9",
+  "version": "3.0.11",
   "author": "contact@radartorain.com",
   "homepage": "https://github.com/raainio/raain-model",
   "description": "radartorain.com api model",
@@ -12,6 +12,20 @@
   "license": "MIT",
   "main": "./index.js",
   "types": "./index.d.ts",
+  "scripts": {
+    "bp:_clean": "rm -rf package-lock.json node_modules .gen .logs .nyc_output .logs .output.txt .coverage .coverage_temp dist app && npm i",
+    "bp:bump": "OLD_VERSION=\"v$(node -e \"console.log(require('./package.json').version)\")\" && VERSION=\"$(npm version patch --no-git-tag-version)\" && npm i && echo \"export const bpInfo = {version:'$VERSION'}\" > ./src/bpInfo.ts && git tag $OLD_VERSION && git checkout -b $VERSION",
+    "bp:update-changelog-dates": "node ./scripts/bp/update-changelog-date.js",
+    "bp:use-local-deps": "node ./scripts/bp/switch-dependencies.js local && npm run bp:_clean",
+    "bp:use-remote-deps": "node ./scripts/bp/switch-dependencies.js remote && npm run bp:_clean",
+    "bp:branch:push": "git add . && git commit -m \"chore: release v$(node -p \"require('./package.json').version\")\" && git push",
+    "bp:branch:squash": "node ./scripts/bp/squash-commits.js",
+    "build": "npm run build-dist",
+    "build-dist": "rm -rf dist/ && npx tsc && cp package.json dist/ && cp *.md dist/",
+    "test": "nyc mocha --require ts-node/register 'specs/**/**.spec.ts'",
+    "docs": "typedoc --out docs src/",
+    "docs:serve": "npx serve docs"
+  },
   "devDependencies": {
     "@testdeck/mocha": "^0.3.3",
     "@types/chai": "^4.3.10",
@@ -22,19 +36,10 @@
     "chai-spies": "^1.1.0",
     "hash-it": "^6.0.0",
     "mocha": "^10.2.0",
+    "nyc": "^17.1.0",
     "ts-node": "^8.10.2",
     "tslint": "^6.1.3",
     "typedoc": "^0.25.12",
     "typescript": "^5.0.4"
-  },
-  "scripts": {
-    "bump": "VERSION=\"$(npm version patch --no-git-tag-version)\" && npm i",
-    "build": "npm run build-dist",
-    "build-dist": "rm -rf dist/ && npx tsc && cp package.json dist/ && cp *.md dist/",
-    "test": "mocha --require ts-node/register 'specs/**/**.spec.ts'",
-    "docs": "typedoc --out docs src/",
-    "docs:serve": "npx serve docs",
-    "update-changelog": "node scripts/update-changelog.js",
-    "verify-changelog": "node scripts/verify-changelog.js"
   }
 }

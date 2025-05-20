@@ -26,40 +26,46 @@ flowchart TD
 ### Core Files (Required)
 
 1. `projectbrief.md`
-    - Foundation document that shapes all other files
-    - Created at project start if it doesn't exist
-    - Defines core requirements and goals
-    - Source of truth for project scope
+
+- Foundation document that shapes all other files
+- Created at project start if it doesn't exist
+- Defines core requirements and goals
+- Source of truth for project scope
 
 2. `productContext.md`
-    - Why this project exists
-    - Problems it solves
-    - How it should work
-    - User experience goals
+
+- Why this project exists
+- Problems it solves
+- How it should work
+- User experience goals
 
 3. `activeContext.md`
-    - Current work focus
-    - Recent changes
-    - Next steps
-    - Active decisions and considerations
+
+- Current work focus
+- Recent changes
+- Next steps
+- Active decisions and considerations
 
 4. `systemPatterns.md`
-    - System architecture
-    - Key technical decisions
-    - Design patterns in use
-    - Component relationships
+
+- System architecture
+- Key technical decisions
+- Design patterns in use
+- Component relationships
 
 5. `techContext.md`
-    - Technologies used
-    - Development setup
-    - Technical constraints
-    - Dependencies
+
+- Technologies used
+- Development setup
+- Technical constraints
+- Dependencies
 
 6. `progress.md`
-    - What works
-    - What's left to build
-    - Current status
-    - Known issues
+
+- What works
+- What's left to build
+- Current status
+- Known issues
 
 ### Additional Context
 
@@ -94,7 +100,7 @@ flowchart TD
 flowchart TD
     Start[Start] --> Context[Check Memory Bank]
     Context --> Update[Update Documentation]
-    Update --> Rules[Update .airules if needed]
+    Update --> Rules[Update README.md if needed]
     Rules --> Execute[Execute Task]
     Execute --> Document[Document Changes]
 ```
@@ -116,7 +122,7 @@ flowchart TD
         P1[Review ALL Files]
         P2[Document Current State]
         P3[Clarify Next Steps]
-        P4[Update .airules]
+        P4[Update README.md]
         
         P1 --> P2 --> P3 --> P4
     end
@@ -127,9 +133,9 @@ flowchart TD
 Note: When triggered by **update memory bank**, I MUST review every memory bank file, even if some don't require
 updates. Focus particularly on activeContext.md and progress.md as they track current state.
 
-## Project Intelligence (.airules)
+## Project Intelligence (README.md)
 
-The .airules file is my learning journal for each project. It captures important patterns, preferences, and project
+The README.md file is my learning journal for each project. It captures important patterns, preferences, and project
 intelligence that help me work more effectively. As I work with you and the project, I'll discover and document key
 insights that aren't obvious from the code alone.
 
@@ -140,11 +146,11 @@ flowchart TD
     subgraph Learn [Learning Process]
         D1[Identify Pattern]
         D2[Validate with User]
-        D3[Document in .airules]
+        D3[Document in README.md]
     end
     
     subgraph Apply [Usage]
-        A1[Read .airules]
+        A1[Read README.md]
         A2[Apply Learned Patterns]
         A3[Improve Future Work]
     end
@@ -163,7 +169,7 @@ flowchart TD
 - Tool usage patterns
 
 The format is flexible - focus on capturing valuable insights that help me work more effectively with you and the
-project. Think of .airules as a living document that grows smarter as we work together.
+project. Think of README.md as a living document that grows smarter as we work together.
 
 REMEMBER: After every memory reset, I begin completely fresh. The Memory Bank is my only link to previous work. It must
 be maintained with precision and clarity, as my effectiveness depends entirely on its accuracy. 

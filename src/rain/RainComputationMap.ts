@@ -42,7 +42,7 @@ export class RainComputationMap extends RainComputationAbstract {
      * @param json.map - Array of rain measurements or stringified JSON
      * @param json.links - Optional array of related nodes or links
      * @param json.version - Optional version string
-     * @param json.quality - Optional quality metric (0-1)
+     * @param json.quality - Optional quality metric (0-1), -1 if unknown
      * @param json.progressIngest - Optional ingestion progress (0-100)
      * @param json.progressComputing - Optional computing progress (0-100)
      * @param json.timeSpentInMs - Optional computation time in milliseconds

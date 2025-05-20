@@ -1,0 +1,12 @@
+{
+  "version": "0.0.4",
+  "type": "standalone",
+  "status": {
+    "find-projects": "2025-05-20 16:52",
+    "check-gitignore": "2025-05-20 16:52",
+    "check-memory-bank": "2025-05-20 16:52",
+    "check-scripts": "2025-05-20 16:52",
+    "check-project-type": "2025-05-20 16:52",
+    "clean-release-scripts": "2025-05-20 16:52"
+  }
+}

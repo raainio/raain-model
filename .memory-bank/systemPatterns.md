@@ -14,6 +14,21 @@ The RAAIN Model library follows a modular architecture organized around key doma
 
 3. **Rain Layer**: Classes for rain data processing
    - RainNode: Represents a rain measurement node
+     - Extends `RaainNode`
+     - Manages rain data computation and configuration
+     - Properties:
+       - `name`: Station name
+       - `description`: Optional description
+       - `team`: Associated TeamNode
+       - `status`: Current status number
+       - `quality`: Quality metric
+       - `latLngRectsAsJSON`: Geographic coverage as JSON
+       - `configurationAsJSON`: Private configuration data as string (improved type safety)
+     - Key Features:
+       - Radar link management
+       - Gauge integration
+       - Geographic calculations (center, limits)
+       - Computation history tracking
    - RainComputation: Processes radar data to compute rain measurements
    - RainComputationAbstract: Base class with core rain computation logic
    - RainComputationMap: Manages spatial distribution of rain computations
@@ -21,6 +36,18 @@ The RAAIN Model library follows a modular architecture organized around key doma
 
 4. **Gauge Layer**: Classes for rain gauge stations
    - GaugeNode: Represents a physical rain gauge station
+     - Extends `RaainNode`
+     - Properties:
+       - `name`: Station name
+       - `description`: Station description
+       - `latitude`: Geographic latitude
+       - `longitude`: Geographic longitude
+       - `team`: Associated TeamNode (supports string IDs)
+       - `configurationAsJSON`: Private configuration data as string (improved type safety)
+     - Features:
+       - Configuration management
+       - Location-based services
+       - Team association
    - GaugeMeasure: Encapsulates gauge measurement data
    - GaugeNodeMap: Manages collections of gauge nodes
 
@@ -41,8 +68,14 @@ The RAAIN Model library follows a modular architecture organized around key doma
 5. **Coordinate System Abstraction**: Abstracting coordinate systems to support both polar and Cartesian representations.
 
 6. **Quality Metrics**: Implementing built-in quality assessment for measurements.
+   - Enhanced speed matrix comparisons
+   - Improved quality point calculations
+   - Updated Cartesian rain history tracking
+   - Refined quality measurement tools
 
 7. **Link-based Relationships**: Using Link objects to establish relationships between entities.
+   - Enhanced link handling in GaugeMeasure and RadarMeasure
+   - Improved node creation with proper link handling
 
 ## Design Patterns in Use
 
@@ -78,7 +111,7 @@ The RAAIN Model library follows a modular architecture organized around key doma
    AbstractPolarMeasureValue
    ├── RadarPolarMeasureValue
    └── RainPolarMeasureValue
-   
+
    CartesianMeasureValue
    ├── RadarCartesianMeasureValue
    └── RainCartesianMeasureValue
@@ -100,3 +133,12 @@ The RAAIN Model library follows a modular architecture organized around key doma
    ```
 
 The architecture is designed to be flexible and extensible, allowing for the addition of new node types, measurement types, and processing strategies as needed.
+
+## API Endpoints
+- `/api/rains/:id`: Rain node management
+- `/api/gauges/:id`: Gauge station management
+
+## Data Processing
+- Polar measurement filtering
+- Cartesian coordinate transformations
+- Quality metric calculations
