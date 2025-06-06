@@ -18,28 +18,36 @@ The current focus of the RAAIN Model project is on:
 
 Based on the CHANGELOG.md, the most recent changes include:
 
-### Version 3.0.1 (2023-11-15)
+### Unreleased Changes
 
 #### Added
-- Major version upgrade to 3.0.0
-- Enhanced TypeScript 5.0.4 support
-- Improved documentation and API references
-- Additional test coverage
+- Added static TYPE property to RainComputationQuality class
+- Added getLinkType method to RainComputationQuality class for consistent link type handling
+
+### Version 3.0.11 (2025-05-20)
+
+#### Added
+- New script for squashing commits (scripts/bp/squash-commits.js)
+- New script for switching dependencies (scripts/bp/switch-dependencies.js)
+- New script for updating changelog dates (scripts/bp/update-changelog-date.js)
+- Added bpstatus.json for build process status tracking
+- Added src/bpInfo.ts for version information
 
 #### Changed
-- Refactored core components for better performance
-- Updated dependencies to latest versions
-- Improved error handling and type safety
+- Updated build process and CI workflow
+- Improved RadarNode and RainComputationMap implementations
+- Updated documentation in .memory-bank folder
+- Refactored release process
 
-#### Technical Details
-- Optimized data structures for radar and rain processing
-- Enhanced coordinate transformation algorithms
-- Improved quality metrics calculation
+#### Removed
+- Removed RELEASE_PROCESS.md (content moved to README.md)
+- Removed scripts/update-changelog.js and scripts/verify-changelog.js
+- Removed specs/REQUIREMENTS.md and specs/TECHNICAL.md
 
 ### Other Recent Activities
-- Added Memory Bank structure with memory-bank-rules.md
-- Updated release process documentation (RELEASE_PROCESS.md)
-- Modified various core components including RainComputationMap, RainCartesianMeasureValue, GaugeNodeMap, etc.
+- Enhanced RainComputationQuality with consistent link type handling
+- Continued improvements to the Memory Bank documentation
+- Ongoing maintenance and optimization of core components
 
 ## Next Steps
 

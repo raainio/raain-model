@@ -9,6 +9,7 @@ import {RainComputation} from './RainComputation';
  */
 export class RainComputationQuality extends RainComputationAbstract {
 
+    public static readonly TYPE = 'rain-computation-quality';
     public qualitySpeedMatrixContainer: SpeedMatrixContainer;
     public error: string;
 
@@ -174,6 +175,10 @@ export class RainComputationQuality extends RainComputationAbstract {
             return a1.concat(a2);
         }
         return stillComputed;
+    }
+
+    protected getLinkType(): string {
+        return RainComputationQuality.TYPE;
     }
 
 }

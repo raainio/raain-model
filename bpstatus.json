@@ -1,12 +1,12 @@
 {
-  "version": "0.0.4",
-  "type": "standalone",
+  "version": "0.0.10",
+  "type": "package",
   "status": {
-    "find-projects": "2025-05-20 16:52",
-    "check-gitignore": "2025-05-20 16:52",
-    "check-memory-bank": "2025-05-20 16:52",
-    "check-scripts": "2025-05-20 16:52",
-    "check-project-type": "2025-05-20 16:52",
-    "clean-release-scripts": "2025-05-20 16:52"
+    "find-projects": "2025-05-21 10:47",
+    "check-gitignore": "2025-06-05 15:50",
+    "check-memory-bank": "2025-05-21 10:47",
+    "check-scripts": "2025-05-24 17:37",
+    "check-project-type": "2025-05-21 10:56",
+    "clean-release-scripts": "2025-05-21 11:09"
   }
 }
