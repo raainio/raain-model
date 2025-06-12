@@ -35,10 +35,30 @@ const dependencies = mode === 'local'
 // Update the dependencies in package.json
 let updated = false;
 for (const [name, version] of Object.entries(dependencies)) {
-  if (!packageJson.dependencies[name] || packageJson.dependencies[name] !== version) {
+  // Check if the dependency exists in devDependencies
+  if (packageJson.devDependencies && packageJson.devDependencies[name]) {
+    if (packageJson.devDependencies[name] !== version) {
+      packageJson.devDependencies[name] = version;
+      updated = true;
+      console.log(`Updated devDependency ${name} to ${version}`);
+    }
+  }
+  // Check if the dependency exists in dependencies
+  else if (packageJson.dependencies && packageJson.dependencies[name]) {
+    if (packageJson.dependencies[name] !== version) {
+      packageJson.dependencies[name] = version;
+      updated = true;
+      console.log(`Updated dependency ${name} to ${version}`);
+    }
+  }
+  // If not found in either, add to dependencies
+  else {
+    if (!packageJson.dependencies) {
+      packageJson.dependencies = {};
+    }
     packageJson.dependencies[name] = version;
     updated = true;
-    console.log(`Updated ${name} to ${version}`);
+    console.log(`Added new dependency ${name} with version ${version}`);
   }
 }
 

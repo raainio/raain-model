@@ -43,6 +43,38 @@ async function squashCommits() {
       process.exit(1);
     }
 
+    // Check if current branch is main or master, ask for confirmation
+    if (currentBranch === 'main' || currentBranch === 'master') {
+      return new Promise((resolve) => {
+        rl.question(`You are on the ${currentBranch} branch. Are you sure you want to proceed with squashing commits? (yes/no): `, (answer) => {
+          if (answer.toLowerCase() !== 'yes' && answer.toLowerCase() !== 'y') {
+            console.log('Operation cancelled by user.');
+            rl.close();
+            process.exit(0);
+          }
+          resolve();
+        });
+      }).then(() => {
+        // Continue with the rest of the function
+        return continueSquashing();
+      });
+    } else {
+      // If not on main/master, continue directly
+      return continueSquashing();
+    }
+  } catch (error) {
+    console.error('An error occurred:', error.message);
+    rl.close();
+    process.exit(1);
+  }
+}
+
+// Function to continue with the squashing process after branch check
+async function continueSquashing() {
+  try {
+    // Get the current branch name again
+    const currentBranch = execCommand('git rev-parse --abbrev-ref HEAD');
+
     // Check if there are any uncommitted changes
     try {
       execCommand('git diff-index --quiet HEAD --');
