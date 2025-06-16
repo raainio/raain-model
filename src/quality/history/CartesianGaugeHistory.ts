@@ -8,11 +8,11 @@ export class CartesianGaugeHistory {
     public configurationAsJSON: string;
 
     constructor(json: {
-        gaugeId: string,
-        gaugeLabel: string,
-        date: Date,
-        value: CartesianValue,
-        configurationAsJSON: string,
+        gaugeId: string;
+        gaugeLabel: string;
+        date: Date;
+        value: CartesianValue;
+        configurationAsJSON: string;
     }) {
         this.gaugeId = json.gaugeId;
         this.gaugeLabel = json.gaugeLabel;

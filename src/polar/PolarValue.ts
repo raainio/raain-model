@@ -4,13 +4,12 @@ export class PolarValue {
     public polarDistanceInMeters: number;
 
     constructor(json: {
-        value: number,
-        polarAzimuthInDegrees: number,
-        polarDistanceInMeters: number
+        value: number;
+        polarAzimuthInDegrees: number;
+        polarDistanceInMeters: number;
     }) {
         this.value = json.value;
         this.polarAzimuthInDegrees = json.polarAzimuthInDegrees;
         this.polarDistanceInMeters = json.polarDistanceInMeters;
     }
 }
-

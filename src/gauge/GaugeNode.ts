@@ -20,7 +20,6 @@ import {Link, RaainNode, TeamNode} from '../organization';
  * ```
  */
 export class GaugeNode extends RaainNode {
-
     /** Type identifier for gauge nodes */
     public static TYPE = 'gauge';
 
@@ -57,15 +56,15 @@ export class GaugeNode extends RaainNode {
      * @param json.configurationAsJSON - Optional configuration object
      */
     constructor(json: {
-        id: string,
-        latitude: number,
-        longitude: number,
-        name: string,
-        team: string | TeamNode,
-        description?: string,
-        links?: Link[] | RaainNode[],
-        version?: string,
-        configurationAsJSON?: string,
+        id: string;
+        latitude: number;
+        longitude: number;
+        name: string;
+        team: string | TeamNode;
+        description?: string;
+        links?: Link[] | RaainNode[];
+        version?: string;
+        configurationAsJSON?: string;
     }) {
         super(json);
         this.latitude = json.latitude;
@@ -89,6 +88,7 @@ export class GaugeNode extends RaainNode {
         try {
             conf = JSON.parse(configuration);
         } catch (ignored) {
+            // Ignore parsing errors, use the original value
         }
 
         if (conf) {
@@ -105,6 +105,7 @@ export class GaugeNode extends RaainNode {
         try {
             return JSON.parse(this.configurationAsJSON);
         } catch (e) {
+            // Return null if configuration cannot be parsed
         }
         return null;
     }
@@ -124,7 +125,7 @@ export class GaugeNode extends RaainNode {
             latitude: this.latitude,
             longitude: this.longitude,
             team: this.team?.id || this.team,
-            configurationAsJSON: this.configurationAsJSON
+            configurationAsJSON: this.configurationAsJSON,
         };
     }
 

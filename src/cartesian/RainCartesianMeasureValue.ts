@@ -4,13 +4,12 @@ import {CartesianMeasureValue} from './CartesianMeasureValue';
 import {LatLng} from './LatLng';
 
 export class RainCartesianMeasureValue extends CartesianMeasureValue implements IVersion {
-
     private readonly version: string;
 
     constructor(json: {
-        cartesianValues: string | CartesianValue[],
-        limitPoints: [LatLng, LatLng],
-        version: string,
+        cartesianValues: string | CartesianValue[];
+        limitPoints: [LatLng, LatLng];
+        version: string;
     }) {
         super(json);
         this.version = json.version;
@@ -24,7 +23,7 @@ export class RainCartesianMeasureValue extends CartesianMeasureValue implements 
         const json = super.toJSON(options);
         return {
             ...json,
-            version: this.getVersion()
+            version: this.getVersion(),
         };
     }
 

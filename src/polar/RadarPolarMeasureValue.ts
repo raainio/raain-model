@@ -6,15 +6,17 @@ import {MeasureValuePolarContainer} from './MeasureValuePolarContainer';
 /**
  * Radar with polar value containers
  */
-export class RadarPolarMeasureValue extends AbstractPolarMeasureValue implements IPolarMeasureValue {
-
-    public angle: number;   // In degrees. Radar incidence angle, from 0° to 90°, from the ground to the top
-    public axis: number;    // In degrees. Polarization angle 0° = horizontal, 90°= vertical.
+export class RadarPolarMeasureValue
+    extends AbstractPolarMeasureValue
+    implements IPolarMeasureValue
+{
+    public angle: number; // In degrees. Radar incidence angle, from 0° to 90°, from the ground to the top
+    public axis: number; // In degrees. Polarization angle 0° = horizontal, 90°= vertical.
 
     constructor(json: {
-        polarMeasureValue: RadarPolarMeasureValue | PolarMeasureValue | string,
-        angle: number
-        axis: number
+        polarMeasureValue: RadarPolarMeasureValue | PolarMeasureValue | string;
+        angle: number;
+        axis: number;
     }) {
         super(json);
 
@@ -42,7 +44,9 @@ export class RadarPolarMeasureValue extends AbstractPolarMeasureValue implements
      *  - 720 azimuth with a step of 0.5°
      *  - 250 gate with a step of 1KM
      */
-    public static BuildFakeRadarPolarMeasureValues(movementFrom0To90 = 0): RadarPolarMeasureValue[] {
+    public static BuildFakeRadarPolarMeasureValues(
+        movementFrom0To90 = 0
+    ): RadarPolarMeasureValue[] {
         const radarPolarMeasureValues: RadarPolarMeasureValue[] = [];
 
         const getMovementValue = (az: number, dis: number) => {
@@ -59,15 +63,18 @@ export class RadarPolarMeasureValue extends AbstractPolarMeasureValue implements
 
         const azimuthsCount = 360 * 2;
         const polarEdgesCount = 250;
-        for (let axis = 0; axis <= 90; axis += 90) {    // 2 axis: horizontal + vertical
-            for (let angle = 0.4; angle < 3; angle++) { // 3 sites: 0.4°, 1.4°, 2.4°
+        for (let axis = 0; axis <= 90; axis += 90) {
+            // 2 axis: horizontal + vertical
+            for (let angle = 0.4; angle < 3; angle++) {
+                // 3 sites: 0.4°, 1.4°, 2.4°
                 const value = {
                     polarMeasureValue: null,
                     axis,
-                    angle
+                    angle,
                 };
                 const measureValuePolarContainers = [];
-                for (let azimuth = 0; azimuth < (azimuthsCount / 2); azimuth += 0.5) {  // 0.5° azimuth
+                for (let azimuth = 0; azimuth < azimuthsCount / 2; azimuth += 0.5) {
+                    // 0.5° azimuth
                     const data = [];
                     for (let distance = 0; distance < polarEdgesCount; distance++) {
                         const num = Math.round(angle * getMovementValue(azimuth, distance));
@@ -80,7 +87,11 @@ export class RadarPolarMeasureValue extends AbstractPolarMeasureValue implements
                     });
                     measureValuePolarContainers.push(measureValuePolarContainer);
                 }
-                value.polarMeasureValue = new PolarMeasureValue({measureValuePolarContainers, azimuthsCount, polarEdgesCount});
+                value.polarMeasureValue = new PolarMeasureValue({
+                    measureValuePolarContainers,
+                    azimuthsCount,
+                    polarEdgesCount,
+                });
                 const radarPolarMeasureValue = new RadarPolarMeasureValue(value);
                 radarPolarMeasureValues.push(radarPolarMeasureValue);
             }

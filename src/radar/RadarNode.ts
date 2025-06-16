@@ -4,7 +4,6 @@ import {Link, RaainNode, TeamNode} from '../organization';
  *  api/radars/:id
  */
 export class RadarNode extends RaainNode {
-
     public static TYPE = 'radar';
 
     public name: string;
@@ -19,17 +18,17 @@ export class RadarNode extends RaainNode {
     private configurationAsJSON: string;
 
     constructor(json: {
-        id: string,
-        latitude: number,
-        longitude: number,
-        name: string,
-        team: string | TeamNode,
-        description?: string,
-        technicalInfos?: string,
-        open?: boolean,
-        links?: Link[] | RaainNode[],
-        version?: string,
-        configurationAsJSON?: string,
+        id: string;
+        latitude: number;
+        longitude: number;
+        name: string;
+        team: string | TeamNode;
+        description?: string;
+        technicalInfos?: string;
+        open?: boolean;
+        links?: Link[] | RaainNode[];
+        version?: string;
+        configurationAsJSON?: string;
     }) {
         super(json);
         this.latitude = json.latitude;
@@ -55,7 +54,7 @@ export class RadarNode extends RaainNode {
             latitude: this.latitude,
             longitude: this.longitude,
             team: this.team?.id || this.team,
-            configurationAsJSON: this.configurationAsJSON
+            configurationAsJSON: this.configurationAsJSON,
         };
     }
 
@@ -64,6 +63,7 @@ export class RadarNode extends RaainNode {
         try {
             conf = JSON.parse(configuration);
         } catch (ignored) {
+            // Ignore parsing errors, use the original value
         }
 
         if (conf) {
@@ -75,6 +75,7 @@ export class RadarNode extends RaainNode {
         try {
             return JSON.parse(this.configurationAsJSON);
         } catch (e) {
+            // Return null if configuration cannot be parsed
         }
         return null;
     }
@@ -82,5 +83,4 @@ export class RadarNode extends RaainNode {
     protected getLinkType(): string {
         return RadarNode.TYPE;
     }
-
 }

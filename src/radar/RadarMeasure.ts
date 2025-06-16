@@ -7,32 +7,30 @@ import {RadarNode} from './RadarNode';
  *  api/radars/:id/measures/:id
  */
 export class RadarMeasure extends Measure {
-
     public static TYPE = 'radar-measure';
 
     constructor(json: {
-                    id: string,
-                    values: IPolarMeasureValue[] | ICartesianMeasureValue[] | number[],
-                    date?: Date,
-                    validity?: number,
-                    configurationAsJSON?: string,
-                    radar?: string,
-                }
-    ) {
+        id: string;
+        values: IPolarMeasureValue[] | ICartesianMeasureValue[] | number[];
+        date?: Date;
+        validity?: number;
+        configurationAsJSON?: string;
+        radar?: string;
+    }) {
         super(json);
         if (json.radar) {
             this.addLinks(this.getRadarLinks([json.radar]));
         }
     }
 
-    public toJSON(options?: { removeValues?: boolean }) {
+    public toJSON(options?: {removeValues?: boolean}) {
         const json = super.toJSON(options);
         const radarLink = this.getLink(RadarNode.TYPE);
 
         if (radarLink) {
             return {
                 ...json,
-                radar: radarLink.getId()
+                radar: radarLink.getId(),
             };
         }
 
@@ -44,15 +42,24 @@ export class RadarMeasure extends Measure {
             return [];
         }
 
-        return linksToPurify.map(l => {
+        return linksToPurify.map((l) => {
             if (l instanceof Link) {
                 return l;
             } else if (l && l['_id']) {
-                return new RadarNode({id: l['_id'].toString(), latitude: 0, longitude: 0, name: l.name, team: l.team});
+                return new RadarNode({
+                    id: l['_id'].toString(),
+                    latitude: 0,
+                    longitude: 0,
+                    name: l.name,
+                    team: l.team,
+                });
             } else if (l && l.id) {
                 return new RadarNode({
-                    id: l.id.toString(),// 'hex'
-                    latitude: 0, longitude: 0, name: l.name, team: l.team
+                    id: l.id.toString(), // 'hex'
+                    latitude: 0,
+                    longitude: 0,
+                    name: l.name,
+                    team: l.team,
                 });
             }
         });

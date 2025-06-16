@@ -2,9 +2,7 @@ import {expect} from 'chai';
 import {CartesianTools, LatLng, Position, QualityTools} from '../../src';
 
 describe('QualityTools', () => {
-
     it('should MapPositionToLatLng and MapLatLngToPosition', () => {
-
         let point = new Position({x: 0, y: 0});
         let latLng = QualityTools.MapPositionToLatLng(point);
         expect(QualityTools.MapLatLngToPosition(latLng).x).eq(point.x);
@@ -25,7 +23,10 @@ describe('QualityTools', () => {
         expect(QualityTools.MapLatLngToPosition(latLng).y).eq(point.y);
 
         point = new Position({x: 11.0003, y: -11.03});
-        const cartesianWidthDefault = new LatLng({lat: CartesianTools.DEFAULT_SCALE, lng: CartesianTools.DEFAULT_SCALE});
+        const cartesianWidthDefault = new LatLng({
+            lat: CartesianTools.DEFAULT_SCALE,
+            lng: CartesianTools.DEFAULT_SCALE,
+        });
         latLng = QualityTools.MapPositionToLatLng(point);
         // expect(QualityTools.MapLatLngToPosition(latLng).x).eq(11);
         expect(QualityTools.MapLatLngToPosition(latLng).y).eq(-11.03);
@@ -40,7 +41,6 @@ describe('QualityTools', () => {
         latLng = new LatLng({lat: 48.86423959124331, lng: 2.254480156320581});
         // expect(QualityTools.MapLatLngToPosition(latLng).x).eq(2.25398);
         // expect(QualityTools.MapLatLngToPosition(latLng).y).eq(48.86902);
-
     });
 
     it('should CreateNDimArray', () => {
@@ -63,5 +63,4 @@ describe('QualityTools', () => {
         createdFilledWithAnyNDimArray[0][1][2].push('test');
         expect(createdFilledWithAnyNDimArray[0][1][2][0]).eq('test');
     });
-
 });

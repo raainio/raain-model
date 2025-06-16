@@ -100,12 +100,17 @@ function checkIfOnlyInterestingFilesChanged() {
 
         // Check if we're on a branch (not in a detached HEAD state)
         if (currentBranch === 'HEAD') {
-            console.error('Error: You are in a detached HEAD state. Please checkout a branch first.');
+            console.error(
+                'Error: You are in a detached HEAD state. Please checkout a branch first.'
+            );
             return false;
         }
 
         // Determine if the main branch is called "main" or "master"
-        const baseBranchResult = execCommand('git show-ref --verify --quiet refs/heads/main && echo "main" || echo "master"', true);
+        const baseBranchResult = execCommand(
+            'git show-ref --verify --quiet refs/heads/main && echo "main" || echo "master"',
+            true
+        );
         if (!baseBranchResult.success) {
             console.error('Failed to determine main branch name.');
             return false;
@@ -127,7 +132,10 @@ function checkIfOnlyInterestingFilesChanged() {
             return false;
         }
 
-        const changedFiles = changedFilesResult.output.trim().split('\n').filter(file => file.trim() !== '');
+        const changedFiles = changedFilesResult.output
+            .trim()
+            .split('\n')
+            .filter((file) => file.trim() !== '');
 
         if (changedFiles.length === 0) {
             console.log('No files changed in this branch.');
@@ -135,12 +143,19 @@ function checkIfOnlyInterestingFilesChanged() {
         }
 
         // Check if all changed files are *.md, *.json files, bpInfo or in scripts/bp directory
-        const onlyInterestingFiles = changedFiles.every(file => {
-            return file.endsWith('.md') || file.endsWith('.json') || file.endsWith('bpInfo.ts') || file.startsWith('scripts/bp/');
+        const onlyInterestingFiles = changedFiles.every((file) => {
+            return (
+                file.endsWith('.md') ||
+                file.endsWith('.json') ||
+                file.endsWith('bpInfo.ts') ||
+                file.startsWith('scripts/bp/')
+            );
         });
 
         if (onlyInterestingFiles) {
-            console.log(`\n⚠️ All changes in branch ${currentBranch} compared to ${baseBranch} only concern interesting files.`);
+            console.log(
+                `\n⚠️ All changes in branch ${currentBranch} compared to ${baseBranch} only concern interesting files.`
+            );
             console.log('This branch is not interesting to merge.');
             return true;
         } else {
@@ -160,7 +175,9 @@ async function checkBeforeRelease() {
 
     // Check if we are on main or master branch
     if (checkIfOnMainOrMaster()) {
-        console.log('Exiting with code 1 (pre-release checks should not be run on main or master branch).');
+        console.log(
+            'Exiting with code 1 (pre-release checks should not be run on main or master branch).'
+        );
         process.exit(1);
     }
 

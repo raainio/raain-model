@@ -2,19 +2,12 @@
  *  api/teams/:id => contacts
  */
 export class PeopleNode {
-
     public id: string;
     public roles: string[];
     public email: string;
     public name: string;
 
-    constructor(json: {
-                    id: string,
-                    roles: string[],
-                    email: string,
-                    name: string,
-                }
-    ) {
+    constructor(json: {id: string; roles: string[]; email: string; name: string}) {
         this.id = json.id;
         this.roles = json.roles;
         this.email = json.email;

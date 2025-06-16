@@ -9,15 +9,15 @@ export class PositionHistory extends PositionValue {
     public configurationAsJSON: string;
 
     constructor(json: {
-        id: string,
-        label: string,
-        date: Date,
-        x: number,
-        y: number,
-        value: number,
-        valueFromGauge?: number,
-        valueFromRain?: number,
-        configurationAsJSON?: string,
+        id: string;
+        label: string;
+        date: Date;
+        x: number;
+        y: number;
+        value: number;
+        valueFromGauge?: number;
+        valueFromRain?: number;
+        configurationAsJSON?: string;
     }) {
         super(json);
 

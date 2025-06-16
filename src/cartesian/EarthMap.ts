@@ -1,5 +1,5 @@
 export interface EarthMap {
-    latitudeScale: number,
-    latitudes: number[],
-    latitudeLongitudeScales: number[],
+    latitudeScale: number;
+    latitudes: number[];
+    latitudeLongitudeScales: number[];
 }

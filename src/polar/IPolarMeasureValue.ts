@@ -2,7 +2,6 @@ import {MeasureValuePolarContainer} from './MeasureValuePolarContainer';
 import {PolarValue} from './PolarValue';
 
 export interface IPolarMeasureValue {
-
     getAzimuthsCount(): number;
 
     getPolarEdgesCount(): number;
@@ -15,7 +14,7 @@ export interface IPolarMeasureValue {
 
     toJSONWithPolarStringified(): any;
 
-    getPolarValue(json: { azimuthInDegrees: number, distanceInMeters: number }): PolarValue;
+    getPolarValue(json: {azimuthInDegrees: number; distanceInMeters: number}): PolarValue;
 
-    setPolarValue(json: { azimuthInDegrees: number, distanceInMeters: number, value: number }): void;
+    setPolarValue(json: {azimuthInDegrees: number; distanceInMeters: number; value: number}): void;
 }

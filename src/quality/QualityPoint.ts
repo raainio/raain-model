@@ -1,25 +1,24 @@
 import {CartesianValue} from '../cartesian';
 
 export class QualityPoint {
-
     public gaugeId: string;
     public gaugeLabel: string;
     public gaugeDate: Date;
     public rainDate: Date;
     public gaugeCartesianValue: CartesianValue;
     public rainCartesianValues: CartesianValue[];
-    public speed: { x: number, y: number };
+    public speed: {x: number; y: number};
     public remark: string;
 
     constructor(json: {
-        gaugeId: string,
-        gaugeLabel: string,
-        gaugeDate: Date,
-        rainDate: Date,
-        gaugeCartesianValue: CartesianValue,
-        rainCartesianValues: CartesianValue[],
-        speed: { x: number, y: number },
-        remark: string,
+        gaugeId: string;
+        gaugeLabel: string;
+        gaugeDate: Date;
+        rainDate: Date;
+        gaugeCartesianValue: CartesianValue;
+        rainCartesianValues: CartesianValue[];
+        speed: {x: number; y: number};
+        remark: string;
     }) {
         this.gaugeId = json.gaugeId;
         this.gaugeLabel = json.gaugeLabel;
@@ -38,10 +37,10 @@ export class QualityPoint {
             gaugeDate: new Date(src.gaugeDate),
             rainDate: new Date(src.rainDate),
             gaugeCartesianValue: new CartesianValue(src.gaugeCartesianValue),
-            rainCartesianValues: src.rainCartesianValues.map(v => new CartesianValue(v)),
+            rainCartesianValues: src.rainCartesianValues.map((v) => new CartesianValue(v)),
             speed: {x: src.speed?.x, y: src.speed?.y},
             remark: src.remark,
-        })
+        });
     }
 
     getGaugeValue(): number {
@@ -71,7 +70,6 @@ export class QualityPoint {
     }
 
     getRatio(): number {
-
         let ratio = 0;
         if (this.getRainValue() === 0) {
             return ratio;
@@ -94,9 +92,9 @@ export class QualityPoint {
     accumulateValues(qualityPoint: QualityPoint) {
         this.gaugeCartesianValue.value += qualityPoint.getGaugeValue();
         if (this.rainCartesianValues.length === 0) {
-            this.rainCartesianValues = qualityPoint.rainCartesianValues.map(q => q);
+            this.rainCartesianValues = qualityPoint.rainCartesianValues.map((q) => q);
         } else {
-            this.rainCartesianValues.forEach(v => v.value += qualityPoint.getRainValue());
+            this.rainCartesianValues.forEach((v) => (v.value += qualityPoint.getRainValue()));
         }
     }
 

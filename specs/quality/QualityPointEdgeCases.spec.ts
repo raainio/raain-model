@@ -1,5 +1,11 @@
 import {expect} from 'chai';
-import {CartesianValue, QualityPoint, RainComputationQuality, SpeedMatrix, SpeedMatrixContainer} from '../../src';
+import {
+    CartesianValue,
+    QualityPoint,
+    RainComputationQuality,
+    SpeedMatrix,
+    SpeedMatrixContainer,
+} from '../../src';
 
 describe('QualityPoint Edge Cases', () => {
     it('should handle missing or invalid data in quality points', () => {
@@ -12,7 +18,7 @@ describe('QualityPoint Edge Cases', () => {
             gaugeCartesianValue: null,
             rainCartesianValues: [new CartesianValue({value: 10, lat: 1, lng: 1})],
             speed: {x: 1, y: 1},
-            remark: 'missing gauge'
+            remark: 'missing gauge',
         });
 
         expect(qualityPointMissingGauge.getGaugeValue()).eq(undefined);
@@ -28,7 +34,7 @@ describe('QualityPoint Edge Cases', () => {
             gaugeCartesianValue: new CartesianValue({value: 10, lat: 1, lng: 1}),
             rainCartesianValues: [],
             speed: {x: 1, y: 1},
-            remark: 'missing rain'
+            remark: 'missing rain',
         });
 
         expect(qualityPointMissingRain.getGaugeValue()).eq(10);
@@ -44,7 +50,7 @@ describe('QualityPoint Edge Cases', () => {
             gaugeCartesianValue: new CartesianValue({value: 10, lat: 1, lng: 1}),
             rainCartesianValues: [new CartesianValue({value: 10, lat: 1, lng: 1})],
             speed: {x: 1, y: 1},
-            remark: 'null dates'
+            remark: 'null dates',
         });
 
         // Check that dates are set to Unix epoch when constructed with null
@@ -63,7 +69,7 @@ describe('QualityPoint Edge Cases', () => {
             gaugeCartesianValue: new CartesianValue({value: 1000, lat: 1, lng: 1}),
             rainCartesianValues: [new CartesianValue({value: 1, lat: 1, lng: 1})],
             speed: {x: 1, y: 1},
-            remark: 'extreme difference'
+            remark: 'extreme difference',
         });
 
         expect(qualityPointExtreme.getGaugeValue()).eq(1000);
@@ -82,10 +88,10 @@ describe('QualityPoint Edge Cases', () => {
             rainCartesianValues: [
                 new CartesianValue({value: 10, lat: 1, lng: 1}),
                 new CartesianValue({value: 20, lat: 1, lng: 1}),
-                new CartesianValue({value: 100, lat: 1, lng: 1})
+                new CartesianValue({value: 100, lat: 1, lng: 1}),
             ],
             speed: {x: 1, y: 1},
-            remark: 'varied rain values'
+            remark: 'varied rain values',
         });
 
         expect(qualityPointMultiRain.getRainValue()).to.be.approximately(43.33, 0.01);
@@ -110,7 +116,7 @@ describe('SpeedMatrix Edge Cases', () => {
             gaugeCartesianValue: new CartesianValue({value: 10, lat: 1, lng: 1}),
             rainCartesianValues: [new CartesianValue({value: 10, lat: 1, lng: 1})],
             speed: {x: 1000, y: 1000}, // Extreme speed
-            remark: 'extreme speed'
+            remark: 'extreme speed',
         });
 
         const speedMatrix = new SpeedMatrix('test', '', [qualityPoint]);
@@ -132,7 +138,7 @@ describe('SpeedMatrixContainer Quality Tests', () => {
             gaugeCartesianValue: new CartesianValue({value: 10, lat: 1, lng: 1}),
             rainCartesianValues: [new CartesianValue({value: 10, lat: 1, lng: 1})],
             speed: {x: 1, y: 1},
-            remark: 'first point'
+            remark: 'first point',
         });
 
         const qualityPoint2 = new QualityPoint({
@@ -143,7 +149,7 @@ describe('SpeedMatrixContainer Quality Tests', () => {
             gaugeCartesianValue: new CartesianValue({value: 20, lat: 1, lng: 1}),
             rainCartesianValues: [new CartesianValue({value: 20, lat: 1, lng: 1})],
             speed: {x: -1, y: -1}, // Opposite direction
-            remark: 'second point'
+            remark: 'second point',
         });
 
         const matrix1 = new SpeedMatrix('1', '', [qualityPoint1]);
@@ -167,10 +173,12 @@ describe('SpeedMatrixContainer Quality Tests', () => {
             gaugeCartesianValue: new CartesianValue({value: 0, lat: 1, lng: 1}), // Zero gauge value
             rainCartesianValues: [new CartesianValue({value: 0, lat: 1, lng: 1})], // Zero rain value
             speed: {x: 0, y: 0}, // Zero speed
-            remark: 'boundary case'
+            remark: 'boundary case',
         });
 
-        const container = new SpeedMatrixContainer({matrices: [new SpeedMatrix('test', '', [qualityPoint])]});
+        const container = new SpeedMatrixContainer({
+            matrices: [new SpeedMatrix('test', '', [qualityPoint])],
+        });
         expect(container.getMaxGauge()).eq(0);
         expect(container.getMaxRain()).eq(0);
     });
@@ -182,7 +190,7 @@ describe('RainComputationQuality Edge Cases', () => {
             id: 'test',
             date: new Date(),
             isReady: true,
-            qualitySpeedMatrixContainer: new SpeedMatrixContainer({matrices: []})
+            qualitySpeedMatrixContainer: new SpeedMatrixContainer({matrices: []}),
         });
 
         expect(rainComputationQuality.isReady).eq(true);
@@ -198,18 +206,24 @@ describe('RainComputationQuality Edge Cases', () => {
             gaugeCartesianValue: new CartesianValue({value: 100, lat: 1, lng: 1}),
             rainCartesianValues: [new CartesianValue({value: 1, lat: 1, lng: 1})], // Very different from gauge
             speed: {x: 1, y: 1},
-            remark: 'inconsistent data'
+            remark: 'inconsistent data',
         });
 
-        const container = new SpeedMatrixContainer({matrices: [new SpeedMatrix('test', '', [qualityPoint])]});
+        const container = new SpeedMatrixContainer({
+            matrices: [new SpeedMatrix('test', '', [qualityPoint])],
+        });
         const rainComputationQuality = new RainComputationQuality({
             id: 'test',
             date: new Date(),
             isReady: true,
-            qualitySpeedMatrixContainer: container
+            qualitySpeedMatrixContainer: container,
         });
 
         expect(rainComputationQuality.isReady).eq(true);
-        expect(SpeedMatrix.ComputeQualityIndicator(rainComputationQuality.qualitySpeedMatrixContainer.getQualityPoints())).eq(99);
+        expect(
+            SpeedMatrix.ComputeQualityIndicator(
+                rainComputationQuality.qualitySpeedMatrixContainer.getQualityPoints()
+            )
+        ).eq(99);
     });
 });

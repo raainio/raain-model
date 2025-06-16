@@ -12,14 +12,13 @@ export class Measure extends RaainNode {
     private configurationAsJSON: string;
 
     constructor(json: {
-                    id: string,
-                    values: IPolarMeasureValue[] | ICartesianMeasureValue[] | number[],
-                    date?: Date,
-                    validity?: number,
-                    configurationAsJSON?: string,
-                    version?: string,
-                }
-    ) {
+        id: string;
+        values: IPolarMeasureValue[] | ICartesianMeasureValue[] | number[];
+        date?: Date;
+        validity?: number;
+        configurationAsJSON?: string;
+        version?: string;
+    }) {
         super(json);
         this.values = json.values ? json.values : [];
         this.date = json.date ? new Date(json.date) : undefined;
@@ -32,6 +31,7 @@ export class Measure extends RaainNode {
         try {
             conf = JSON.parse(configuration);
         } catch (ignored) {
+            // Ignore parsing errors, use the original value
         }
 
         if (conf) {
@@ -39,15 +39,15 @@ export class Measure extends RaainNode {
         }
     }
 
-    public toJSON(options: { removeValues?: boolean } = {}) {
+    public toJSON(options: {removeValues?: boolean} = {}) {
         const json = super.toJSON();
         const extendedJson = {
             ...json,
             date: this.date,
             validity: this.validity,
             configurationAsJSON: this.configurationAsJSON,
-            values: [] as IPolarMeasureValue[] | ICartesianMeasureValue[] | number[]
-        }
+            values: [] as IPolarMeasureValue[] | ICartesianMeasureValue[] | number[],
+        };
 
         if (options?.removeValues) {
             return extendedJson;
@@ -55,7 +55,7 @@ export class Measure extends RaainNode {
 
         return {
             ...extendedJson,
-            values: this.values
+            values: this.values,
         };
     }
 
@@ -63,6 +63,7 @@ export class Measure extends RaainNode {
         try {
             return JSON.parse(this.configurationAsJSON);
         } catch (e) {
+            // Return null if configuration cannot be parsed
         }
         return null;
     }

@@ -37,11 +37,7 @@ export class RaainNode implements IVersion {
      * @param json.links - Array of HATEOAS links
      * @param json.version - Version string
      */
-    constructor(json: {
-        id: string,
-        links?: Link[] | RaainNode[],
-        version?: string,
-    }) {
+    constructor(json: {id: string; links?: Link[] | RaainNode[]; version?: string}) {
         if (!json?.id) {
             throw new Error('RaainNode needs a valid Object or ID');
         }
@@ -78,8 +74,8 @@ export class RaainNode implements IVersion {
         }
 
         const linksPurified = linksToPurify
-            .filter(l => l !== null && l !== undefined)
-            .map(l => {
+            .filter((l) => l !== null && l !== undefined)
+            .map((l) => {
                 if (l instanceof Link || Link.isCloneable(l)) {
                     return Link.clone(l);
                 } else if (l && typeof l.getLinkType === 'function' && l.id) {
@@ -97,7 +93,7 @@ export class RaainNode implements IVersion {
                 }
                 return null;
             })
-            .filter(l => l !== null);
+            .filter((l) => l !== null);
 
         function uniqBy(a: Link[], key: (a: any) => string) {
             const seen = {};
@@ -106,7 +102,7 @@ export class RaainNode implements IVersion {
                     return false;
                 }
                 const k = key(item);
-                if (seen.hasOwnProperty(k)) {
+                if (Object.prototype.hasOwnProperty.call(seen, k)) {
                     return false;
                 }
                 seen[k] = true;
@@ -124,12 +120,12 @@ export class RaainNode implements IVersion {
      */
     public toJSON() {
         const json: {
-            id: string,
-            links: Link[],
-            version?: string,
+            id: string;
+            links: Link[];
+            version?: string;
         } = {
             id: this.id,
-            links: this.links
+            links: this.links,
         };
 
         if (this.version) {
@@ -147,8 +143,7 @@ export class RaainNode implements IVersion {
             return this._links;
         }
         // return this.links.filter(l => l && l.rel && linkType === l.rel);
-        return this._links.filter(l => l.getLinkType() === linkType);
-
+        return this._links.filter((l) => l.getLinkType() === linkType);
     }
 
     public getLink(linkType: string, index?: number): Link {
@@ -166,7 +161,7 @@ export class RaainNode implements IVersion {
      * @returns Array of link IDs
      */
     public getLinkIds(): string[] {
-        return this._links.map(l => l.getId());
+        return this._links.map((l) => l.getId());
     }
 
     /**
@@ -182,7 +177,7 @@ export class RaainNode implements IVersion {
         if (!linkType) {
             return this._links.length;
         }
-        return this._links.filter(l => l.getLinkType() === linkType).length;
+        return this._links.filter((l) => l.getLinkType() === linkType).length;
     }
 
     /**

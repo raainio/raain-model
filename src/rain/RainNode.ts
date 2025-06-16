@@ -8,7 +8,6 @@ import {LatLng} from '../cartesian';
  * api/rains/:id
  */
 export class RainNode extends RaainNode {
-
     public static TYPE = 'rain';
 
     public name: string;
@@ -22,23 +21,23 @@ export class RainNode extends RaainNode {
     private configurationAsJSON: string;
 
     constructor(json: {
-        id: string,
-        name: string,
-        team: string | TeamNode,
-        description?: string,
-        links?: Link[] | RaainNode[],
-        version?: string,
-        status?: number,
-        quality?: number,
-        radars?: string[] | RadarNode[],
-        gauges?: string[] | GaugeNode[],
-        latLngRectsAsJSON?: string,
-        configurationAsJSON?: string,
-        lastCompletedComputations?: string[] | RainComputation[],
+        id: string;
+        name: string;
+        team: string | TeamNode;
+        description?: string;
+        links?: Link[] | RaainNode[];
+        version?: string;
+        status?: number;
+        quality?: number;
+        radars?: string[] | RadarNode[];
+        gauges?: string[] | GaugeNode[];
+        latLngRectsAsJSON?: string;
+        configurationAsJSON?: string;
+        lastCompletedComputations?: string[] | RainComputation[];
     }) {
         super(json);
 
-        const links = json?.links ? json.links as any[] : [];
+        const links = json?.links ? (json.links as any[]) : [];
 
         this.name = json.name;
         this.description = json.description;
@@ -51,12 +50,12 @@ export class RainNode extends RaainNode {
         this.quality = json.quality >= 0 ? json.quality : -1;
         this.latLngRectsAsJSON = json.latLngRectsAsJSON;
 
-        this.addRadars(links.filter(l => l instanceof RadarNode));
+        this.addRadars(links.filter((l) => l instanceof RadarNode));
         this.addRadars(json.radars);
-        this.addGauges(links.filter(l => l instanceof GaugeNode));
+        this.addGauges(links.filter((l) => l instanceof GaugeNode));
         this.addGauges(json.gauges);
         this.setConfiguration(json.configurationAsJSON);
-        this.addCompletedComputations(links.filter(l => l instanceof RainComputation));
+        this.addCompletedComputations(links.filter((l) => l instanceof RainComputation));
         this.addCompletedComputations(json.lastCompletedComputations);
     }
 
@@ -65,25 +64,29 @@ export class RainNode extends RaainNode {
             return [];
         }
 
-        const linksPurified = linksToPurify.map(l => {
+        const linksPurified = linksToPurify.map((l) => {
             if (l instanceof Link) {
                 return l;
             } else if (l && l['_id']) {
                 return new RainComputation({
                     id: l['_id'].toString(),
-                    date: l.date, version: l.version,
-                    isReady: null, results: null,
+                    date: l.date,
+                    version: l.version,
+                    isReady: null,
+                    results: null,
                 });
             } else if (l && l.id) {
                 return new RainComputation({
                     id: l.id.toString(),
-                    date: l.date, version: l.version,
-                    isReady: null, results: null
+                    date: l.date,
+                    version: l.version,
+                    isReady: null,
+                    results: null,
                 });
             }
         });
 
-        return linksPurified.filter(l => !!l);
+        return linksPurified.filter((l) => !!l);
     }
 
     private static _getGaugeLinks(linksToPurify: any[]): any[] {
@@ -91,17 +94,29 @@ export class RainNode extends RaainNode {
             return [];
         }
 
-        const linksPurified = linksToPurify.map(l => {
+        const linksPurified = linksToPurify.map((l) => {
             if (l instanceof Link) {
                 return l;
             } else if (l && l['_id']) {
-                return new GaugeNode({id: l['_id'].toString(), latitude: l.latitude, longitude: l.longitude, name: l.name, team: l.team});
+                return new GaugeNode({
+                    id: l['_id'].toString(),
+                    latitude: l.latitude,
+                    longitude: l.longitude,
+                    name: l.name,
+                    team: l.team,
+                });
             } else if (l && l.id) {
-                return new GaugeNode({id: l.id.toString(), latitude: l.latitude, longitude: l.longitude, name: l.name, team: l.team});
+                return new GaugeNode({
+                    id: l.id.toString(),
+                    latitude: l.latitude,
+                    longitude: l.longitude,
+                    name: l.name,
+                    team: l.team,
+                });
             }
         });
 
-        return linksPurified.filter(l => !!l);
+        return linksPurified.filter((l) => !!l);
     }
 
     public setConfiguration(configuration: string | any) {
@@ -109,6 +124,7 @@ export class RainNode extends RaainNode {
         try {
             conf = JSON.parse(configuration);
         } catch (ignored) {
+            // Ignore parsing errors, use the original value
         }
 
         if (conf) {
@@ -120,6 +136,7 @@ export class RainNode extends RaainNode {
         try {
             return JSON.parse(this.configurationAsJSON);
         } catch (e) {
+            // Return null if configuration cannot be parsed
         }
         return null;
     }
@@ -135,9 +152,15 @@ export class RainNode extends RaainNode {
             team: this.team?.id || this.team,
             latLngRectsAsJSON: this.latLngRectsAsJSON,
             configurationAsJSON: this.configurationAsJSON,
-            radars: this.links.filter(l => l.getLinkType() === RadarNode.TYPE).map(l => l.getId()),
-            gauges: this.links.filter(l => l.getLinkType() === GaugeNode.TYPE).map(l => l.getId()),
-            lastCompletedComputations: this.links.filter(l => l.getLinkType() === RainComputation.TYPE).map(l => l.getId()),
+            radars: this.links
+                .filter((l) => l.getLinkType() === RadarNode.TYPE)
+                .map((l) => l.getId()),
+            gauges: this.links
+                .filter((l) => l.getLinkType() === GaugeNode.TYPE)
+                .map((l) => l.getId()),
+            lastCompletedComputations: this.links
+                .filter((l) => l.getLinkType() === RainComputation.TYPE)
+                .map((l) => l.getId()),
         };
     }
 
@@ -155,10 +178,9 @@ export class RainNode extends RaainNode {
     }
 
     public getCenter(): LatLng {
-
         let center = new LatLng({lat: 0, lng: 0});
 
-        this.setDefaultLatLng(this['radars'])
+        this.setDefaultLatLng(this['radars']);
 
         if (this.latLngRectsAsJSON && this.latLngRectsAsJSON !== '[]') {
             const rects = JSON.parse(this.latLngRectsAsJSON);
@@ -166,13 +188,24 @@ export class RainNode extends RaainNode {
             for (const rect of rects) {
                 const topLeft = rect[0];
                 const bottomRight = rect[1];
-                latMax = typeof latMax === 'undefined' ? topLeft.lat : Math.max(topLeft.lat, latMax);
-                lngMin = typeof lngMin === 'undefined' ? topLeft.lng : Math.min(topLeft.lng, lngMin);
-                latMin = typeof latMin === 'undefined' ? bottomRight.lat : Math.min(bottomRight.lat, latMin);
-                lngMax = typeof lngMax === 'undefined' ? bottomRight.lng : Math.max(bottomRight.lng, lngMax);
+                latMax =
+                    typeof latMax === 'undefined' ? topLeft.lat : Math.max(topLeft.lat, latMax);
+                lngMin =
+                    typeof lngMin === 'undefined' ? topLeft.lng : Math.min(topLeft.lng, lngMin);
+                latMin =
+                    typeof latMin === 'undefined'
+                        ? bottomRight.lat
+                        : Math.min(bottomRight.lat, latMin);
+                lngMax =
+                    typeof lngMax === 'undefined'
+                        ? bottomRight.lng
+                        : Math.max(bottomRight.lng, lngMax);
             }
 
-            center = new LatLng({lat: ((latMax - latMin) / 2) + latMin, lng: ((lngMax - lngMin) / 2) + lngMin})
+            center = new LatLng({
+                lat: (latMax - latMin) / 2 + latMin,
+                lng: (lngMax - lngMin) / 2 + lngMin,
+            });
         }
 
         return center;
@@ -189,13 +222,32 @@ export class RainNode extends RaainNode {
             for (const rect of rects) {
                 const rectA = rect[0];
                 const rectB = rect[1];
-                latMax = Math.max(rectA.lat, rectB.lat, typeof latMax !== 'undefined' ? latMax : rectA.lat);
-                lngMin = Math.min(rectA.lng, rectB.lng, typeof lngMin !== 'undefined' ? lngMin : rectA.lng);
-                latMin = Math.min(rectA.lat, rectB.lat, typeof latMin !== 'undefined' ? latMin : rectB.lat);
-                lngMax = Math.max(rectA.lng, rectB.lng, typeof lngMax !== 'undefined' ? lngMax : rectB.lng);
+                latMax = Math.max(
+                    rectA.lat,
+                    rectB.lat,
+                    typeof latMax !== 'undefined' ? latMax : rectA.lat
+                );
+                lngMin = Math.min(
+                    rectA.lng,
+                    rectB.lng,
+                    typeof lngMin !== 'undefined' ? lngMin : rectA.lng
+                );
+                latMin = Math.min(
+                    rectA.lat,
+                    rectB.lat,
+                    typeof latMin !== 'undefined' ? latMin : rectB.lat
+                );
+                lngMax = Math.max(
+                    rectA.lng,
+                    rectB.lng,
+                    typeof lngMax !== 'undefined' ? lngMax : rectB.lng
+                );
             }
 
-            limitPoints = [new LatLng({lat: latMin, lng: lngMin}), new LatLng({lat: latMax, lng: lngMax})];
+            limitPoints = [
+                new LatLng({lat: latMin, lng: lngMin}),
+                new LatLng({lat: latMax, lng: lngMax}),
+            ];
         }
 
         return limitPoints;
@@ -210,19 +262,31 @@ export class RainNode extends RaainNode {
             return [];
         }
 
-        const linksPurified = linksToPurify.map(l => {
+        const linksPurified = linksToPurify.map((l) => {
             if (l instanceof Link) {
                 return l;
             } else if (l && l['_id']) {
-                return new RadarNode({id: l['_id'].toString(), latitude: l.latitude, longitude: l.latitude, name: l.name, team: l.team});
+                return new RadarNode({
+                    id: l['_id'].toString(),
+                    latitude: l.latitude,
+                    longitude: l.latitude,
+                    name: l.name,
+                    team: l.team,
+                });
             } else if (l && l.id) {
-                return new RadarNode({id: l.id.toString(), latitude: l.latitude, longitude: l.longitude, name: l.name, team: l.team});
+                return new RadarNode({
+                    id: l.id.toString(),
+                    latitude: l.latitude,
+                    longitude: l.longitude,
+                    name: l.name,
+                    team: l.team,
+                });
             } else if (typeof l === 'string') {
                 return new RadarNode({id: l, latitude: 0, longitude: 0, name: '', team: this.team});
             }
         });
 
-        return linksPurified.filter(l => !!l);
+        return linksPurified.filter((l) => !!l);
     }
 
     private setDefaultLatLng(radars: any[]) {
@@ -233,7 +297,8 @@ export class RainNode extends RaainNode {
                 if (radarNode instanceof RadarNode) {
                     latLngRects.push([
                         new LatLng({lat: radarNode.latitude + 1, lng: radarNode.longitude - 1}),
-                        new LatLng({lat: radarNode.latitude - 1, lng: radarNode.longitude + 1})]);
+                        new LatLng({lat: radarNode.latitude - 1, lng: radarNode.longitude + 1}),
+                    ]);
                 }
             }
 

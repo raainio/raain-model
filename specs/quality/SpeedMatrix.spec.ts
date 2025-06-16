@@ -1,29 +1,38 @@
 import {expect} from 'chai';
-import {CartesianTools, CartesianValue, Position, QualityPoint, RainComputationQuality, SpeedMatrix, SpeedMatrixContainer} from '../../src';
+import {
+    CartesianTools,
+    CartesianValue,
+    Position,
+    QualityPoint,
+    RainComputationQuality,
+    SpeedMatrix,
+    SpeedMatrixContainer,
+} from '../../src';
 
 describe('SpeedMatrix', () => {
-
     const optionalTrace = (...log: any[]) => {
         // console.log(new Date().toISOString(), log)
-    }
+    };
     const optionalLogger = null; // console;
 
     it('should SpeedMatrixContainer CreateFromJson, merge and renderMergedMatrix', () => {
-
         const speedMatrices = [];
         speedMatrices.push(new SpeedMatrix('1', '', []));
         speedMatrices.push(new SpeedMatrix('2', '', []));
         const speedMatrixContainer = new SpeedMatrixContainer({matrices: speedMatrices});
 
-        const speedMatrixContainerTwin = SpeedMatrixContainer.CreateFromJson(speedMatrixContainer.toJSON());
+        const speedMatrixContainerTwin = SpeedMatrixContainer.CreateFromJson(
+            speedMatrixContainer.toJSON()
+        );
         const optionsForFairCompare = {
             removeFlatten: true,
             removeMatrices: true,
             removeIndicators: true,
         };
 
-        expect(JSON.stringify(speedMatrixContainer.toJSON(optionsForFairCompare)))
-            .equal(JSON.stringify(speedMatrixContainerTwin.toJSON(optionsForFairCompare)));
+        expect(JSON.stringify(speedMatrixContainer.toJSON(optionsForFairCompare))).equal(
+            JSON.stringify(speedMatrixContainerTwin.toJSON(optionsForFairCompare))
+        );
 
         const qualityPoint1 = new QualityPoint({
             gaugeId: 'id1',
@@ -31,7 +40,10 @@ describe('SpeedMatrix', () => {
             gaugeDate: null,
             rainDate: null,
             gaugeCartesianValue: new CartesianValue({value: 1, lat: 0, lng: 0}),
-            rainCartesianValues: [new CartesianValue({value: 2, lat: 0, lng: 0}), new CartesianValue({value: 3, lat: 0.01, lng: 0.02})],
+            rainCartesianValues: [
+                new CartesianValue({value: 2, lat: 0, lng: 0}),
+                new CartesianValue({value: 3, lat: 0.01, lng: 0.02}),
+            ],
             speed: null,
             remark: 'none',
         });
@@ -41,7 +53,10 @@ describe('SpeedMatrix', () => {
             gaugeDate: null,
             rainDate: null,
             gaugeCartesianValue: new CartesianValue({value: 10, lat: 0, lng: 0}),
-            rainCartesianValues: [new CartesianValue({value: 20, lat: 0, lng: 0}), new CartesianValue({value: 30, lat: 0.01, lng: 0.02})],
+            rainCartesianValues: [
+                new CartesianValue({value: 20, lat: 0, lng: 0}),
+                new CartesianValue({value: 30, lat: 0.01, lng: 0.02}),
+            ],
             speed: null,
             remark: 'none',
         });
@@ -49,7 +64,7 @@ describe('SpeedMatrix', () => {
 
         const speedMatrixContainerToMerge = SpeedMatrixContainer.CreateFromJson({
             matrices: [new SpeedMatrix('3', '', qualityPoints)],
-            trustedIndicator: 0.85
+            trustedIndicator: 0.85,
         });
         speedMatrixContainer.merge(speedMatrixContainerToMerge);
 
@@ -73,7 +88,6 @@ describe('SpeedMatrix', () => {
     });
 
     it('should SpeedMatrixContainer merge and compare', async () => {
-
         const dateG1 = new Date(1.1 * 60 * 1000);
         const dateG2 = new Date(7.1 * 60 * 1000);
         const dateG3 = new Date(10.1 * 60 * 1000);
@@ -88,16 +102,30 @@ describe('SpeedMatrix', () => {
             gaugeDate: dateG1,
             rainDate: dateR1,
             gaugeCartesianValue: new CartesianValue({value: 10, lat: 1, lng: 2}),
-            rainCartesianValues: [new CartesianValue({value: 8, lat: 1, lng: 2}), new CartesianValue({value: 13, lat: 1.01, lng: 2.02})],
+            rainCartesianValues: [
+                new CartesianValue({value: 8, lat: 1, lng: 2}),
+                new CartesianValue({value: 13, lat: 1.01, lng: 2.02}),
+            ],
             speed: {x: 1, y: 2},
             remark: 'none',
         };
         const qualityPoint1 = new QualityPoint(JSON.parse(JSON.stringify(qp)));
         const qualityPoints1: QualityPoint[] = [qualityPoint1];
-        const roundScale: Position = new Position({x: CartesianTools.DEFAULT_SCALE, y: CartesianTools.DEFAULT_SCALE});
+        const roundScale: Position = new Position({
+            x: CartesianTools.DEFAULT_SCALE,
+            y: CartesianTools.DEFAULT_SCALE,
+        });
 
         const flattenPositionRange = {xMin: -4, xMax: 4, yMin: -4, yMax: 4};
-        const speedMatrix1 = new SpeedMatrix('0', '', qualityPoints1, speed, 1, flattenPositionRange, roundScale);
+        const speedMatrix1 = new SpeedMatrix(
+            '0',
+            '',
+            qualityPoints1,
+            speed,
+            1,
+            flattenPositionRange,
+            roundScale
+        );
         const qualitySpeedMatrixContainer1 = new SpeedMatrixContainer({matrices: [speedMatrix1]});
 
         // 1) Verify creation
@@ -117,7 +145,15 @@ describe('SpeedMatrix', () => {
         qp.gaugeId = 'gaugeId2';
         const qualityPoint2_2 = new QualityPoint(JSON.parse(JSON.stringify(qp)));
         const qualityPoints2: QualityPoint[] = [qualityPoint2_1, qualityPoint2_2];
-        const speedMatrix2 = new SpeedMatrix('-2', '', qualityPoints2, speed, 1, flattenPositionRange, roundScale);
+        const speedMatrix2 = new SpeedMatrix(
+            '-2',
+            '',
+            qualityPoints2,
+            speed,
+            1,
+            flattenPositionRange,
+            roundScale
+        );
         const qualitySpeedMatrixContainer2 = new SpeedMatrixContainer({matrices: [speedMatrix2]});
         qualitySpeedMatrixContainer2.merge(qualitySpeedMatrixContainer1);
 
@@ -130,7 +166,15 @@ describe('SpeedMatrix', () => {
         qp.gaugeDate = dateG3;
         const qualityPoint3_2 = new QualityPoint(JSON.parse(JSON.stringify(qp)));
         const qualityPoints3: QualityPoint[] = [qualityPoint3_1, qualityPoint3_2];
-        const speedMatrix3 = new SpeedMatrix('3', '', qualityPoints3, speed, 1, flattenPositionRange, roundScale);
+        const speedMatrix3 = new SpeedMatrix(
+            '3',
+            '',
+            qualityPoints3,
+            speed,
+            1,
+            flattenPositionRange,
+            roundScale
+        );
         const qualitySpeedMatrixContainer3 = new SpeedMatrixContainer({matrices: [speedMatrix3]});
         qualitySpeedMatrixContainer2.merge(qualitySpeedMatrixContainer3);
 
@@ -161,21 +205,29 @@ describe('SpeedMatrix', () => {
             id: 'rcq1',
             date: dateR1,
             isReady: true,
-            qualitySpeedMatrixContainer: new SpeedMatrixContainer({matrices: [speedMatrix1, speedMatrix2]})
+            qualitySpeedMatrixContainer: new SpeedMatrixContainer({
+                matrices: [speedMatrix1, speedMatrix2],
+            }),
         });
         const rainComputationQuality2 = new RainComputationQuality({
             id: 'rcq2',
             date: dateR2,
             isReady: true,
-            qualitySpeedMatrixContainer: qualitySpeedMatrixContainer2
+            qualitySpeedMatrixContainer: qualitySpeedMatrixContainer2,
         });
         const rainComputationQuality3 = new RainComputationQuality({
             id: 'rcq3',
             date: dateR3,
             isReady: true,
-            qualitySpeedMatrixContainer: new SpeedMatrixContainer({matrices: [speedMatrix2, speedMatrix3]})
+            qualitySpeedMatrixContainer: new SpeedMatrixContainer({
+                matrices: [speedMatrix2, speedMatrix3],
+            }),
         });
-        const compares = SpeedMatrixContainer.BuildCompares([rainComputationQuality1, rainComputationQuality2, rainComputationQuality3]);
+        const compares = SpeedMatrixContainer.BuildCompares([
+            rainComputationQuality1,
+            rainComputationQuality2,
+            rainComputationQuality3,
+        ]);
 
         // comparesPerDate
         expect(compares.comparesPerDate.length).eq(3);
@@ -208,7 +260,5 @@ describe('SpeedMatrix', () => {
         expect(compares.compareCumulative.qualityPoints[1].getGaugeValue()).eq(30.2);
         expect(compares.compareCumulative.qualityPoints[1].getRainValue()).eq(31.5);
         expect(compares.compareCumulative.maxValue).eq(31.5);
-
     });
-
 });

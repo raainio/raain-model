@@ -4,10 +4,7 @@ export class Position {
     public y: number;
     private readonly precision: number;
 
-    constructor(json: {
-        x: number,
-        y: number
-    }) {
+    constructor(json: {x: number; y: number}) {
         this.x = json.x;
         this.y = json.y;
         this.precision = Position.DEFAULT_PRECISION;
@@ -16,13 +13,13 @@ export class Position {
     static uniq = (a: Position[]): Position[] => {
         const set = [];
         for (const p of a) {
-            const same = set.filter(s => s.x === p.x && s.y === p.y);
+            const same = set.filter((s) => s.x === p.x && s.y === p.y);
             if (same.length <= 0) {
                 set.push(p);
             }
         }
         return set;
-    }
+    };
 
     setPrecision(precision: number = Position.DEFAULT_PRECISION) {
         const tenPower = Math.pow(10, precision);
@@ -31,7 +28,7 @@ export class Position {
         this.y = xy.y;
     }
 
-    getXY(precision?: number): { x: number, y: number } {
+    getXY(precision?: number): {x: number; y: number} {
         if (typeof precision === 'undefined') {
             return {x: this.x, y: this.y};
         }
@@ -52,7 +49,7 @@ export class Position {
         return this.precision;
     }
 
-    getXYScaled(scale: number): { x: number, y: number } {
+    getXYScaled(scale: number): {x: number; y: number} {
         const precision = Math.round(Math.log10(1 / scale));
         return this.getXY(precision);
     }

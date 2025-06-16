@@ -2,7 +2,6 @@ import {LatLng} from '../../cartesian';
 import {Position} from '../position/Position';
 
 export class QualityTools {
-
     public static IndexOfDualArray(array, itemToFind) {
         for (const [index, value] of array.entries()) {
             if (value[0] === itemToFind[0] && value[1] === itemToFind[1]) {
@@ -16,7 +15,8 @@ export class QualityTools {
         if (!isFinite(a)) {
             return 0;
         }
-        let e = 1, p = 0;
+        let e = 1,
+            p = 0;
         while (Math.round(a * e) / e !== a) {
             e *= 10;
             p++;
@@ -44,7 +44,9 @@ export class QualityTools {
             for (let i = 0; i < dim; i++) {
                 newArray[i] = QualityTools.CreateNDimArray(rest, defaultValue);
                 if (typeof newArray[i] === 'undefined') {
-                    newArray[i] = !defaultValue ? defaultValue : JSON.parse(JSON.stringify(defaultValue));
+                    newArray[i] = !defaultValue
+                        ? defaultValue
+                        : JSON.parse(JSON.stringify(defaultValue));
                 }
             }
             return newArray;
@@ -52,5 +54,4 @@ export class QualityTools {
             return undefined;
         }
     }
-
 }

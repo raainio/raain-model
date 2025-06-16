@@ -6,13 +6,15 @@ import {PolarMeasureValue} from './PolarMeasureValue';
 /**
  * Computed Rain with polar value containers
  */
-export class RainPolarMeasureValue extends AbstractPolarMeasureValue implements IPolarMeasureValue, IVersion {
-
+export class RainPolarMeasureValue
+    extends AbstractPolarMeasureValue
+    implements IPolarMeasureValue, IVersion
+{
     private readonly version: string;
 
     constructor(json: {
-        polarMeasureValue: RainPolarMeasureValue | PolarMeasureValue | string,
-        version?: string
+        polarMeasureValue: RainPolarMeasureValue | PolarMeasureValue | string;
+        version?: string;
     }) {
         super(json);
 
@@ -25,8 +27,7 @@ export class RainPolarMeasureValue extends AbstractPolarMeasureValue implements 
     }
 
     static From(obj: IPolarMeasureValue | any): RainPolarMeasureValue {
-        let version: string,
-            polarMeasureValue: PolarMeasureValue;
+        let version: string, polarMeasureValue: PolarMeasureValue;
 
         if (typeof obj.version === 'string') {
             version = obj.version;
@@ -43,7 +44,7 @@ export class RainPolarMeasureValue extends AbstractPolarMeasureValue implements 
         const json = super.toJSON();
         return {
             ...json,
-            version: this.version
+            version: this.version,
         };
     }
 
@@ -51,7 +52,7 @@ export class RainPolarMeasureValue extends AbstractPolarMeasureValue implements 
         const json = super.toJSONWithPolarStringified();
         return {
             ...json,
-            version: this.version
+            version: this.version,
         };
     }
 

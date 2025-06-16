@@ -3,16 +3,13 @@ import {CartesianValue} from './CartesianValue';
 import {LatLng} from './LatLng';
 
 export class CartesianMeasureValue implements ICartesianMeasureValue {
-
     protected cartesianValues: CartesianValue[];
     protected limitPoints: [LatLng, LatLng];
 
     constructor(json: {
-                    cartesianValues: string | CartesianValue[],
-                    limitPoints?: [LatLng, LatLng]
-                }
-    ) {
-
+        cartesianValues: string | CartesianValue[];
+        limitPoints?: [LatLng, LatLng];
+    }) {
         if (!json?.cartesianValues) {
             throw new Error('CartesianMeasureValue needs cartesianValues');
         }
@@ -59,17 +56,16 @@ export class CartesianMeasureValue implements ICartesianMeasureValue {
 
         if (Array.isArray(values)) {
             this.cartesianValues = [];
-            values.forEach(v => {
+            values.forEach((v) => {
                 this.cartesianValues.push(new CartesianValue(v));
             });
         }
     }
 
     toJSON(options = {stringify: false}) {
-
         let cartesianValues: string | CartesianValue[] = this.cartesianValues;
         if (options.stringify) {
-            cartesianValues = JSON.stringify(this.cartesianValues)
+            cartesianValues = JSON.stringify(this.cartesianValues);
         }
 
         return {
@@ -82,7 +78,7 @@ export class CartesianMeasureValue implements ICartesianMeasureValue {
         return this.toJSON({stringify: true});
     }
 
-    getCartesianValue(json: { lat: number, lng: number }): CartesianValue {
+    getCartesianValue(json: {lat: number; lng: number}): CartesianValue {
         for (const value of this.cartesianValues) {
             if (value.lat === json.lat && value.lng === json.lng) {
                 return value;
@@ -91,11 +87,7 @@ export class CartesianMeasureValue implements ICartesianMeasureValue {
         return null;
     }
 
-    getCartesianValueRounded(json: {
-        lat: number,
-        lng: number,
-        scale: LatLng
-    }): CartesianValue {
+    getCartesianValueRounded(json: {lat: number; lng: number; scale: LatLng}): CartesianValue {
         for (const value of this.cartesianValues) {
             const latRounded1 = Math.round(json.lat / json.scale.lat) * json.scale.lat;
             const lngRounded1 = Math.round(json.lng / json.scale.lng) * json.scale.lng;
@@ -108,7 +100,7 @@ export class CartesianMeasureValue implements ICartesianMeasureValue {
         return null;
     }
 
-    setCartesianValue(json: { lat: number, lng: number, value: number }): void {
+    setCartesianValue(json: {lat: number; lng: number; value: number}): void {
         this.cartesianValues.push(new CartesianValue(json));
     }
 
@@ -122,7 +114,7 @@ export class CartesianMeasureValue implements ICartesianMeasureValue {
     setLimitPoints(point1: LatLng, point2: LatLng) {
         this.limitPoints = [
             new LatLng({lat: point1.lat, lng: point1.lng}),
-            new LatLng({lat: point2.lat, lng: point2.lng})
+            new LatLng({lat: point2.lat, lng: point2.lng}),
         ];
     }
 
@@ -156,10 +148,16 @@ export class CartesianMeasureValue implements ICartesianMeasureValue {
             }
         }
 
-        if (typeof p1Lat !== 'undefined' && typeof p1Lng !== 'undefined' &&
-            typeof p2Lat !== 'undefined' && typeof p2Lng !== 'undefined') {
-            this.setLimitPoints(new LatLng({lat: p1Lat, lng: p1Lng}),
-                new LatLng({lat: p2Lat, lng: p2Lng}));
+        if (
+            typeof p1Lat !== 'undefined' &&
+            typeof p1Lng !== 'undefined' &&
+            typeof p2Lat !== 'undefined' &&
+            typeof p2Lng !== 'undefined'
+        ) {
+            this.setLimitPoints(
+                new LatLng({lat: p1Lat, lng: p1Lng}),
+                new LatLng({lat: p2Lat, lng: p2Lng})
+            );
         }
     }
 }

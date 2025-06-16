@@ -11,25 +11,23 @@ import {MergeStrategy} from './MergeStrategy';
  *  api/rains/:id/computations?format=id&begin=...
  */
 export class RainComputation extends RainComputationAbstract {
-
     public static TYPE = 'rain-computation';
 
     constructor(json: {
-        id: string,
-        date: Date,
-        isReady: boolean,
-        results: string[] | RainPolarMeasureValue[] | RainCartesianMeasureValue[],
-        links?: Link[] | RaainNode[],
-        version?: string,
-        quality?: number,
-        progressIngest?: number,
-        progressComputing?: number,
-        timeSpentInMs?: number,
-        isDoneDate?: Date,
-        launchedBy?: string,
-        rain?: string | Link | RaainNode,
-        radars?: string[] | Link[] | RaainNode[],
-
+        id: string;
+        date: Date;
+        isReady: boolean;
+        results: string[] | RainPolarMeasureValue[] | RainCartesianMeasureValue[];
+        links?: Link[] | RaainNode[];
+        version?: string;
+        quality?: number;
+        progressIngest?: number;
+        progressComputing?: number;
+        timeSpentInMs?: number;
+        isDoneDate?: Date;
+        launchedBy?: string;
+        rain?: string | Link | RaainNode;
+        radars?: string[] | Link[] | RaainNode[];
     }) {
         super(json);
         this.results = json.results;
@@ -53,7 +51,7 @@ export class RainComputation extends RainComputationAbstract {
             return;
         }
 
-        this._results = results.map(r => {
+        this._results = results.map((r) => {
             if (typeof r === 'string' && r.indexOf('polarMeasureValue') >= 0) {
                 return new RainPolarMeasureValue(JSON.parse(r));
             } else if (r.polarMeasureValue) {
@@ -73,28 +71,31 @@ export class RainComputation extends RainComputationAbstract {
         const json = super.toJSON();
         return {
             ...json,
-            results: this._results.map(r => r.toJSON(options))
+            results: this._results.map((r) => r.toJSON(options)),
         };
     }
 
     mergeCartesianResults(options: {
-        mergeStrategy: MergeStrategy,
-        mergeLimitPoints: [LatLng, LatLng],
-        cartesianTools: CartesianTools,
-        removeNullValues?: boolean,
+        mergeStrategy: MergeStrategy;
+        mergeLimitPoints: [LatLng, LatLng];
+        cartesianTools: CartesianTools;
+        removeNullValues?: boolean;
     }): RainMeasure[] {
-
         this.buildLatLngMatrix(options);
 
-        return this.mergeRainMeasures([new RainMeasure({
-            id: this.id,
-            values: this._results,
-            date: this.date
-        })], options);
+        return this.mergeRainMeasures(
+            [
+                new RainMeasure({
+                    id: this.id,
+                    values: this._results,
+                    date: this.date,
+                }),
+            ],
+            options
+        );
     }
 
     protected getLinkType(): string {
         return RainComputation.TYPE;
     }
-
 }

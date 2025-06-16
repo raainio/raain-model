@@ -9,8 +9,7 @@ export class Link {
     constructor(
         public rel: string,
         public href: string
-    ) {
-    }
+    ) {}
 
     public static isCloneable(object: any): boolean {
         return object?.rel && object?.href;

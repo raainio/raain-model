@@ -6,35 +6,32 @@ import {CartesianValue} from '../cartesian/CartesianValue';
 import {RainComputationQuality} from '../rain/RainComputationQuality';
 
 export interface ICompares {
-    comparesPerDate: IComparePerDate[],
-    compareCumulative: ICompare,
+    comparesPerDate: IComparePerDate[];
+    compareCumulative: ICompare;
 }
 
 export interface IComparePerDate {
-    date: Date,
-    rainComputationQuality: RainComputationQuality,
-    compareTimeline: ICompare[],
+    date: Date;
+    rainComputationQuality: RainComputationQuality;
+    compareTimeline: ICompare[];
 }
 
 export interface ICompare {
-    name: string,
-    date: Date,
-    qualityPointsLegacy: QualityPoint[],
-    qualityPoints: QualityPoint[],
-    maxValue: number,
-    remarks: string,
+    name: string;
+    date: Date;
+    qualityPointsLegacy: QualityPoint[];
+    qualityPoints: QualityPoint[];
+    maxValue: number;
+    remarks: string;
 }
 
 export class SpeedMatrixContainer {
-
     protected qualityPoints: any;
     protected trustedIndicators: number[];
     protected flattenMatrices: PositionValue[][];
     protected matrices: SpeedMatrix[];
 
-    constructor(json: {
-        matrices: SpeedMatrix[]
-    }) {
+    constructor(json: {matrices: SpeedMatrix[]}) {
         this.qualityPoints = {};
         this.trustedIndicators = [];
         this.flattenMatrices = [];
@@ -58,13 +55,12 @@ export class SpeedMatrixContainer {
         return created;
     }
 
-    static BuildCompares(qualities: RainComputationQuality[],
-                         removeDuplicates = true): ICompares {
-        const qualitiesSorted = qualities
-            .sort((a, b) => a.date.getTime() - b.date.getTime());
+    static BuildCompares(qualities: RainComputationQuality[], removeDuplicates = true): ICompares {
+        const qualitiesSorted = qualities.sort((a, b) => a.date.getTime() - b.date.getTime());
         const comparesPerDate: IComparePerDate[] = [];
         const compareCumulative: ICompare = {
-            name: 'cumulative_' + qualities.reduce((p, rcq) => p + '_' + rcq.date.toISOString(), ''),
+            name:
+                'cumulative_' + qualities.reduce((p, rcq) => p + '_' + rcq.date.toISOString(), ''),
             date: qualities[0]?.date,
             qualityPointsLegacy: [],
             qualityPoints: [],
@@ -82,33 +78,46 @@ export class SpeedMatrixContainer {
 
         // build timelines and store
         for (const rainComputationQuality of qualitiesSorted) {
-            const compareTimeline = SpeedMatrixContainer.BuildCompareTimeline(rainComputationQuality, dateMin, dateMax);
+            const compareTimeline = SpeedMatrixContainer.BuildCompareTimeline(
+                rainComputationQuality,
+                dateMin,
+                dateMax
+            );
 
             comparesPerDate.push({
                 date: rainComputationQuality.date,
                 rainComputationQuality,
-                compareTimeline
+                compareTimeline,
             });
 
-            const qualityPoints: QualityPoint[] = compareTimeline.reduce((p, a) => p.concat(a.qualityPoints), []);
+            const qualityPoints: QualityPoint[] = compareTimeline.reduce(
+                (p, a) => p.concat(a.qualityPoints),
+                []
+            );
             for (const qualityPoint of qualityPoints) {
                 const key = qualityPoint.gaugeDate.toISOString() + '_' + qualityPoint.gaugeId;
                 if (typeof minDeltaPerDate_GaugeId[key] === 'undefined') {
                     minDeltaPerDate_GaugeId[key] = qualityPoint.getDelta();
                 }
-                minDeltaPerDate_GaugeId[key] = Math.min(minDeltaPerDate_GaugeId[key], qualityPoint.getDelta());
+                minDeltaPerDate_GaugeId[key] = Math.min(
+                    minDeltaPerDate_GaugeId[key],
+                    qualityPoint.getDelta()
+                );
             }
         }
 
         // loop and search for unique points
         const qualityPointToUsePerDate_GaugeId = {};
-        comparesPerDate.forEach(compare => {
-            compare.compareTimeline.forEach(timeline => {
+        comparesPerDate.forEach((compare) => {
+            compare.compareTimeline.forEach((timeline) => {
                 for (let i = timeline.qualityPoints.length - 1; i >= 0; i--) {
                     const qualityPoint = timeline.qualityPoints[i];
                     const key = qualityPoint.gaugeDate.toISOString() + '_' + qualityPoint.gaugeId;
-                    if (!qualityPointToUsePerDate_GaugeId[key] && typeof minDeltaPerDate_GaugeId[key] !== 'undefined'
-                        && minDeltaPerDate_GaugeId[key] === qualityPoint.getDelta()) {
+                    if (
+                        !qualityPointToUsePerDate_GaugeId[key] &&
+                        typeof minDeltaPerDate_GaugeId[key] !== 'undefined' &&
+                        minDeltaPerDate_GaugeId[key] === qualityPoint.getDelta()
+                    ) {
                         qualityPointToUsePerDate_GaugeId[key] = qualityPoint;
                     } else {
                         if (removeDuplicates) {
@@ -125,7 +134,8 @@ export class SpeedMatrixContainer {
         for (const qp of qps) {
             const qualityPoint = qp as QualityPoint;
             if (!qualityPointPerGaugeId[qualityPoint.gaugeId]) {
-                qualityPointPerGaugeId[qualityPoint.gaugeId] = QualityPoint.CreateFromJSON(qualityPoint);
+                qualityPointPerGaugeId[qualityPoint.gaugeId] =
+                    QualityPoint.CreateFromJSON(qualityPoint);
             } else {
                 qualityPointPerGaugeId[qualityPoint.gaugeId].accumulateValues(qualityPoint);
             }
@@ -133,35 +143,44 @@ export class SpeedMatrixContainer {
 
         compareCumulative.qualityPoints = Object.values(qualityPointPerGaugeId);
         compareCumulative.qualityPointsLegacy = Object.values(qualityPointPerGaugeId);
-        const maxRain = Math.max(...compareCumulative.qualityPoints.map(p => p.getRainValue()));
-        const maxGauge = Math.max(...compareCumulative.qualityPoints.map(p => p.getGaugeValue()));
+        const maxRain = Math.max(...compareCumulative.qualityPoints.map((p) => p.getRainValue()));
+        const maxGauge = Math.max(...compareCumulative.qualityPoints.map((p) => p.getGaugeValue()));
         compareCumulative.maxValue = Math.max(maxRain, maxGauge);
 
         return {comparesPerDate, compareCumulative};
     }
 
-    static BuildCompareTimeline(currentQuality: RainComputationQuality, dateMin: Date, dateMax: Date): ICompare[] {
+    static BuildCompareTimeline(
+        currentQuality: RainComputationQuality,
+        dateMin: Date,
+        dateMax: Date
+    ): ICompare[] {
         const compares: ICompare[] = [];
         const qualitySpeedMatrixContainer = currentQuality.qualitySpeedMatrixContainer;
         if (!qualitySpeedMatrixContainer) {
             return compares;
         }
 
-        const compareNames = qualitySpeedMatrixContainer.getMatrices()
-            .map(m => m.name)
+        const compareNames = qualitySpeedMatrixContainer
+            .getMatrices()
+            .map((m) => m.name)
             .sort((a, b) => parseInt(a, 10) - parseInt(b, 10));
 
         for (const [index, name] of compareNames.entries()) {
-
             const qualityPointsLegacy = qualitySpeedMatrixContainer.getQualityPoints(name);
-            const maxValue = Math.max(qualitySpeedMatrixContainer.getMaxGauge(), qualitySpeedMatrixContainer.getMaxRain());
+            const maxValue = Math.max(
+                qualitySpeedMatrixContainer.getMaxGauge(),
+                qualitySpeedMatrixContainer.getMaxRain()
+            );
             const remarks = qualitySpeedMatrixContainer.getMatrix(index)?.remarks;
 
             const delta = parseInt(name, 10);
             const compareDate = new Date(currentQuality.date.getTime() - delta * 60 * 1000);
 
-            if (dateMin.getTime() <= compareDate.getTime() && compareDate.getTime() <= dateMax.getTime()) {
-
+            if (
+                dateMin.getTime() <= compareDate.getTime() &&
+                compareDate.getTime() <= dateMax.getTime()
+            ) {
                 let renamed = compareDate.toLocaleString();
                 renamed += delta > 0 ? ' since ' : ' in ';
                 renamed += Math.abs(delta) + ' minutes';
@@ -246,16 +265,18 @@ export class SpeedMatrixContainer {
         return stillComputed;
     }
 
-    protected static mergeReduce(a1: Array<QualityPoint>, a2: Array<QualityPoint>): Array<QualityPoint> {
+    protected static mergeReduce(
+        a1: Array<QualityPoint>,
+        a2: Array<QualityPoint>
+    ): Array<QualityPoint> {
         const stillComputed = this.mergeStillComputed(a1, a2);
         if (stillComputed === null) {
-
             const ids = new Map();
             const concatted: QualityPoint[] = a1.concat(a2);
             for (const qualityPoint of concatted) {
                 const oldValue = {
                     gaugeValue: 0,
-                    rainValue: 0
+                    rainValue: 0,
                 };
                 // if (ids.has(qualityPoint.gaugeId)) {
                 //     oldValue = ids.get(qualityPoint.gaugeId);
@@ -281,7 +302,11 @@ export class SpeedMatrixContainer {
                     gaugeLabel: value.gaugeLabel,
                     gaugeDate: value.gaugeDate,
                     rainDate: value.rainDate,
-                    gaugeCartesianValue: new CartesianValue({value: value.gaugeValue, lat: value.gaugeLat, lng: value.gaugeLng}),
+                    gaugeCartesianValue: new CartesianValue({
+                        value: value.gaugeValue,
+                        lat: value.gaugeLat,
+                        lng: value.gaugeLng,
+                    }),
                     rainCartesianValues: value.rainCartesianValues,
                     speed: null,
                     remark: value.remark,
@@ -299,7 +324,7 @@ export class SpeedMatrixContainer {
     }
 
     getMatrixByName(name: string) {
-        const found = this.matrices.filter(m => m.name === name);
+        const found = this.matrices.filter((m) => m.name === name);
         if (found.length === 1) {
             return found[0];
         }
@@ -311,7 +336,6 @@ export class SpeedMatrixContainer {
     }
 
     getQualityPoints(matrixName?: string): QualityPoint[] {
-
         if (this.matrices.length === 0) {
             return [];
         }
@@ -320,7 +344,7 @@ export class SpeedMatrixContainer {
 
         let matrixNames = [matrixName];
         if (!matrixName) {
-            matrixNames = this.matrices.map(m => m.name);
+            matrixNames = this.matrices.map((m) => m.name);
         } else {
             if (this.qualityPoints[matrixName]?.length > 0 && this.flattenMatrices.length > 0) {
                 return this.qualityPoints[matrixName];
@@ -329,9 +353,11 @@ export class SpeedMatrixContainer {
 
         let qualityPoints: QualityPoint[] = [];
         for (const name of matrixNames) {
-            const matricesWithSameName = this.matrices.filter(m => m.name === name);
+            const matricesWithSameName = this.matrices.filter((m) => m.name === name);
             if (matricesWithSameName.length === 1) {
-                const points = matricesWithSameName[0].getQualityPoints().map(p => new QualityPoint(p));
+                const points = matricesWithSameName[0]
+                    .getQualityPoints()
+                    .map((p) => new QualityPoint(p));
                 qualityPoints = qualityPoints.concat(points);
 
                 // store
@@ -343,7 +369,6 @@ export class SpeedMatrixContainer {
     }
 
     getQualityPointsByHistoricalPosition(position: number = 0): QualityPoint[] {
-
         if (this.matrices.length <= 1) {
             return [];
         }
@@ -399,17 +424,23 @@ export class SpeedMatrixContainer {
         return this.trustedIndicators;
     }
 
-    getSpeed(): { angleInDegrees: number, pixelsPerPeriod: number } {
-        let mergedSpeed: { angleInDegrees: number, pixelsPerPeriod: number };
+    getSpeed(): {angleInDegrees: number; pixelsPerPeriod: number} {
+        let mergedSpeed: {angleInDegrees: number; pixelsPerPeriod: number};
 
         for (const matrix of this.matrices) {
             if (!mergedSpeed) {
                 mergedSpeed = matrix.getSpeed();
             } else {
                 mergedSpeed = {
-                    angleInDegrees: SpeedMatrixContainer.mergeAvg(mergedSpeed.angleInDegrees, matrix.getSpeed().angleInDegrees),
-                    pixelsPerPeriod: SpeedMatrixContainer.mergeAvg(mergedSpeed.pixelsPerPeriod, matrix.getSpeed().pixelsPerPeriod),
-                }
+                    angleInDegrees: SpeedMatrixContainer.mergeAvg(
+                        mergedSpeed.angleInDegrees,
+                        matrix.getSpeed().angleInDegrees
+                    ),
+                    pixelsPerPeriod: SpeedMatrixContainer.mergeAvg(
+                        mergedSpeed.pixelsPerPeriod,
+                        matrix.getSpeed().pixelsPerPeriod
+                    ),
+                };
             }
         }
 
@@ -427,16 +458,17 @@ export class SpeedMatrixContainer {
             indicAverage += indic;
         }
         indicAverage = indicAverage / (indics.length ? indics.length : 1);
-        return indicAverage > (SpeedMatrix.DEFAULT_TRUSTED_INDICATOR / 2);
+        return indicAverage > SpeedMatrix.DEFAULT_TRUSTED_INDICATOR / 2;
     }
 
     getFlattenMatrixCount(): number {
         return this.flattenMatrices.length;
     }
 
-    renderFlattenMatrix(index = 0,
-                        options: { normalize?: boolean } = {normalize: true}): PositionValue[] {
-
+    renderFlattenMatrix(
+        index = 0,
+        options: {normalize?: boolean} = {normalize: true}
+    ): PositionValue[] {
         let rendered: PositionValue[];
         if (this.flattenMatrices && this.flattenMatrices[index]) {
             rendered = this.flattenMatrices[index];
@@ -452,7 +484,7 @@ export class SpeedMatrixContainer {
         return rendered;
     }
 
-    renderMergedMatrix(options: { normalize?: boolean } = {normalize: true}): PositionValue[] {
+    renderMergedMatrix(options: {normalize?: boolean} = {normalize: true}): PositionValue[] {
         const count = this.flattenMatrices.length;
         const size = Math.sqrt(this.flattenMatrices[0]?.length);
         const range = (size - 1) / 2;
@@ -462,7 +494,7 @@ export class SpeedMatrixContainer {
             for (let y = -range; y <= range; y++) {
                 let value = 0;
                 for (const flattenMatrix of this.flattenMatrices) {
-                    const pos = flattenMatrix.filter(v => v.x === x && v.y === y)[0];
+                    const pos = flattenMatrix.filter((v) => v.x === x && v.y === y)[0];
                     value += pos.value;
                     maxValue = Math.max(maxValue, value);
                 }
@@ -479,18 +511,16 @@ export class SpeedMatrixContainer {
     }
 
     toJSON(options?: {
-        removeFlatten?: boolean,
-        removeMatrices?: boolean,
-        removeIndicators?: boolean,
+        removeFlatten?: boolean;
+        removeMatrices?: boolean;
+        removeIndicators?: boolean;
     }) {
         const json = {
             qualityPoints: this.getQualityPoints(),
             trustedIndicators: this.getTrustedIndicators(),
             flattenMatrices: this.flattenMatrices,
             speed: this.getSpeed(),
-            matrices: this.matrices
-                .filter(m => !!m)
-                .map(m => m.toJSON()),
+            matrices: this.matrices.filter((m) => !!m).map((m) => m.toJSON()),
         };
 
         if (options?.removeMatrices) {
@@ -509,49 +539,59 @@ export class SpeedMatrixContainer {
     }
 
     merge(speedMatrixContainerToMergeIn: SpeedMatrixContainer) {
-
-        this.trustedIndicators = SpeedMatrixContainer.mergeConcat(this.getTrustedIndicators(),
-            speedMatrixContainerToMergeIn.getTrustedIndicators());
-        this.matrices = SpeedMatrixContainer.mergeConcat(this.matrices,
-            speedMatrixContainerToMergeIn.matrices);
-        this.flattenMatrices = SpeedMatrixContainer.mergeConcat(this.flattenMatrices,
-            speedMatrixContainerToMergeIn.flattenMatrices);
+        this.trustedIndicators = SpeedMatrixContainer.mergeConcat(
+            this.getTrustedIndicators(),
+            speedMatrixContainerToMergeIn.getTrustedIndicators()
+        );
+        this.matrices = SpeedMatrixContainer.mergeConcat(
+            this.matrices,
+            speedMatrixContainerToMergeIn.matrices
+        );
+        this.flattenMatrices = SpeedMatrixContainer.mergeConcat(
+            this.flattenMatrices,
+            speedMatrixContainerToMergeIn.flattenMatrices
+        );
 
         return this;
     }
 
-    logMergedMatrix(options: { normalize: boolean, logger: any } = {normalize: true, logger: null}) {
-
+    logMergedMatrix(options: {normalize: boolean; logger: any} = {normalize: true, logger: null}) {
         const mergedMatrix = this.renderMergedMatrix(options);
-        const positionHistories = mergedMatrix.map(pv => new PositionHistory({
-            id: '-',
-            label: '-',
-            date: null,
-            x: pv.x,
-            y: pv.y,
-            value: pv.value,
-            valueFromGauge: -1,
-            valueFromRain: -1
-        }));
+        const positionHistories = mergedMatrix.map(
+            (pv) =>
+                new PositionHistory({
+                    id: '-',
+                    label: '-',
+                    date: null,
+                    x: pv.x,
+                    y: pv.y,
+                    value: pv.value,
+                    valueFromGauge: -1,
+                    valueFromRain: -1,
+                })
+        );
 
         const valueDisplay = (pv: PositionValue): string => {
             if (!pv) {
                 return '';
             }
             return '' + Math.round(pv.value * 1000) / 1000;
-        }
+        };
 
-        SpeedMatrix.LogPositionValues(positionHistories, valueDisplay, {
+        SpeedMatrix.LogPositionValues(
+            positionHistories,
+            valueDisplay,
+            {
                 xMin: -SpeedMatrix.DEFAULT_MATRIX_RANGE,
                 xMax: SpeedMatrix.DEFAULT_MATRIX_RANGE,
                 yMin: -SpeedMatrix.DEFAULT_MATRIX_RANGE,
-                yMax: SpeedMatrix.DEFAULT_MATRIX_RANGE
+                yMax: SpeedMatrix.DEFAULT_MATRIX_RANGE,
             },
-            options?.logger);
+            options?.logger
+        );
     }
 
     protected storeFlattenMatrices() {
-
         if (this.flattenMatrices.length === this.matrices.length) {
             return this.flattenMatrices;
         }
@@ -565,5 +605,4 @@ export class SpeedMatrixContainer {
 
         this.flattenMatrices = flattenMatrices;
     }
-
 }

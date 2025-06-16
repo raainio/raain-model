@@ -7,6 +7,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [3.0.13] - 2025-06-16
+
+### Added
+
+- Added ESLint configuration with modern rules
+- Enhanced code style consistency
+
+### Changed
+
+- Updated dependencies to latest versions
+- Improved build process scripts
+
+## [3.0.12] - 2025-06-06
+
 ### Added
 
 - Added static TYPE property to RainComputationQuality class
@@ -317,7 +331,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Initial release
 - First extracts from RAAIN services
 
-[Unreleased]: https://github.com/raainio/raain-model/compare/v3.0.11...HEAD
+[Unreleased]: https://github.com/raainio/raain-model/compare/v3.0.13...HEAD
+
+[3.0.13]: https://github.com/raainio/raain-model/compare/v3.0.12...v3.0.13
+
+[3.0.12]: https://github.com/raainio/raain-model/compare/v3.0.11...v3.0.12
 
 [3.0.11]: https://github.com/raainio/raain-model/compare/v3.0.10...v3.0.11
 

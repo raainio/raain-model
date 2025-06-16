@@ -1,14 +1,10 @@
 import {CartesianTools} from './CartesianTools';
 
 export class LatLng {
-
     public lat: number;
     public lng: number;
 
-    constructor(json: {
-        lat: number,
-        lng: number,
-    }) {
+    constructor(json: {lat: number; lng: number}) {
         if (typeof json?.lat === 'undefined' || typeof json?.lng === 'undefined') {
             throw new Error('LatLng needs valid latitude && longitude');
         }

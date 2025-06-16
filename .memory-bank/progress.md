@@ -50,11 +50,11 @@
 
 ## Current Status
 
-The project is currently in a stable state with version 3.0.11 released. The library is fully functional and being used in production by radartorain.com services. Active development is focused on maintenance, documentation improvements, and incremental enhancements.
+The project is currently in a stable state with version 3.0.13 released. The library is fully functional and being used in production by radartorain.com services. Active development is focused on maintenance, documentation improvements, code quality enhancements, and incremental feature additions.
 
 ### Version Status
-- Latest release: 3.0.11 (2025-05-20)
-- Unreleased changes: Enhanced RainComputationQuality with consistent link type handling
+- Latest release: 3.0.13 (2025-06-16)
+- Unreleased changes: None at this time
 - Development status: Active maintenance
 - Stability: Production-ready
 

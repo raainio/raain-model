@@ -11,15 +11,14 @@ export class EventNode {
     public modified: Date;
 
     constructor(json: {
-                    id: string,
-                    title: string,
-                    status: number,
-                    red: boolean,
-                    description: string,
-                    created: Date,
-                    modified: Date
-                }
-    ) {
+        id: string;
+        title: string;
+        status: number;
+        red: boolean;
+        description: string;
+        created: Date;
+        modified: Date;
+    }) {
         this.id = json.id;
         this.title = json.title;
         this.status = json.status;

@@ -1,7 +1,13 @@
 import {Link, RaainNode} from '../organization';
 import {RadarMeasure, RadarNode} from '../radar';
 import {RainNode} from './RainNode';
-import {CartesianMeasureValue, CartesianTools, CartesianValue, LatLng, RainCartesianMeasureValue} from '../cartesian';
+import {
+    CartesianMeasureValue,
+    CartesianTools,
+    CartesianValue,
+    LatLng,
+    RainCartesianMeasureValue,
+} from '../cartesian';
 import {RainMeasure} from './RainMeasure';
 import {MergeLatLng, MergeStrategy} from './MergeStrategy';
 
@@ -9,7 +15,6 @@ import {MergeLatLng, MergeStrategy} from './MergeStrategy';
  *  not used directly
  */
 export class RainComputationAbstract extends RaainNode {
-
     public quality: number;
     public progressIngest: number;
     public progressComputing: number;
@@ -27,22 +32,21 @@ export class RainComputationAbstract extends RaainNode {
     };
 
     constructor(json: {
-        id: string,
-        date: Date,
-        isReady: boolean,
+        id: string;
+        date: Date;
+        isReady: boolean;
 
-        name?: string,
-        links?: Link[] | RaainNode[],
-        version?: string,
-        quality?: number,
-        progressIngest?: number,
-        progressComputing?: number,
-        timeSpentInMs?: number,
-        isDoneDate?: Date,
-        launchedBy?: string,
-        rain?: string | Link | RaainNode,
-        radars?: string[] | Link[] | RaainNode[],
-
+        name?: string;
+        links?: Link[] | RaainNode[];
+        version?: string;
+        quality?: number;
+        progressIngest?: number;
+        progressComputing?: number;
+        timeSpentInMs?: number;
+        isDoneDate?: Date;
+        launchedBy?: string;
+        rain?: string | Link | RaainNode;
+        radars?: string[] | Link[] | RaainNode[];
     }) {
         super(json);
 
@@ -67,15 +71,24 @@ export class RainComputationAbstract extends RaainNode {
             return [];
         }
 
-        return linksToPurify.map(l => {
+        return linksToPurify.map((l) => {
             if (l instanceof Link) {
                 return l;
             } else if (l && l['_id']) {
-                return new RadarNode({id: l['_id'].toString(), latitude: 0, longitude: 0, name: l.name, team: l.team});
+                return new RadarNode({
+                    id: l['_id'].toString(),
+                    latitude: 0,
+                    longitude: 0,
+                    name: l.name,
+                    team: l.team,
+                });
             } else if (l && l.id) {
                 return new RadarNode({
-                    id: l.id.toString(),// 'hex'
-                    latitude: 0, longitude: 0, name: l.name, team: l.team
+                    id: l.id.toString(), // 'hex'
+                    latitude: 0,
+                    longitude: 0,
+                    name: l.name,
+                    team: l.team,
                 });
             }
         });
@@ -86,7 +99,7 @@ export class RainComputationAbstract extends RaainNode {
             return [];
         }
 
-        return linksToPurify.map(l => {
+        return linksToPurify.map((l) => {
             if (l instanceof Link) {
                 return l;
             } else if (l && l['_id']) {
@@ -107,30 +120,34 @@ export class RainComputationAbstract extends RaainNode {
         return new RainNode({
             id: linkToPurify.id.toString(),
             name: linkToPurify.id.toString(),
-            team: null
+            team: null,
         });
     }
 
     public toJSON(): {
-        id: string,
-        links: Link[],
-        version?: string,
-        isReady: boolean,
-        name: string,
-        date: Date,
-        quality: number,
-        progressIngest: number,
-        progressComputing: number,
-        timeSpentInMs: number,
-        isDoneDate: Date,
-        launchedBy: string,
-        rain: string,
-        radars: string[],
+        id: string;
+        links: Link[];
+        version?: string;
+        isReady: boolean;
+        name: string;
+        date: Date;
+        quality: number;
+        progressIngest: number;
+        progressComputing: number;
+        timeSpentInMs: number;
+        isDoneDate: Date;
+        launchedBy: string;
+        rain: string;
+        radars: string[];
     } {
         const json = super.toJSON();
-        const rainLinks = this.links.filter(l => l.getLinkType() === RainNode.TYPE).map(l => l.getId());
+        const rainLinks = this.links
+            .filter((l) => l.getLinkType() === RainNode.TYPE)
+            .map((l) => l.getId());
         const rainLink = rainLinks.length === 1 ? rainLinks[0] : '';
-        const radarLinks = this.links.filter(l => l.getLinkType() === RadarNode.TYPE).map(l => l.getId());
+        const radarLinks = this.links
+            .filter((l) => l.getLinkType() === RadarNode.TYPE)
+            .map((l) => l.getId());
 
         return {
             ...json,
@@ -160,29 +177,35 @@ export class RainComputationAbstract extends RaainNode {
         this.addLinks(RainComputationAbstract._getRadarMeasureLinks(linksToAdd));
     }
 
-    public getBuiltMergeTools(rainMeasures: RainMeasure[], options: {
-        cartesianTools: CartesianTools,
-        mergeLimitPoints: LatLng[]
-    }) {
+    public getBuiltMergeTools(
+        rainMeasures: RainMeasure[],
+        options: {
+            cartesianTools: CartesianTools;
+            mergeLimitPoints: LatLng[];
+        }
+    ) {
         this.buildLatLngMatrix(options);
         this.buildMergeTools(rainMeasures);
         return this.mergeTools;
     }
 
     public getMergeLatLngIndex(cartesianValue: CartesianValue) {
-
         const latLng = this.mergeTools.cartesianTools.getLatLngFromEarthMap(cartesianValue);
         const latLngScale = this.mergeTools.cartesianTools.getScaleLatLngFromEarth(latLng);
 
-        const latIndex = Math.round((latLng.lat - this.mergeTools.limitPoints[0].lat) / latLngScale.lat);
-        const lngIndex = Math.round((latLng.lng - this.mergeTools.limitPoints[0].lng) / latLngScale.lng);
+        const latIndex = Math.round(
+            (latLng.lat - this.mergeTools.limitPoints[0].lat) / latLngScale.lat
+        );
+        const lngIndex = Math.round(
+            (latLng.lng - this.mergeTools.limitPoints[0].lng) / latLngScale.lng
+        );
 
         return {index: [latIndex, lngIndex], latLng};
     }
 
     protected buildLatLngMatrix(options: {
-        cartesianTools: CartesianTools,
-        mergeLimitPoints: LatLng[]
+        cartesianTools: CartesianTools;
+        mergeLimitPoints: LatLng[];
     }) {
         const latsLngs: MergeLatLng[][] = [];
         this.mergeTools = {latsLngs, cartesianTools: options.cartesianTools, limitPoints: []};
@@ -207,7 +230,11 @@ export class RainComputationAbstract extends RaainNode {
             latsLngs.push(lngs);
         }
 
-        this.mergeTools = {latsLngs, cartesianTools: options.cartesianTools, limitPoints: [downPoint, topPoint]};
+        this.mergeTools = {
+            latsLngs,
+            cartesianTools: options.cartesianTools,
+            limitPoints: [downPoint, topPoint],
+        };
         return this.mergeTools;
     }
 
@@ -219,12 +246,20 @@ export class RainComputationAbstract extends RaainNode {
                     const cartesianValues = cartesianMeasureValue.getCartesianValues();
                     for (const cartesianValue of cartesianValues) {
                         const {index, latLng} = this.getMergeLatLngIndex(cartesianValue);
-                        if (index[0] >= 0 && index[1] >= 0 && index[0] < this.mergeTools.latsLngs.length &&
-                            index[1] < this.mergeTools.latsLngs[index[0]].length) {
-                            this.mergeTools.latsLngs[index[0]][index[1]].latLng = CartesianTools.CreateLatLng(latLng);
-                            this.mergeTools.latsLngs[index[0]][index[1]].sum += cartesianValue.value;
+                        if (
+                            index[0] >= 0 &&
+                            index[1] >= 0 &&
+                            index[0] < this.mergeTools.latsLngs.length &&
+                            index[1] < this.mergeTools.latsLngs[index[0]].length
+                        ) {
+                            this.mergeTools.latsLngs[index[0]][index[1]].latLng =
+                                CartesianTools.CreateLatLng(latLng);
+                            this.mergeTools.latsLngs[index[0]][index[1]].sum +=
+                                cartesianValue.value;
                             this.mergeTools.latsLngs[index[0]][index[1]].max = Math.max(
-                                cartesianValue.value, this.mergeTools.latsLngs[index[0]][index[1]].max);
+                                cartesianValue.value,
+                                this.mergeTools.latsLngs[index[0]][index[1]].max
+                            );
                             this.mergeTools.latsLngs[index[0]][index[1]].count++;
                         } else {
                             // throw new Error(`Wrong mergeRainMeasure ${latLngIndex[0]} ${latLngIndex[1]}`);
@@ -239,13 +274,14 @@ export class RainComputationAbstract extends RaainNode {
         throw Error('abstract');
     }
 
-    protected mergeRainMeasures(rainMeasures: RainMeasure[],
-                                options: {
-                                    mergeStrategy: MergeStrategy,
-                                    mergeLimitPoints: [LatLng, LatLng],
-                                    removeNullValues?: boolean,
-                                }): RainMeasure[] {
-
+    protected mergeRainMeasures(
+        rainMeasures: RainMeasure[],
+        options: {
+            mergeStrategy: MergeStrategy;
+            mergeLimitPoints: [LatLng, LatLng];
+            removeNullValues?: boolean;
+        }
+    ): RainMeasure[] {
         if (rainMeasures.length === 0) {
             return [];
         }
@@ -253,14 +289,19 @@ export class RainComputationAbstract extends RaainNode {
         this.buildMergeTools(rainMeasures);
 
         const firstCartesianRainMeasure = rainMeasures[0];
-        const cartesianValuesMerged = this.buildMergeCartesianValues(options.mergeStrategy, options.removeNullValues);
+        const cartesianValuesMerged = this.buildMergeCartesianValues(
+            options.mergeStrategy,
+            options.removeNullValues
+        );
 
         const rm = new RainMeasure(firstCartesianRainMeasure.toJSON());
-        rm.values = [new RainCartesianMeasureValue({
-            cartesianValues: cartesianValuesMerged,
-            version: firstCartesianRainMeasure.getVersion(),
-            limitPoints: options.mergeLimitPoints,
-        })];
+        rm.values = [
+            new RainCartesianMeasureValue({
+                cartesianValues: cartesianValuesMerged,
+                version: firstCartesianRainMeasure.getVersion(),
+                limitPoints: options.mergeLimitPoints,
+            }),
+        ];
 
         return [rm];
     }
@@ -285,5 +326,4 @@ export class RainComputationAbstract extends RaainNode {
         }
         return cartesianValuesMerged;
     }
-
 }

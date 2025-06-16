@@ -1,10 +1,6 @@
 import {PeopleNode} from './PeopleNode';
 import {RaainNode} from './RaainNode';
 
-export interface ITeamNode {
-}
-
-
 /**
  * Represents a team in the RAAIN system.
  * This class manages team members and their contracts.
@@ -24,7 +20,6 @@ export interface ITeamNode {
  * ```
  */
 export class TeamNode extends RaainNode {
-
     public static readonly TYPE = 'team';
 
     public name: string;
@@ -33,11 +28,11 @@ export class TeamNode extends RaainNode {
     public contacts: PeopleNode[];
 
     constructor(json: {
-        id: any | string,
-        name?: string,
-        description?: string,
-        contracts?: string[],
-        contacts?: PeopleNode[]
+        id: string;
+        name?: string;
+        description?: string;
+        contracts?: string[];
+        contacts?: PeopleNode[];
     }) {
         super(json);
 

@@ -25,7 +25,6 @@ import {RadarMeasure} from '../radar';
  * - api/rains/:id/computations?format=map&begin=...
  */
 export class RainComputationMap extends RainComputationAbstract {
-
     /**
      * The map data stored as a stringified JSON array of RainMeasure objects.
      * This format allows for efficient storage and transmission of large datasets.
@@ -52,20 +51,20 @@ export class RainComputationMap extends RainComputationAbstract {
      * @param json.radars - Optional array of related radar nodes
      */
     constructor(json: {
-        id: string,
-        date: Date,
-        isReady: boolean,
-        map: RainMeasure[] | string,
-        links?: Link[] | RaainNode[],
-        version?: string,
-        quality?: number,
-        progressIngest?: number,
-        progressComputing?: number,
-        timeSpentInMs?: number,
-        isDoneDate?: Date,
-        launchedBy?: string,
-        rain?: string | Link | RaainNode,
-        radars?: string[] | Link[] | RaainNode[],
+        id: string;
+        date: Date;
+        isReady: boolean;
+        map: RainMeasure[] | string;
+        links?: Link[] | RaainNode[];
+        version?: string;
+        quality?: number;
+        progressIngest?: number;
+        progressComputing?: number;
+        timeSpentInMs?: number;
+        isDoneDate?: Date;
+        launchedBy?: string;
+        rain?: string | Link | RaainNode;
+        radars?: string[] | Link[] | RaainNode[];
     }) {
         super(json);
         this.setMapData(json.map, {mergeStrategy: MergeStrategy.NONE});
@@ -83,7 +82,7 @@ export class RainComputationMap extends RainComputationAbstract {
         const json = super.toJSON();
         return {
             ...json,
-            map: this.map
+            map: this.map,
         };
     }
 
@@ -102,22 +101,28 @@ export class RainComputationMap extends RainComputationAbstract {
      * operations based on the provided options. The data is always stored internally
      * as a stringified JSON array.
      */
-    public setMapData(mapData: RainMeasure[] | string, options: {
-        mergeStrategy: MergeStrategy,
-        cartesianTools?: CartesianTools,
-        mergeLimitPoints?: [LatLng, LatLng],
-        removeNullValues?: boolean,
-    }) {
+    public setMapData(
+        mapData: RainMeasure[] | string,
+        options: {
+            mergeStrategy: MergeStrategy;
+            cartesianTools?: CartesianTools;
+            mergeLimitPoints?: [LatLng, LatLng];
+            removeNullValues?: boolean;
+        }
+    ) {
         if (!mapData) {
             return;
         }
 
-        if (typeof (mapData) !== 'string' && options.mergeStrategy !== MergeStrategy.NONE
-            && options?.cartesianTools && options?.mergeLimitPoints) {
-
+        if (
+            typeof mapData !== 'string' &&
+            options.mergeStrategy !== MergeStrategy.NONE &&
+            options?.cartesianTools &&
+            options?.mergeLimitPoints
+        ) {
             this.buildLatLngMatrix({
                 cartesianTools: options.cartesianTools,
-                mergeLimitPoints: options.mergeLimitPoints
+                mergeLimitPoints: options.mergeLimitPoints,
             });
 
             mapData = this.mergeRainMeasures(mapData as RainMeasure[], {
@@ -135,6 +140,7 @@ export class RainComputationMap extends RainComputationAbstract {
             const parsed = JSON.parse(this.map);
             return parsed.map((m: any) => new RadarMeasure(m));
         } catch (_) {
+            // Return empty array if parsing fails
         }
         return [];
     }
