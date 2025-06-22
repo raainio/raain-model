@@ -382,6 +382,19 @@ describe('Polar', () => {
         ).eq(2000);
         expect(polarMeasureValueMap2.getPolarValue({azimuthIndex: 3, edgeIndex: 3}).value).eq(123);
 
+        const polarMeasureValueMap3 = PolarMeasureValueMap.Duplicate(
+            JSON.parse(JSON.stringify(polarMeasureValueMap2))
+        );
+        expect(
+            polarMeasureValueMap3.getPolarValue({azimuthIndex: 3, edgeIndex: 3})
+                .polarAzimuthInDegrees
+        ).eq(1.5);
+        expect(
+            polarMeasureValueMap3.getPolarValue({azimuthIndex: 3, edgeIndex: 3})
+                .polarDistanceInMeters
+        ).eq(2000);
+        expect(polarMeasureValueMap3.getPolarValue({azimuthIndex: 3, edgeIndex: 3}).value).eq(123);
+
         // Apply
         polarMeasureValueMap2.applyToPolar();
 

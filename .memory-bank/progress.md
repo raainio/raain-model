@@ -54,7 +54,7 @@ The project is currently in a stable state with version 3.0.13 released. The lib
 
 ### Version Status
 - Latest release: 3.0.13 (2025-06-16)
-- Unreleased changes: None at this time
+- Unreleased changes: PolarMeasureValueMap improvements (Duplicate method, property access, warning removal)
 - Development status: Active maintenance
 - Stability: Production-ready
 

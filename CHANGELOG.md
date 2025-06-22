@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Added static `Duplicate()` method to PolarMeasureValueMap class for creating copies of polar measure value maps
+
+### Changed
+
+- Changed `measureValuePolarContainer.getDistance()` to `measureValuePolarContainer.distance` in PolarMeasureValueMap
+- Commented out warning message about negative distanceInMeters in PolarMeasureValueMap
+
 ## [3.0.13] - 2025-06-16
 
 ### Added

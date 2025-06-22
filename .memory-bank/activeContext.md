@@ -22,7 +22,12 @@ Based on the CHANGELOG.md, the most recent changes include:
 
 ### Unreleased Changes
 
-No unreleased changes at this time.
+#### Added
+- Added static `Duplicate()` method to PolarMeasureValueMap class for creating copies of polar measure value maps
+
+#### Changed
+- Changed `measureValuePolarContainer.getDistance()` to `measureValuePolarContainer.distance` in PolarMeasureValueMap
+- Commented out warning message about negative distanceInMeters in PolarMeasureValueMap
 
 ### Version 3.0.13 (2025-06-16)
 

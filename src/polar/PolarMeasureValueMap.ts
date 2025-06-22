@@ -16,6 +16,17 @@ export class PolarMeasureValueMap {
         this.buildFromPolar();
     }
 
+    static Duplicate(polarMeasureValueMap: PolarMeasureValueMap): PolarMeasureValueMap {
+        const pol = new PolarMeasureValueMap(null);
+        pol.polarMeasureValue = new PolarMeasureValue(
+            polarMeasureValueMap.polarMeasureValue as any
+        );
+        pol.builtMeasureValuePolarContainers =
+            polarMeasureValueMap.builtMeasureValuePolarContainers;
+        pol.buildPolarFilter = polarMeasureValueMap.buildPolarFilter;
+        return pol;
+    }
+
     protected static UpdateIndex(arrayLength: number, index: number): number {
         let newIndex = index;
         if (arrayLength <= index) {
@@ -294,7 +305,7 @@ export class PolarMeasureValueMap {
     ) {
         let distance = this.polarMeasureValue.getDefaultDistance();
         if (measureValuePolarContainer) {
-            distance = measureValuePolarContainer.getDistance();
+            distance = measureValuePolarContainer.distance;
         }
         const edgeMin =
             typeof this.buildPolarFilter?.edgeMin !== 'undefined'
@@ -309,9 +320,9 @@ export class PolarMeasureValueMap {
         }
 
         const distanceInMeters = distance * distanceIndex;
-        if (distanceInMeters < 0) {
-            console.warn('### raain-model > Map strange edgeIndex:', edgeIndex, distanceInMeters);
-        }
+        // if (distanceInMeters < 0) {
+        // console.warn('### raain-model > Map strange edgeIndex:', edgeIndex, distanceInMeters);
+        // }
 
         edgeIndex = Math.round(edgeIndex);
 
