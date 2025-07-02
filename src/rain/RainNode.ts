@@ -2,7 +2,7 @@ import {Link, RaainNode, TeamNode} from '../organization';
 import {RadarNode} from '../radar';
 import {RainComputation} from './RainComputation';
 import {GaugeNode} from '../gauge';
-import {LatLng} from '../cartesian';
+import {CartesianTools, LatLng} from '../cartesian';
 
 /**
  * api/rains/:id
@@ -180,32 +180,11 @@ export class RainNode extends RaainNode {
     public getCenter(): LatLng {
         let center = new LatLng({lat: 0, lng: 0});
 
-        this.setDefaultLatLng(this['radars']);
+        this.setDefaultLatLng(this['radars'], center);
 
         if (this.latLngRectsAsJSON && this.latLngRectsAsJSON !== '[]') {
             const rects = JSON.parse(this.latLngRectsAsJSON);
-            let latMax: number, lngMax: number, latMin: number, lngMin: number;
-            for (const rect of rects) {
-                const topLeft = rect[0];
-                const bottomRight = rect[1];
-                latMax =
-                    typeof latMax === 'undefined' ? topLeft.lat : Math.max(topLeft.lat, latMax);
-                lngMin =
-                    typeof lngMin === 'undefined' ? topLeft.lng : Math.min(topLeft.lng, lngMin);
-                latMin =
-                    typeof latMin === 'undefined'
-                        ? bottomRight.lat
-                        : Math.min(bottomRight.lat, latMin);
-                lngMax =
-                    typeof lngMax === 'undefined'
-                        ? bottomRight.lng
-                        : Math.max(bottomRight.lng, lngMax);
-            }
-
-            center = new LatLng({
-                lat: (latMax - latMin) / 2 + latMin,
-                lng: (lngMax - lngMin) / 2 + lngMin,
-            });
+            center = CartesianTools.GetLatLngRectsCenter(rects);
         }
 
         return center;
@@ -214,40 +193,11 @@ export class RainNode extends RaainNode {
     public getLimitPoints(): [LatLng, LatLng] {
         let limitPoints: [LatLng, LatLng];
 
-        this.setDefaultLatLng(this['radars']);
+        this.setDefaultLatLng(this['radars'], this.getCenter());
 
         if (this.latLngRectsAsJSON && this.latLngRectsAsJSON !== '[]') {
             const rects = JSON.parse(this.latLngRectsAsJSON);
-            let latMax: number, lngMax: number, latMin: number, lngMin: number;
-            for (const rect of rects) {
-                const rectA = rect[0];
-                const rectB = rect[1];
-                latMax = Math.max(
-                    rectA.lat,
-                    rectB.lat,
-                    typeof latMax !== 'undefined' ? latMax : rectA.lat
-                );
-                lngMin = Math.min(
-                    rectA.lng,
-                    rectB.lng,
-                    typeof lngMin !== 'undefined' ? lngMin : rectA.lng
-                );
-                latMin = Math.min(
-                    rectA.lat,
-                    rectB.lat,
-                    typeof latMin !== 'undefined' ? latMin : rectB.lat
-                );
-                lngMax = Math.max(
-                    rectA.lng,
-                    rectB.lng,
-                    typeof lngMax !== 'undefined' ? lngMax : rectB.lng
-                );
-            }
-
-            limitPoints = [
-                new LatLng({lat: latMin, lng: lngMin}),
-                new LatLng({lat: latMax, lng: lngMax}),
-            ];
+            limitPoints = CartesianTools.GetLimitPoints(rects);
         }
 
         return limitPoints;
@@ -289,19 +239,37 @@ export class RainNode extends RaainNode {
         return linksPurified.filter((l) => !!l);
     }
 
-    private setDefaultLatLng(radars: any[]) {
-        // TODO put a default latLngRectsAsJSON based on cartesianTools earth ?
-        if (radars?.length && (!this.latLngRectsAsJSON || this.latLngRectsAsJSON === '[]')) {
-            const latLngRects = [];
+    private setDefaultLatLng(radars: string[] | Link[] | RadarNode[], center?: LatLng) {
+        if (this.latLngRectsAsJSON && this.latLngRectsAsJSON !== '[]') {
+            return;
+        }
+
+        const latLngRects = [];
+        if (radars?.length) {
             for (const radarNode of radars) {
                 if (radarNode instanceof RadarNode) {
                     latLngRects.push([
-                        new LatLng({lat: radarNode.latitude + 1, lng: radarNode.longitude - 1}),
-                        new LatLng({lat: radarNode.latitude - 1, lng: radarNode.longitude + 1}),
+                        new LatLng({lat: radarNode.latitude - 1, lng: radarNode.longitude - 1}),
+                        new LatLng({lat: radarNode.latitude + 1, lng: radarNode.longitude + 1}),
                     ]);
                 }
             }
 
+            this.latLngRectsAsJSON = JSON.stringify(latLngRects);
+        } else if (center) {
+            latLngRects.push([
+                new LatLng({
+                    lat: center.lat + 1,
+                    lng: center.lat - 1,
+                }),
+                new LatLng({
+                    lat: center.lat - 1,
+                    lng: center.lat + 1,
+                }),
+            ]);
+        }
+
+        if (latLngRects.length) {
             this.latLngRectsAsJSON = JSON.stringify(latLngRects);
         }
     }

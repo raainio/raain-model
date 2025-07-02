@@ -1,15 +1,13 @@
 import {LatLng} from './LatLng';
 import {CartesianValue} from './CartesianValue';
 import {EarthMap} from './EarthMap';
+import {RainNode} from '../rain';
 
 export class CartesianTools {
     // scale of Pixel regarding LatLng : Approx. 1 => 100km, 0.01 => 1km, 0.005 => 500m
     public static DEFAULT_SCALE = 0.01;
 
-    constructor(
-        public scale = CartesianTools.DEFAULT_SCALE,
-        public earthMap: EarthMap = undefined
-    ) {}
+    constructor(public scale = CartesianTools.DEFAULT_SCALE) {}
 
     public static RoundLatLng(
         latOrLng: number,
@@ -274,6 +272,45 @@ export class CartesianTools {
         return s / 1000; // distance in kilometers
     }
 
+    public static GetLatLngRectsCenter(latLngRects: LatLng[]) {
+        const limitPoints = CartesianTools.GetLimitPoints(latLngRects);
+
+        return new LatLng({
+            lat: (limitPoints[1].lat - limitPoints[0].lat) / 2 + limitPoints[0].lat,
+            lng: (limitPoints[1].lng - limitPoints[0].lng) / 2 + limitPoints[0].lng,
+        });
+    }
+
+    public static GetLimitPoints(latLngRects: LatLng[]): [LatLng, LatLng] {
+        let latMax: number, lngMax: number, latMin: number, lngMin: number;
+        for (const rect of latLngRects) {
+            const rectA = rect[0];
+            const rectB = rect[1];
+            latMax = Math.max(
+                rectA.lat,
+                rectB.lat,
+                typeof latMax !== 'undefined' ? latMax : rectA.lat
+            );
+            lngMin = Math.min(
+                rectA.lng,
+                rectB.lng,
+                typeof lngMin !== 'undefined' ? lngMin : rectA.lng
+            );
+            latMin = Math.min(
+                rectA.lat,
+                rectB.lat,
+                typeof latMin !== 'undefined' ? latMin : rectB.lat
+            );
+            lngMax = Math.max(
+                rectA.lng,
+                rectB.lng,
+                typeof lngMax !== 'undefined' ? lngMax : rectB.lng
+            );
+        }
+
+        return [new LatLng({lat: latMin, lng: lngMin}), new LatLng({lat: latMax, lng: lngMax})];
+    }
+
     protected static LabelWithSign(val: number) {
         const value = val;
         if (value < 0) {
@@ -316,23 +353,19 @@ export class CartesianTools {
     }
 
     public getScaleLatLngFromEarth(fromLatLng: LatLng): LatLng {
-        if (!this.earthMap) {
-            return null;
-        }
+        const earthMap = EarthMap.initialize(this);
 
         const posLat = Math.round((90 + fromLatLng.lat) / this.scale);
-        const latitudeLongitudeScale = this.earthMap.latitudeLongitudeScales[posLat];
+        const latitudeLongitudeScale = earthMap.latitudeLongitudeScales[posLat];
         return new LatLng({lat: this.scale, lng: latitudeLongitudeScale});
     }
 
     public getLatLngFromEarthMap(fromLatLng: LatLng): LatLng {
-        if (!this.earthMap) {
-            return null;
-        }
+        const earthMap = EarthMap.initialize(this);
 
         const posLat = Math.round((90 + fromLatLng.lat) / this.scale);
-        const lat = this.earthMap.latitudes[posLat];
-        const latitudeLongitudeScale = this.earthMap.latitudeLongitudeScales[posLat];
+        const lat = earthMap.latitudes[posLat];
+        const latitudeLongitudeScale = earthMap.latitudeLongitudeScales[posLat];
 
         const lngPos = Math.round(fromLatLng.lng / latitudeLongitudeScale);
         const lng = CartesianTools.LimitWithPrecision(lngPos * latitudeLongitudeScale);
@@ -340,31 +373,54 @@ export class CartesianTools {
         return new LatLng({lat, lng});
     }
 
-    public buildLatLngEarthMap(): EarthMap {
-        if (this.earthMap) {
-            delete this.earthMap;
-        }
-        this.earthMap = undefined;
+    public getSquareFromWidthAndCenter(widthInKm: number, center: LatLng): [LatLng, LatLng] {
+        const halfWidthKm = widthInKm / 2;
 
-        const earthMap: EarthMap = {
-            latitudes: [],
-            latitudeScale: this.scale,
-            latitudeLongitudeScales: [],
-        };
+        // Calculate the distance in latitude degrees for half the width
+        // We use the fact that 1 degree of latitude is approximately 111.32 km
+        const latDiff = halfWidthKm / 111.32;
 
-        for (let lat = -90; lat <= 90; lat += this.scale) {
-            lat = CartesianTools.LimitWithPrecision(lat);
-            earthMap.latitudes.push(lat);
-            let direction = 1;
-            if (lat > 0) {
-                direction = -1;
-            }
-            earthMap.latitudeLongitudeScales.push(
-                this.getScaleLatLng(new LatLng({lat, lng: 0}), direction).lng
-            );
-        }
+        // Calculate the southwest and northeast corners
+        const southWestLat = center.lat - latDiff;
+        const northEastLat = center.lat + latDiff;
 
-        this.earthMap = earthMap;
-        return earthMap;
+        // Calculate the longitude difference based on the latitude-specific scale
+        // We use the fact that at the equator, 1 degree of longitude is approximately 111.32 km
+        // But this decreases as we move away from the equator, proportional to cos(latitude)
+        const lngDiff = halfWidthKm / (111.32 * Math.cos(CartesianTools.DegToRad(center.lat)));
+
+        const southWestLng = center.lng - lngDiff;
+        const northEastLng = center.lng + lngDiff;
+
+        // Create raw southwest and northeast corners
+        const rawSouthWest = new LatLng({
+            lat: southWestLat,
+            lng: southWestLng,
+        });
+
+        const rawNorthEast = new LatLng({
+            lat: northEastLat,
+            lng: northEastLng,
+        });
+
+        // Use getLatLngFromEarthMap to get the final coordinates aligned with the earth map grid
+        const southWest = this.getLatLngFromEarthMap(rawSouthWest);
+        const northEast = this.getLatLngFromEarthMap(rawNorthEast);
+
+        return [southWest, northEast];
+    }
+
+    public adjustRainNodeWithSquareWidth(rainNode: RainNode, widthInKm: number) {
+        const latLngRects = this.getSquareFromWidthAndCenter(widthInKm, rainNode.getCenter());
+        rainNode.latLngRectsAsJSON = JSON.stringify(latLngRects);
+    }
+
+    protected buildLatLngEarthMap(): EarthMap {
+        // Reset the singleton instance
+        EarthMap.reset();
+
+        // Initialize the singleton with this CartesianTools instance
+        // The initialize method will build the latitude and longitude scales
+        return EarthMap.initialize(this);
     }
 }

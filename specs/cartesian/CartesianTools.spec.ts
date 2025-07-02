@@ -1,5 +1,5 @@
 import {expect} from 'chai';
-import {CartesianTools, LatLng} from '../../src';
+import {CartesianTools, EarthMap, LatLng, RainNode} from '../../src';
 
 describe('CartesianTools', () => {
     it('should get roundLatLng', () => {
@@ -142,11 +142,14 @@ describe('CartesianTools', () => {
     it('should buildLatLngEarthMap', () => {
         const cartesianTools = new CartesianTools(CartesianTools.DEFAULT_SCALE);
 
-        expect(cartesianTools.getLatLngFromEarthMap(new LatLng({lat: 12.00656, lng: 12.0098}))).eq(
-            null
-        );
+        // useless
+        // const earthMap = cartesianTools.buildLatLngEarthMap();
+        // replaced by singleton
+        const earthMap = EarthMap.getInstance();
 
-        const earthMap = cartesianTools.buildLatLngEarthMap();
+        expect(
+            cartesianTools.getLatLngFromEarthMap(new LatLng({lat: 12.00656, lng: 12.0098})).lat
+        ).eq(12.01);
 
         expect(earthMap.latitudeScale).eq(CartesianTools.DEFAULT_SCALE);
         expect(earthMap.latitudes.length).eq(18001);
@@ -207,5 +210,66 @@ describe('CartesianTools', () => {
         expect(
             cartesianTools.getLatLngFromEarthMap(new LatLng({lat: -85.00656, lng: -177.0098})).lng
         ).eq(-176.985);
+    });
+
+    it('should getSquareFromWidthAndCenter', () => {
+        const cartesianTools = new CartesianTools(CartesianTools.DEFAULT_SCALE);
+
+        // Test with a center at the equator
+        const center1 = new LatLng({lat: 0, lng: 0});
+        const width1 = 10; // 10 km
+        const square1 = cartesianTools.getSquareFromWidthAndCenter(width1, center1);
+
+        // Verify the square is centered at the specified point
+        const squareCenter1 = new LatLng({
+            lat: (square1[0].lat + square1[1].lat) / 2,
+            lng: (square1[0].lng + square1[1].lng) / 2,
+        });
+        expect(Math.abs(squareCenter1.lat - center1.lat)).lessThan(0.01); // Allow rounding errors due to grid alignment
+        expect(Math.abs(squareCenter1.lng - center1.lng)).lessThan(0.01); // Allow rounding errors due to grid alignment
+
+        // Verify the square has the correct width
+        const squareWidth1 = CartesianTools.VincentyDistance(
+            new LatLng({lat: square1[0].lat, lng: square1[0].lng}),
+            new LatLng({lat: square1[0].lat, lng: square1[1].lng})
+        );
+        expect(Math.abs(squareWidth1 - width1)).lessThan(1.5); // Allow rounding errors due to grid alignment
+
+        // Test with a center at a higher latitude
+        const center2 = new LatLng({lat: 45, lng: 45});
+        const width2 = 20; // 20 km
+        const square2 = cartesianTools.getSquareFromWidthAndCenter(width2, center2);
+
+        // Verify the square is centered at the specified point
+        const squareCenter2 = new LatLng({
+            lat: (square2[0].lat + square2[1].lat) / 2,
+            lng: (square2[0].lng + square2[1].lng) / 2,
+        });
+        expect(Math.abs(squareCenter2.lat - center2.lat)).lessThan(0.01); // Allow rounding errors due to grid alignment
+        expect(Math.abs(squareCenter2.lng - center2.lng)).lessThan(0.01); // Allow rounding errors due to grid alignment
+
+        // Verify the square has the correct width
+        const squareWidth2 = CartesianTools.VincentyDistance(
+            new LatLng({lat: square2[0].lat, lng: square2[0].lng}),
+            new LatLng({lat: square2[0].lat, lng: square2[1].lng})
+        );
+        expect(Math.abs(squareWidth2 - width2)).lessThan(1.5); // Allow rounding errors due to grid alignment
+    });
+
+    it('should adjustRainNodeWithSquareWidth', () => {
+        const cartesianTools = new CartesianTools();
+        const rainNode = new RainNode({
+            id: 'notEmpty',
+            name: '',
+            team: null,
+        });
+        expect(rainNode.getCenter().lat).eq(0);
+        expect(rainNode.getCenter().lng).eq(0);
+        expect(rainNode.latLngRectsAsJSON).eq('[[{"lat":1,"lng":-1},{"lat":-1,"lng":1}]]');
+        cartesianTools.adjustRainNodeWithSquareWidth(rainNode, 300);
+
+        expect(rainNode.latLngRectsAsJSON).eq(
+            '[{"lat":-1.35,"lng":-1.35},{"lat":1.35,"lng":1.35}]'
+        );
     });
 });

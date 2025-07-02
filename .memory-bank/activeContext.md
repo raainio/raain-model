@@ -6,7 +6,7 @@ The current focus of the RAAIN Model project is on:
 
 1. **Memory Bank Implementation**: Establishing a comprehensive Memory Bank structure to improve project documentation and context retention.
 
-2. **Version 3.0.13 Maintenance**: Maintaining and improving the recently released version 3.0.13, addressing any issues that arise.
+2. **Version 3.0.15 Maintenance**: Maintaining and improving the recently released version 3.0.15, addressing any issues that arise.
 
 3. **TypeScript 5.0.4 Compatibility**: Ensuring full compatibility with TypeScript 5.0.4 and leveraging its features.
 
@@ -16,11 +16,32 @@ The current focus of the RAAIN Model project is on:
 
 6. **Code Quality**: Enhancing code quality through modern ESLint rules and consistent styling.
 
+7. **Cartesian Tools Enhancement**: Improving the CartesianTools functionality for better handling of geographic data.
+
 ## Recent Changes
 
 Based on the CHANGELOG.md, the most recent changes include:
 
 ### Unreleased Changes
+
+No unreleased changes at this time.
+
+### Version 3.0.15 (2025-06-30)
+
+#### Added
+- Added new methods to CartesianTools:
+  - GetLatLngRectsCenter: Calculates the center of a set of LatLng rectangles
+  - GetLimitPoints: Gets the boundary points of a set of LatLng rectangles
+  - getSquareFromWidthAndCenter: Creates a square of specified width around a center point
+  - adjustRainNodeWithSquareWidth: Adjusts a RainNode with a square of specified width
+
+#### Changed
+- Refactored EarthMap from interface to class with singleton pattern
+- Improved RainNode to use CartesianTools methods for center and limit point calculations
+- Enhanced setDefaultLatLng in RainNode to handle cases with and without radars
+- Updated tests to verify new functionality
+
+### Version 3.0.14 (2025-06-22)
 
 #### Added
 - Added static `Duplicate()` method to PolarMeasureValueMap class for creating copies of polar measure value maps

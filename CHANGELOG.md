@@ -7,6 +7,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [3.0.15] - 2025-06-30
+
+### Added
+
+- Added new methods to CartesianTools:
+  - GetLatLngRectsCenter: Calculates the center of a set of LatLng rectangles
+  - GetLimitPoints: Gets the boundary points of a set of LatLng rectangles
+  - getSquareFromWidthAndCenter: Creates a square of specified width around a center point
+  - adjustRainNodeWithSquareWidth: Adjusts a RainNode with a square of specified width
+
+### Changed
+
+- Refactored EarthMap from interface to class with singleton pattern
+- Improved RainNode to use CartesianTools methods for center and limit point calculations
+- Enhanced setDefaultLatLng in RainNode to handle cases with and without radars
+- Updated tests to verify new functionality
+
+## [3.0.14] - 2025-06-22
+
 ### Added
 
 - Added static `Duplicate()` method to PolarMeasureValueMap class for creating copies of polar measure value maps
@@ -340,7 +359,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Initial release
 - First extracts from RAAIN services
 
-[Unreleased]: https://github.com/raainio/raain-model/compare/v3.0.13...HEAD
+[Unreleased]: https://github.com/raainio/raain-model/compare/v3.0.15...HEAD
+
+[3.0.15]: https://github.com/raainio/raain-model/compare/v3.0.14...v3.0.15
+
+[3.0.14]: https://github.com/raainio/raain-model/compare/v3.0.13...v3.0.14
 
 [3.0.13]: https://github.com/raainio/raain-model/compare/v3.0.12...v3.0.13
 

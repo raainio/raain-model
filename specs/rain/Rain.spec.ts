@@ -60,7 +60,7 @@ describe('Rain', function () {
         });
         expect(JSON.stringify(rainNodeWithRadars.toJSON())).eq(
             '{"id":"notEmpty","links":[{"rel":"radar","href":"../radars/rid"}],"name":"","status":-1,"quality":-1,"team":null,' +
-                '"latLngRectsAsJSON":"[[{\\"lat\\":2,\\"lng\\":0},{\\"lat\\":0,\\"lng\\":2}],[{\\"lat\\":5,\\"lng\\":5},{\\"lat\\":3,\\"lng\\":7}]]",' +
+                '"latLngRectsAsJSON":"[[{\\"lat\\":0,\\"lng\\":0},{\\"lat\\":2,\\"lng\\":2}],[{\\"lat\\":3,\\"lng\\":5},{\\"lat\\":5,\\"lng\\":7}]]",' +
                 '"radars":["rid"],"gauges":[],"lastCompletedComputations":[]}'
         );
 
@@ -241,7 +241,6 @@ describe('Rain', function () {
         );
 
         const cartesianTools = new CartesianTools();
-        cartesianTools.buildLatLngEarthMap();
 
         const mergeLimitPoints: [LatLng, LatLng] = [
             new LatLng({lat: 10, lng: 11}),
@@ -316,7 +315,6 @@ describe('Rain', function () {
         });
 
         const cartesianTools = new CartesianTools();
-        cartesianTools.buildLatLngEarthMap();
 
         optionalTrace('setMapData...');
         rainComputationMap.setMapData(rainMeasures, {
@@ -378,7 +376,6 @@ describe('Rain', function () {
         });
 
         const cartesianTools = new CartesianTools();
-        cartesianTools.buildLatLngEarthMap();
 
         const mergedRainCartesianMeasureValues = rainComputation.mergeCartesianResults({
             mergeStrategy: MergeStrategy.SUM,

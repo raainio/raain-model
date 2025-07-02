@@ -50,11 +50,11 @@
 
 ## Current Status
 
-The project is currently in a stable state with version 3.0.13 released. The library is fully functional and being used in production by radartorain.com services. Active development is focused on maintenance, documentation improvements, code quality enhancements, and incremental feature additions.
+The project is currently in a stable state with version 3.0.15 released. The library is fully functional and being used in production by radartorain.com services. Active development is focused on maintenance, documentation improvements, code quality enhancements, and incremental feature additions.
 
 ### Version Status
-- Latest release: 3.0.13 (2025-06-16)
-- Unreleased changes: PolarMeasureValueMap improvements (Duplicate method, property access, warning removal)
+- Latest release: 3.0.15 (2025-06-30)
+- Unreleased changes: None at this time
 - Development status: Active maintenance
 - Stability: Production-ready
 

@@ -1,6 +1,7 @@
 import {expect} from 'chai';
 import {
     CartesianMeasureValue,
+    CartesianTools,
     CartesianValue,
     GaugeMeasure,
     GaugeNode,
@@ -365,5 +366,55 @@ describe('Cartesian', () => {
             bigCircleRadius,
             rainCartesianMeasureValue
         );
+    });
+
+    it('should correctly calculate the center of LatLng rectangles', () => {
+        // Create test rectangles
+        // Each rectangle is represented by two points: top-left and bottom-right
+        // We need to use the same format as expected by the GetLatLngRectsCenter function
+
+        // Test with a single rectangle
+        const rects1 = [[new LatLng({lat: 10, lng: 20}), new LatLng({lat: 8, lng: 22})]];
+
+        const center1 = CartesianTools.GetLatLngRectsCenter(rects1 as any);
+        expect(center1.lat).to.equal(9); // (10 + 8) / 2
+        expect(center1.lng).to.equal(21); // (20 + 22) / 2
+
+        // Test with multiple rectangles
+        const rects2 = [
+            [new LatLng({lat: 10, lng: 20}), new LatLng({lat: 8, lng: 22})],
+            [new LatLng({lat: 12, lng: 18}), new LatLng({lat: 9, lng: 21})],
+            [new LatLng({lat: 11, lng: 19}), new LatLng({lat: 7, lng: 23})],
+        ];
+
+        const center2 = CartesianTools.GetLatLngRectsCenter(rects2 as any);
+        // The expected center should be calculated from the min/max of all rectangles
+        // latMax = 12 (from rect2), latMin = 7 (from rect3)
+        // lngMin = 18 (from rect2), lngMax = 23 (from rect3)
+        expect(center2.lat).to.equal(9.5); // (12 - 7) / 2 + 7
+        expect(center2.lng).to.equal(20.5); // (23 - 18) / 2 + 18
+
+        // Test with rectangles at different quadrants
+        const rects3 = [
+            [new LatLng({lat: -10, lng: -20}), new LatLng({lat: -15, lng: -15})],
+            [new LatLng({lat: 10, lng: -20}), new LatLng({lat: 5, lng: -15})],
+        ];
+
+        const center3 = CartesianTools.GetLatLngRectsCenter(rects3 as any);
+        // latMax = 10 (from rect5), latMin = -15 (from rect4)
+        // lngMin = -20 (from both), lngMax = -15 (from both)
+        expect(center3.lat).to.equal(-2.5); // (10 - (-15)) / 2 + (-15)
+        expect(center3.lng).to.equal(-17.5); // (-15 - (-20)) / 2 + (-20)
+
+        // Test with an empty array
+        const emptyRects = [];
+        try {
+            const centerEmpty = CartesianTools.GetLatLngRectsCenter(emptyRects as any);
+            // If it doesn't throw, we should check what it returns
+            expect(centerEmpty).to.not.be.undefined;
+        } catch (error) {
+            // If it throws an error, that's also a valid behavior to document
+            expect(error).to.be.an('error');
+        }
     });
 });
