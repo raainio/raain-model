@@ -244,7 +244,7 @@ export class RainNode extends RaainNode {
             return;
         }
 
-        const latLngRects = [];
+        const latLngRects: [LatLng, LatLng][] = [];
         if (radars?.length) {
             for (const radarNode of radars) {
                 if (radarNode instanceof RadarNode) {

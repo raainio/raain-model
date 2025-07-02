@@ -269,7 +269,7 @@ describe('CartesianTools', () => {
         cartesianTools.adjustRainNodeWithSquareWidth(rainNode, 300);
 
         expect(rainNode.latLngRectsAsJSON).eq(
-            '[{"lat":-1.35,"lng":-1.35},{"lat":1.35,"lng":1.35}]'
+            '[[{"lat":-1.35,"lng":-1.35},{"lat":1.35,"lng":1.35}]]'
         );
     });
 });

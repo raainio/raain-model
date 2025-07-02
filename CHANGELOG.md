@@ -7,15 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [3.0.15] - 2025-06-30
+### Fixed
+
+- adjustRainNodeWithSquareWidth return type
+
+## [3.0.15] - 2025-07-02
 
 ### Added
 
 - Added new methods to CartesianTools:
-  - GetLatLngRectsCenter: Calculates the center of a set of LatLng rectangles
-  - GetLimitPoints: Gets the boundary points of a set of LatLng rectangles
-  - getSquareFromWidthAndCenter: Creates a square of specified width around a center point
-  - adjustRainNodeWithSquareWidth: Adjusts a RainNode with a square of specified width
+    - GetLatLngRectsCenter: Calculates the center of a set of LatLng rectangles
+    - GetLimitPoints: Gets the boundary points of a set of LatLng rectangles
+    - getSquareFromWidthAndCenter: Creates a square of specified width around a center point
+    - adjustRainNodeWithSquareWidth: Adjusts a RainNode with a square of specified width
 
 ### Changed
 

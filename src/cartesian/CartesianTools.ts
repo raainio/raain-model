@@ -272,7 +272,7 @@ export class CartesianTools {
         return s / 1000; // distance in kilometers
     }
 
-    public static GetLatLngRectsCenter(latLngRects: LatLng[]) {
+    public static GetLatLngRectsCenter(latLngRects: [LatLng, LatLng][]) {
         const limitPoints = CartesianTools.GetLimitPoints(latLngRects);
 
         return new LatLng({
@@ -281,7 +281,7 @@ export class CartesianTools {
         });
     }
 
-    public static GetLimitPoints(latLngRects: LatLng[]): [LatLng, LatLng] {
+    public static GetLimitPoints(latLngRects: [LatLng, LatLng][]): [LatLng, LatLng] {
         let latMax: number, lngMax: number, latMin: number, lngMin: number;
         for (const rect of latLngRects) {
             const rectA = rect[0];
@@ -411,7 +411,9 @@ export class CartesianTools {
     }
 
     public adjustRainNodeWithSquareWidth(rainNode: RainNode, widthInKm: number) {
-        const latLngRects = this.getSquareFromWidthAndCenter(widthInKm, rainNode.getCenter());
+        const latLngRects: [LatLng, LatLng][] = [
+            this.getSquareFromWidthAndCenter(widthInKm, rainNode.getCenter()),
+        ];
         rainNode.latLngRectsAsJSON = JSON.stringify(latLngRects);
     }
 
