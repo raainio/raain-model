@@ -79,6 +79,18 @@ export class PolarMeasureValueMap {
         return newPolarMeasureValueMap;
     }
 
+    getOneCircle(edgeIndex: number): number[] {
+        const circle: number[] = [];
+        for (const container of this.builtMeasureValuePolarContainers) {
+            if (container.polarEdges[edgeIndex]) {
+                circle.push(container.polarEdges[edgeIndex]);
+            } else {
+                circle.push(0);
+            }
+        }
+        return circle;
+    }
+
     getPolarValue(json: {azimuthIndex: number; edgeIndex: number}): PolarValue {
         let edgeValue = 0;
         let distanceInMetersFound = 0;

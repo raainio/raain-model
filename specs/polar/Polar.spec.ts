@@ -416,4 +416,41 @@ describe('Polar', () => {
             )
         ).eq('{"value":124,"polarAzimuthInDegrees":3,"polarDistanceInMeters":15500}');
     });
+
+    it('should get one circle for a specific edge index', () => {
+        // Create test data with known values
+        const azTotal = 4; // Using a small number for clarity in testing
+        const distTotal = 5;
+        const measureValuePolarContainers: MeasureValuePolarContainer[] = [];
+
+        // Create containers with known values
+        for (let i = 0; i < azTotal; i++) {
+            const polarEdges = [];
+            for (let j = 0; j < distTotal; j++) {
+                // Set values that are easy to verify: i * 10 + j
+                polarEdges.push(i * 10 + j);
+            }
+            measureValuePolarContainers.push(
+                new MeasureValuePolarContainer({
+                    azimuth: i * (360 / azTotal),
+                    distance: 1000,
+                    polarEdges
+                })
+            );
+        }
+
+        const polarMeasureValue = new PolarMeasureValue({measureValuePolarContainers});
+        const polarMeasureValueMap = new PolarMeasureValueMap(polarMeasureValue);
+
+        // Test getOneCircle for different edge indices
+        const circle0 = polarMeasureValueMap.getOneCircle(0);
+        expect(circle0).to.deep.equal([0, 10, 20, 30]); // Values at edge index 0 for all azimuths
+
+        const circle2 = polarMeasureValueMap.getOneCircle(2);
+        expect(circle2).to.deep.equal([2, 12, 22, 32]); // Values at edge index 2 for all azimuths
+
+        // Test with an edge index that's out of bounds
+        const circleOutOfBounds = polarMeasureValueMap.getOneCircle(10);
+        expect(circleOutOfBounds).to.deep.equal([0, 0, 0, 0]); // Should return zeros for out of bounds
+    });
 });

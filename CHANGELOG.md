@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- getOneCircle from a polarMeasureValueMap
+
+## [3.0.16] - 2025-07-02
+
 ### Fixed
 
 - adjustRainNodeWithSquareWidth return type
