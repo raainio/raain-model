@@ -24,7 +24,12 @@ Based on the CHANGELOG.md, the most recent changes include:
 
 ### Unreleased Changes
 
-No unreleased changes at this time.
+#### Added
+- Added new method to CartesianTools:
+  - howManyPixelsInEarthMap: Counts how many pixels are in a square defined by southwest and northeast coordinates
+
+#### Fixed
+- Fixed usage of `this.scale` in CartesianTools methods, replacing with `earthMap.latitudeScale` for proper scaling
 
 ### Version 3.0.15 (2025-06-30)
 

@@ -79,7 +79,7 @@ export class PolarMeasureValueMap {
         return newPolarMeasureValueMap;
     }
 
-    getOneCircle(edgeIndex: number): number[] {
+    getOneRawCircle(edgeIndex: number): number[] {
         const circle: number[] = [];
         for (const container of this.builtMeasureValuePolarContainers) {
             if (container.polarEdges[edgeIndex]) {
@@ -87,6 +87,17 @@ export class PolarMeasureValueMap {
             } else {
                 circle.push(0);
             }
+        }
+        return circle;
+    }
+
+    getOneCircle(edgeIndex: number): number[] {
+        const circle: number[] = [];
+        const azimuthsCount = this.polarMeasureValue.getAzimuthsCount();
+        for (let azimuthIndex = 0; azimuthIndex < azimuthsCount; azimuthIndex++) {
+            const polarValue = this.getPolarValue({azimuthIndex, edgeIndex});
+            const value = polarValue?.value ?? 0;
+            circle.push(value);
         }
         return circle;
     }

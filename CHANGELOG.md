@@ -9,6 +9,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Differentiate getOneCircle and getOneRawCircle depending on perf context
+- Added new method to CartesianTools:
+    - howManyPixelsInEarthMap: Counts how many pixels are in a square defined by southwest and northeast coordinates
+
+### Fixed
+
+- Fixed usage of `this.scale` in CartesianTools methods, replacing with `earthMap.latitudeScale` for proper scaling
+
+## [3.0.17] - 2025-07-03
+
+### Added
+
 - getOneCircle from a polarMeasureValueMap
 
 ## [3.0.16] - 2025-07-02

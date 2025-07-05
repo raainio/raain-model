@@ -417,40 +417,51 @@ describe('Polar', () => {
         ).eq('{"value":124,"polarAzimuthInDegrees":3,"polarDistanceInMeters":15500}');
     });
 
-    it('should get one circle for a specific edge index', () => {
-        // Create test data with known values
-        const azTotal = 4; // Using a small number for clarity in testing
+    it('should get one circle (raw or not) for a specific edge index', () => {
+        const azTotal = 4;
         const distTotal = 5;
         const measureValuePolarContainers: MeasureValuePolarContainer[] = [];
-
-        // Create containers with known values
         for (let i = 0; i < azTotal; i++) {
             const polarEdges = [];
             for (let j = 0; j < distTotal; j++) {
-                // Set values that are easy to verify: i * 10 + j
-                polarEdges.push(i * 10 + j);
+                // Set values that are easy to verify:
+                polarEdges.push(j * i);
             }
             measureValuePolarContainers.push(
                 new MeasureValuePolarContainer({
                     azimuth: i * (360 / azTotal),
                     distance: 1000,
-                    polarEdges
+                    polarEdges,
                 })
             );
         }
-
         const polarMeasureValue = new PolarMeasureValue({measureValuePolarContainers});
-        const polarMeasureValueMap = new PolarMeasureValueMap(polarMeasureValue);
+        const polarMeasureValueMap = new PolarMeasureValueMap(
+            polarMeasureValue.getFiltered({
+                nullValues: true,
+                ordered: true,
+            })
+        );
+        polarMeasureValueMap.filter(new PolarFilter({edgeMin: 1, edgeMax: 3}));
 
-        // Test getOneCircle for different edge indices
         const circle0 = polarMeasureValueMap.getOneCircle(0);
-        expect(circle0).to.deep.equal([0, 10, 20, 30]); // Values at edge index 0 for all azimuths
+        expect(circle0).to.deep.equal([0, 0, 0, 0]);
+        const circleRaw0 = polarMeasureValueMap.getOneRawCircle(0);
+        expect(circleRaw0).to.deep.equal([0, 1, 2, 3]); // first azimuth has been filtered for perf
 
         const circle2 = polarMeasureValueMap.getOneCircle(2);
-        expect(circle2).to.deep.equal([2, 12, 22, 32]); // Values at edge index 2 for all azimuths
+        expect(circle2).to.deep.equal([0, 2, 4, 6]);
+        const circleRaw2 = polarMeasureValueMap.getOneRawCircle(2);
+        expect(circleRaw2).to.deep.equal([0, 3, 6, 9]); // first azimuth has been filtered for perf
 
-        // Test with an edge index that's out of bounds
+        const circle4 = polarMeasureValueMap.getOneCircle(4);
+        expect(circle4).to.deep.equal([0, 0, 0, 0]); // filtered by choice
+        const circleRaw4 = polarMeasureValueMap.getOneRawCircle(4);
+        expect(circleRaw4).to.deep.equal([0, 0, 0, 0]); // filtered by choice
+
+        const circleRawOutOfBounds = polarMeasureValueMap.getOneRawCircle(10);
+        expect(circleRawOutOfBounds).to.deep.equal([0, 0, 0, 0]);
         const circleOutOfBounds = polarMeasureValueMap.getOneCircle(10);
-        expect(circleOutOfBounds).to.deep.equal([0, 0, 0, 0]); // Should return zeros for out of bounds
+        expect(circleOutOfBounds).to.deep.equal([0, 0, 0, 0]);
     });
 });

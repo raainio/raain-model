@@ -262,14 +262,41 @@ describe('CartesianTools', () => {
             id: 'notEmpty',
             name: '',
             team: null,
+            latLngRectsAsJSON: '[[{"lat":49.07,"lng":2.205},{"lat":53.07,"lng":8.602}]]',
         });
-        expect(rainNode.getCenter().lat).eq(0);
-        expect(rainNode.getCenter().lng).eq(0);
-        expect(rainNode.latLngRectsAsJSON).eq('[[{"lat":1,"lng":-1},{"lat":-1,"lng":1}]]');
-        cartesianTools.adjustRainNodeWithSquareWidth(rainNode, 300);
+        expect(rainNode.getCenter().lat).eq(51.07);
+        expect(rainNode.getCenter().lng).eq(5.4035);
+        cartesianTools.adjustRainNodeWithSquareWidth(rainNode, 250);
 
         expect(rainNode.latLngRectsAsJSON).eq(
-            '[[{"lat":-1.35,"lng":-1.35},{"lat":1.35,"lng":1.35}]]'
+            '[[{"lat":49.95,"lng":3.615},{"lat":52.19,"lng":7.184}]]'
         );
+    });
+
+    it('should count pixels in a square using howManyPixelsInEarthMap', () => {
+        const cartesianTools = new CartesianTools();
+
+        // Test with a small square at the equator
+        const southWest1 = new LatLng({lat: 0, lng: 0});
+        const northEast1 = new LatLng({lat: 0.1, lng: 0.1});
+        const pixelCount1 = cartesianTools.howManyPixelsInEarthMap(southWest1, northEast1);
+
+        expect(pixelCount1).eq(100);
+
+        // Test with a square at a higher latitude
+        const southWest2 = new LatLng({lat: 45, lng: 45});
+        const northEast2 = new LatLng({lat: 45.1, lng: 45.1});
+        const pixelCount2 = cartesianTools.howManyPixelsInEarthMap(southWest2, northEast2);
+
+        // At higher latitudes, longitude steps are smaller, so we expect less pixel
+        expect(pixelCount2).eq(80);
+
+        // Test with coordinates in reverse order (should still work)
+        const pixelCount3 = cartesianTools.howManyPixelsInEarthMap(northEast1, southWest1);
+        expect(pixelCount3).eq(100);
+
+        // Test with a single point (should return 0)
+        const pixelCount4 = cartesianTools.howManyPixelsInEarthMap(southWest2, southWest2);
+        expect(pixelCount4).eq(0);
     });
 });

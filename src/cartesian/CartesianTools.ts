@@ -355,7 +355,7 @@ export class CartesianTools {
     public getScaleLatLngFromEarth(fromLatLng: LatLng): LatLng {
         const earthMap = EarthMap.initialize(this);
 
-        const posLat = Math.round((90 + fromLatLng.lat) / this.scale);
+        const posLat = Math.round((90 + fromLatLng.lat) / earthMap.latitudeScale);
         const latitudeLongitudeScale = earthMap.latitudeLongitudeScales[posLat];
         return new LatLng({lat: this.scale, lng: latitudeLongitudeScale});
     }
@@ -363,7 +363,7 @@ export class CartesianTools {
     public getLatLngFromEarthMap(fromLatLng: LatLng): LatLng {
         const earthMap = EarthMap.initialize(this);
 
-        const posLat = Math.round((90 + fromLatLng.lat) / this.scale);
+        const posLat = Math.round((90 + fromLatLng.lat) / earthMap.latitudeScale);
         const lat = earthMap.latitudes[posLat];
         const latitudeLongitudeScale = earthMap.latitudeLongitudeScales[posLat];
 
@@ -415,6 +415,44 @@ export class CartesianTools {
             this.getSquareFromWidthAndCenter(widthInKm, rainNode.getCenter()),
         ];
         rainNode.latLngRectsAsJSON = JSON.stringify(latLngRects);
+    }
+
+    // Count how many pixels you have from a square defined by southwest and northeast coordinates
+    public howManyPixelsInEarthMap(southWest: LatLng, northEast: LatLng): number {
+        // Initialize the earth map
+        const earthMap = EarthMap.initialize(this);
+
+        // Ensure southwest is actually southwest and northeast is actually northeast
+        const minLat = Math.min(southWest.lat, northEast.lat);
+        const maxLat = Math.max(southWest.lat, northEast.lat);
+        const minLng = Math.min(southWest.lng, northEast.lng);
+        const maxLng = Math.max(southWest.lng, northEast.lng);
+
+        // If the coordinates are the same, return 0
+        if (minLat === maxLat && minLng === maxLng) {
+            return 0;
+        }
+
+        // Find the indices in the latitude array
+        const minLatIndex = Math.round((90 + minLat) / earthMap.latitudeScale);
+        const maxLatIndex = Math.round((90 + maxLat) / earthMap.latitudeScale);
+
+        let pixelCount = 0;
+
+        // For each latitude in the range
+        for (let latIndex = minLatIndex; latIndex < maxLatIndex; latIndex++) {
+            // Get the longitude scale for this latitude
+            const latitudeLongitudeScale = earthMap.latitudeLongitudeScales[latIndex];
+
+            // Calculate how many longitude steps are in the range
+            const minLngIndex = Math.floor(minLng / latitudeLongitudeScale);
+            const maxLngIndex = Math.ceil(maxLng / latitudeLongitudeScale);
+
+            // Add the number of pixels for this latitude row
+            pixelCount += maxLngIndex - minLngIndex;
+        }
+
+        return pixelCount;
     }
 
     protected buildLatLngEarthMap(): EarthMap {
