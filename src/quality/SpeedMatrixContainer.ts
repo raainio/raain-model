@@ -182,7 +182,7 @@ export class SpeedMatrixContainer {
                 compareDate.getTime() <= dateMax.getTime()
             ) {
                 let renamed = '';
-                renamed += delta > 0 ? 'since ' : 'in ';
+                renamed += delta >= 0 ? 'since ' : 'in ';
                 renamed += Math.abs(delta) + ' minutes';
                 renamed += ' (' + compareDate.toLocaleString() + ')';
                 const qualityPoints = qualityPointsLegacy.filter((p: any) => p); // no real filter
