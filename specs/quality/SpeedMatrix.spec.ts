@@ -238,9 +238,9 @@ describe('SpeedMatrix', () => {
         expect(compares.comparesPerDate[1].compareTimeline.length).eq(3);
         expect(compares.comparesPerDate[2].compareTimeline.length).eq(1);
         expect(compares.comparesPerDate[0].compareTimeline[0].name).contains('in 2');
-        expect(compares.comparesPerDate[0].compareTimeline[1].name).contains('in 0');
+        expect(compares.comparesPerDate[0].compareTimeline[1].name).contains('since 0');
         expect(compares.comparesPerDate[1].compareTimeline[0].name).contains('in 2');
-        expect(compares.comparesPerDate[1].compareTimeline[1].name).contains('in 0');
+        expect(compares.comparesPerDate[1].compareTimeline[1].name).contains('since 0');
         expect(compares.comparesPerDate[1].compareTimeline[2].name).contains('since 3');
         expect(compares.comparesPerDate[2].compareTimeline[0].name).contains('since 3');
         expect(compares.comparesPerDate[0].compareTimeline[0].qualityPoints.length).eq(2);
