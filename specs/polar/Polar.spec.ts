@@ -133,6 +133,8 @@ describe('Polar', () => {
         });
         expect(polarMeasureValue.getHash(hash)).eq('9755238054020');
         expect(filteredPolarMeasureValue.getHash(hash)).eq('8101260843292');
+        expect(polarMeasureValue.getHash()).eq('-1069041059');
+        expect(filteredPolarMeasureValue.getHash()).eq('-552536183');
 
         expect(filteredPolarMeasureValue.getAzimuthsCount()).eq(azTotal);
         expect(filteredPolarMeasureValue.getPolarEdgesCount()).eq(distTotal);

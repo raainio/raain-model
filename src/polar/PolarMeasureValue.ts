@@ -45,6 +45,21 @@ export class PolarMeasureValue implements IPolarMeasureValue {
         }
     }
 
+    static SimpleHash(toHash: string): string {
+        let hash = 0;
+        if (toHash.length === 0) {
+            return hash.toString();
+        }
+
+        for (let i = 0; i < toHash.length; i++) {
+            const char = toHash.charCodeAt(i);
+            hash = (hash << 5) - hash + char;
+            hash = hash & hash;
+        }
+
+        return hash.toString();
+    }
+
     getAzimuthsCount(): number {
         if (this.azimuthsCount < 0) {
             this.count();
@@ -300,7 +315,7 @@ export class PolarMeasureValue implements IPolarMeasureValue {
 
     public getHash(hash?: (arg0: any) => number | string): string {
         if (!hash) {
-            return '' + this.getPolars();
+            return PolarMeasureValue.SimpleHash(this.getPolarsStringified());
         }
         return '' + hash(this.getPolars());
     }
