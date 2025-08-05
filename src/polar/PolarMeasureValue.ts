@@ -2,6 +2,7 @@ import {MeasureValuePolarContainer} from './MeasureValuePolarContainer';
 import {IPolarMeasureValue} from './IPolarMeasureValue';
 import {PolarValue} from './PolarValue';
 import {AbstractPolarMeasureValue} from './AbstractPolarMeasureValue';
+import {calculateMinMax} from '../utils';
 
 export class PolarMeasureValue implements IPolarMeasureValue {
     protected measureValuePolarContainers: MeasureValuePolarContainer[];
@@ -333,14 +334,7 @@ export class PolarMeasureValue implements IPolarMeasureValue {
             );
         }
 
-        if (allValues.length === 0) {
-            return null;
-        }
-
-        return {
-            min: Math.min(...allValues),
-            max: Math.max(...allValues),
-        };
+        return calculateMinMax(allValues);
     }
 
     protected count() {

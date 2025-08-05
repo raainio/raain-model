@@ -6,7 +6,7 @@ The current focus of the RAAIN Model project is on:
 
 1. **Memory Bank Implementation**: Establishing a comprehensive Memory Bank structure to improve project documentation and context retention.
 
-2. **Version 3.0.15 Maintenance**: Maintaining and improving the recently released version 3.0.15, addressing any issues that arise.
+2. **Version 3.0.23 Maintenance**: Maintaining and improving the recently released version 3.0.23, addressing any issues that arise.
 
 3. **TypeScript 5.0.4 Compatibility**: Ensuring full compatibility with TypeScript 5.0.4 and leveraging its features.
 
@@ -22,16 +22,42 @@ The current focus of the RAAIN Model project is on:
 
 Based on the CHANGELOG.md, the most recent changes include:
 
-### Unreleased Changes
+### Version 3.0.23 (2025-08-05)
+
+#### Changed
+- Maintenance release with internal improvements and documentation updates
+
+### Version 3.0.22 (2025-08-05)
 
 #### Added
+- MinMax DBZ Values of the original: computed in the measure, tracked in the computation result
+
+### Version 3.0.21 (2025-08-02)
+
+#### Added
+- Simple polar hash
+
+### Version 3.0.18 (2025-07-05)
+
+#### Added
+- Differentiate getOneCircle and getOneRawCircle depending on perf context
 - Added new method to CartesianTools:
   - howManyPixelsInEarthMap: Counts how many pixels are in a square defined by southwest and northeast coordinates
 
 #### Fixed
 - Fixed usage of `this.scale` in CartesianTools methods, replacing with `earthMap.latitudeScale` for proper scaling
 
-### Version 3.0.15 (2025-06-30)
+### Version 3.0.17 (2025-07-03)
+
+#### Added
+- getOneCircle from a polarMeasureValueMap
+
+### Version 3.0.16 (2025-07-02)
+
+#### Fixed
+- adjustRainNodeWithSquareWidth return type
+
+### Version 3.0.15 (2025-07-02)
 
 #### Added
 - Added new methods to CartesianTools:

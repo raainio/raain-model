@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [3.0.23] - 2025-08-05
+
+### Changed
+
+- Maintenance release with internal improvements and documentation updates
+- Reduce minMax searching memory effort
+
+## [3.0.22] - 2025-08-05
+
 ### Added
 
 - MinMax DBZ Values of the original: computed in the measure, tracked in the computation result
@@ -393,7 +402,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Initial release
 - First extracts from RAAIN services
 
-[Unreleased]: https://github.com/raainio/raain-model/compare/v3.0.15...HEAD
+[Unreleased]: https://github.com/raainio/raain-model/compare/v3.0.23...HEAD
+
+[3.0.23]: https://github.com/raainio/raain-model/compare/v3.0.22...v3.0.23
+
+[3.0.22]: https://github.com/raainio/raain-model/compare/v3.0.21...v3.0.22
+
+[3.0.21]: https://github.com/raainio/raain-model/compare/v3.0.18...v3.0.21
+
+[3.0.18]: https://github.com/raainio/raain-model/compare/v3.0.17...v3.0.18
+
+[3.0.17]: https://github.com/raainio/raain-model/compare/v3.0.16...v3.0.17
+
+[3.0.16]: https://github.com/raainio/raain-model/compare/v3.0.15...v3.0.16
 
 [3.0.15]: https://github.com/raainio/raain-model/compare/v3.0.14...v3.0.15
 

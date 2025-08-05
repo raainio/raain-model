@@ -1,6 +1,7 @@
 import {IPolarMeasureValue} from '../polar';
 import {RaainNode} from './RaainNode';
 import {ICartesianMeasureValue} from '../cartesian';
+import {calculateMinMax} from '../utils';
 
 export class Measure extends RaainNode {
     public date: Date;
@@ -75,22 +76,17 @@ export class Measure extends RaainNode {
 
         // For number[] type
         if (typeof this.values[0] === 'number') {
-            const numValues = this.values as number[];
-            return {
-                min: Math.min(...numValues),
-                max: Math.max(...numValues),
-            };
+            return calculateMinMax(this.values as number[]);
         }
 
-        // For IPolarMeasureValue[] type
-        if ('getPolars' in this.values[0]) {
-            const polarValues = this.values as IPolarMeasureValue[];
+        // Helper function to aggregate min/max values from an array of objects
+        const aggregateMinMax = (values: Array<{getMinMaxValues: () => {min: number; max: number} | null}>) => {
             let minValue = Number.MAX_VALUE;
             let maxValue = Number.MIN_VALUE;
             let hasValues = false;
 
-            for (const polarValue of polarValues) {
-                const minMax = polarValue.getMinMaxValues();
+            for (const value of values) {
+                const minMax = value.getMinMaxValues();
                 if (minMax) {
                     minValue = Math.min(minValue, minMax.min);
                     maxValue = Math.max(maxValue, minMax.max);
@@ -98,40 +94,17 @@ export class Measure extends RaainNode {
                 }
             }
 
-            if (!hasValues) {
-                return null;
-            }
+            return hasValues ? { min: minValue, max: maxValue } : null;
+        };
 
-            return {
-                min: minValue,
-                max: maxValue,
-            };
+        // For IPolarMeasureValue[] type
+        if ('getPolars' in this.values[0]) {
+            return aggregateMinMax(this.values as IPolarMeasureValue[]);
         }
 
         // For ICartesianMeasureValue[] type
         if ('getCartesianValues' in this.values[0]) {
-            const cartesianValues = this.values as ICartesianMeasureValue[];
-            let minValue = Number.MAX_VALUE;
-            let maxValue = Number.MIN_VALUE;
-            let hasValues = false;
-
-            for (const cartesianValue of cartesianValues) {
-                const minMax = cartesianValue.getMinMaxValues();
-                if (minMax) {
-                    minValue = Math.min(minValue, minMax.min);
-                    maxValue = Math.max(maxValue, minMax.max);
-                    hasValues = true;
-                }
-            }
-
-            if (!hasValues) {
-                return null;
-            }
-
-            return {
-                min: minValue,
-                max: maxValue,
-            };
+            return aggregateMinMax(this.values as ICartesianMeasureValue[]);
         }
 
         return null;
