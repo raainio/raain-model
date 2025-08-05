@@ -25,6 +25,8 @@ import {RadarMeasure} from '../radar';
  * - api/rains/:id/computations?format=map&begin=...
  */
 export class RainComputationMap extends RainComputationAbstract {
+    public static readonly TYPE = 'rain-computation-map';
+
     /**
      * The map data stored as a stringified JSON array of RainMeasure objects.
      * This format allows for efficient storage and transmission of large datasets.
@@ -65,6 +67,8 @@ export class RainComputationMap extends RainComputationAbstract {
         launchedBy?: string;
         rain?: string | Link | RaainNode;
         radars?: string[] | Link[] | RaainNode[];
+        originalDBZMin?: number;
+        originalDBZMax?: number;
     }) {
         super(json);
         this.setMapData(json.map, {mergeStrategy: MergeStrategy.NONE});
@@ -143,5 +147,9 @@ export class RainComputationMap extends RainComputationAbstract {
             // Return empty array if parsing fails
         }
         return [];
+    }
+
+    protected getLinkType(): string {
+        return RainComputationMap.TYPE;
     }
 }

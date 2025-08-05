@@ -28,6 +28,8 @@ export class RainComputation extends RainComputationAbstract {
         launchedBy?: string;
         rain?: string | Link | RaainNode;
         radars?: string[] | Link[] | RaainNode[];
+        originalDBZMin?: number;
+        originalDBZMax?: number;
     }) {
         super(json);
         this.results = json.results;

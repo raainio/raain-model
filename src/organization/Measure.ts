@@ -67,4 +67,73 @@ export class Measure extends RaainNode {
         }
         return null;
     }
+
+    public getMinMaxValues(): {min: number; max: number} | null {
+        if (this.values.length === 0) {
+            return null;
+        }
+
+        // For number[] type
+        if (typeof this.values[0] === 'number') {
+            const numValues = this.values as number[];
+            return {
+                min: Math.min(...numValues),
+                max: Math.max(...numValues),
+            };
+        }
+
+        // For IPolarMeasureValue[] type
+        if ('getPolars' in this.values[0]) {
+            const polarValues = this.values as IPolarMeasureValue[];
+            let minValue = Number.MAX_VALUE;
+            let maxValue = Number.MIN_VALUE;
+            let hasValues = false;
+
+            for (const polarValue of polarValues) {
+                const minMax = polarValue.getMinMaxValues();
+                if (minMax) {
+                    minValue = Math.min(minValue, minMax.min);
+                    maxValue = Math.max(maxValue, minMax.max);
+                    hasValues = true;
+                }
+            }
+
+            if (!hasValues) {
+                return null;
+            }
+
+            return {
+                min: minValue,
+                max: maxValue,
+            };
+        }
+
+        // For ICartesianMeasureValue[] type
+        if ('getCartesianValues' in this.values[0]) {
+            const cartesianValues = this.values as ICartesianMeasureValue[];
+            let minValue = Number.MAX_VALUE;
+            let maxValue = Number.MIN_VALUE;
+            let hasValues = false;
+
+            for (const cartesianValue of cartesianValues) {
+                const minMax = cartesianValue.getMinMaxValues();
+                if (minMax) {
+                    minValue = Math.min(minValue, minMax.min);
+                    maxValue = Math.max(maxValue, minMax.max);
+                    hasValues = true;
+                }
+            }
+
+            if (!hasValues) {
+                return null;
+            }
+
+            return {
+                min: minValue,
+                max: maxValue,
+            };
+        }
+
+        return null;
+    }
 }

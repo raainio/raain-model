@@ -6,6 +6,10 @@ import {PolarValue} from './PolarValue';
 export class AbstractPolarMeasureValue implements IPolarMeasureValue {
     public polarMeasureValue: PolarMeasureValue;
 
+    public getMinMaxValues(): {min: number; max: number} | null {
+        return this.polarMeasureValue.getMinMaxValues();
+    }
+
     constructor(json: {polarMeasureValue: AbstractPolarMeasureValue | PolarMeasureValue | string}) {
         if (!json?.polarMeasureValue) {
             throw new Error('Needs one polarMeasureValue');

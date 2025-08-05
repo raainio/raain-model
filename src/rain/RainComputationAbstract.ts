@@ -24,6 +24,8 @@ export class RainComputationAbstract extends RaainNode {
     public isDoneDate: Date;
     public launchedBy: string;
     public name: string;
+    public originalDBZMin: number;
+    public originalDBZMax: number;
 
     protected mergeTools: {
         cartesianTools: CartesianTools;
@@ -47,6 +49,8 @@ export class RainComputationAbstract extends RaainNode {
         launchedBy?: string;
         rain?: string | Link | RaainNode;
         radars?: string[] | Link[] | RaainNode[];
+        originalDBZMin?: number;
+        originalDBZMax?: number;
     }) {
         super(json);
 
@@ -59,6 +63,8 @@ export class RainComputationAbstract extends RaainNode {
         this.isReady = !!json.isReady;
         this.isDoneDate = json.isDoneDate ? new Date(json.isDoneDate) : undefined;
         this.launchedBy = json.launchedBy;
+        this.originalDBZMin = json.originalDBZMin;
+        this.originalDBZMax = json.originalDBZMax;
 
         this.replaceRainLink(json.links);
         this.replaceRainLink(json.rain);
@@ -139,6 +145,8 @@ export class RainComputationAbstract extends RaainNode {
         launchedBy: string;
         rain: string;
         radars: string[];
+        originalDBZMin: number;
+        originalDBZMax: number;
     } {
         const json = super.toJSON();
         const rainLinks = this.links
@@ -162,6 +170,8 @@ export class RainComputationAbstract extends RaainNode {
             name: this.name,
             rain: rainLink,
             radars: radarLinks,
+            originalDBZMin: this.originalDBZMin,
+            originalDBZMax: this.originalDBZMax,
         };
     }
 

@@ -17,4 +17,6 @@ export interface IPolarMeasureValue {
     getPolarValue(json: {azimuthInDegrees: number; distanceInMeters: number}): PolarValue;
 
     setPolarValue(json: {azimuthInDegrees: number; distanceInMeters: number; value: number}): void;
+
+    getMinMaxValues(): {min: number; max: number} | null;
 }

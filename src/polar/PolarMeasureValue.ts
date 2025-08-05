@@ -320,6 +320,29 @@ export class PolarMeasureValue implements IPolarMeasureValue {
         return '' + hash(this.getPolars());
     }
 
+    public getMinMaxValues(): {min: number; max: number} | null {
+        const containers = this.getPolars();
+        if (containers.length === 0) {
+            return null;
+        }
+
+        let allValues: number[] = [];
+        for (const container of containers) {
+            allValues = allValues.concat(
+                container.polarEdges.filter((v) => v !== null && v !== undefined)
+            );
+        }
+
+        if (allValues.length === 0) {
+            return null;
+        }
+
+        return {
+            min: Math.min(...allValues),
+            max: Math.max(...allValues),
+        };
+    }
+
     protected count() {
         const measureValuePolarContainers = this.getPolars();
         this.azimuthsCount = measureValuePolarContainers.length;

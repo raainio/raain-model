@@ -17,4 +17,6 @@ export interface ICartesianMeasureValue {
     getCartesianValueRounded(json: {lat: number; lng: number; scale: LatLng}): CartesianValue;
 
     setCartesianValue(json: {lat: number; lng: number; value: number}): void;
+
+    getMinMaxValues(): {min: number; max: number} | null;
 }

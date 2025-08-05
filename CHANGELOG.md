@@ -9,6 +9,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- MinMax DBZ Values of the original: computed in the measure, tracked in the computation result
+
+## [3.0.21] - 2025-08-02
+
+### Added
+
 - Simple polar hash
 
 ## [3.0.18] - 2025-07-05

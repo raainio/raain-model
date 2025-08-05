@@ -29,6 +29,8 @@ export class RainComputationQuality extends RainComputationAbstract {
         radars?: Link[] | RaainNode[];
         rainComputation?: Link | RaainNode;
         error?: string;
+        originalDBZMin?: number;
+        originalDBZMax?: number;
     }) {
         super(json);
         this.qualitySpeedMatrixContainer = json.qualitySpeedMatrixContainer;

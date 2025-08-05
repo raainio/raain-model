@@ -152,10 +152,13 @@ describe('Rain', function () {
             ],
             launchedBy: 'oneUser',
             version: 'v1',
+            originalDBZMin: 0,
         });
 
         expect(rainComputation.id).eq('rc1');
         expect(rainComputation.getVersion()).eq('v1');
+        expect(rainComputation.originalDBZMin).eq(0);
+        expect(rainComputation.originalDBZMax).eq(undefined);
 
         const rainComputationQuality = new RainComputationQuality({
             id: 'rcq1',

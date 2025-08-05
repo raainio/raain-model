@@ -6,6 +6,26 @@ export class CartesianMeasureValue implements ICartesianMeasureValue {
     protected cartesianValues: CartesianValue[];
     protected limitPoints: [LatLng, LatLng];
 
+    public getMinMaxValues(): {min: number; max: number} | null {
+        const values = this.getCartesianValues();
+        if (values.length === 0) {
+            return null;
+        }
+
+        const allValues = values
+            .map((v) => v.value)
+            .filter((v) => v !== null && v !== undefined);
+
+        if (allValues.length === 0) {
+            return null;
+        }
+
+        return {
+            min: Math.min(...allValues),
+            max: Math.max(...allValues),
+        };
+    }
+
     constructor(json: {
         cartesianValues: string | CartesianValue[];
         limitPoints?: [LatLng, LatLng];
