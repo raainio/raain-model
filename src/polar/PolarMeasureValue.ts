@@ -341,7 +341,14 @@ export class PolarMeasureValue implements IPolarMeasureValue {
         const measureValuePolarContainers = this.getPolars();
         this.azimuthsCount = measureValuePolarContainers.length;
         if (this.azimuthsCount > 0) {
-            this.polarEdgesCount = measureValuePolarContainers[0].polarEdges.length;
+            let maxLength = 0;
+            for (const container of measureValuePolarContainers) {
+                const containerLength = container.polarEdges.length + container.edgeOffset;
+                if (containerLength > maxLength) {
+                    maxLength = containerLength;
+                }
+            }
+            this.polarEdgesCount = maxLength;
         } else {
             this.polarEdgesCount = 0;
         }
