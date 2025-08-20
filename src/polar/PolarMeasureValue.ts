@@ -205,13 +205,13 @@ export class PolarMeasureValue implements IPolarMeasureValue {
         }
     }
 
-    iterate(
+    async iterate(
         onEachValue: (
             polarValue: PolarValue,
             azimuthIndex: number,
             edgeIndex: number,
             valueSetter: (newValue: number) => void
-        ) => void
+        ) => Promise<void>
     ) {
         for (const measureValuePolarContainer of this.measureValuePolarContainers) {
             const azimuth = measureValuePolarContainer.azimuth;
@@ -226,7 +226,7 @@ export class PolarMeasureValue implements IPolarMeasureValue {
                     polarEdges[edgeIndex] = newValue;
                 };
 
-                onEachValue(
+                await onEachValue(
                     new PolarValue({
                         value,
                         polarAzimuthInDegrees: azimuth,

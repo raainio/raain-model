@@ -9,6 +9,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- async PolarMeasureValue iteration capability
+
+## [3.0.24] - 2025-08-07
+
+### Changed
+
 - Enforce PolarMeasureValue count
 
 ## [3.0.23] - 2025-08-05

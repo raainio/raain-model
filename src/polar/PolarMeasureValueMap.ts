@@ -164,12 +164,12 @@ export class PolarMeasureValueMap {
             azimuthIndex: number,
             edgeIndex: number,
             valueSetter: (newValue: number) => void
-        ) => void,
+        ) => void | Promise<void>,
         options?: {
             iterateOnEachEdge?: boolean;
             polarFilter?: PolarFilter;
         }
-    ) {
+    ): void | Promise<void> {
         const azimuthMin =
             typeof options?.polarFilter?.azimuthMin !== 'undefined'
                 ? options?.polarFilter.azimuthMin
@@ -186,9 +186,9 @@ export class PolarMeasureValueMap {
                 : this.polarMeasureValue.getPolarEdgesCount();
 
         if (options?.iterateOnEachEdge) {
-            this.iterateOnEachEdge(azimuthMin, azimuthMax, edgeMin, edgeMax, onEachValue);
+            return this.iterateOnEachEdge(azimuthMin, azimuthMax, edgeMin, edgeMax, onEachValue);
         } else {
-            this.iterateOnEachAzimuth(azimuthMin, azimuthMax, edgeMin, edgeMax, onEachValue);
+            return this.iterateOnEachAzimuth(azimuthMin, azimuthMax, edgeMin, edgeMax, onEachValue);
         }
     }
 
@@ -362,8 +362,11 @@ export class PolarMeasureValueMap {
             azimuthIndex: number,
             edgeIndex: number,
             valueSetter: (newValue: number) => void
-        ) => void
+        ) => void | Promise<void>
     ) {
+        const promises: Promise<void>[] = [];
+        let isAsync = false;
+
         for (const measureValuePolarContainer of this.builtMeasureValuePolarContainers) {
             const azimuthInDegrees = measureValuePolarContainer.azimuth;
             const polarEdges = measureValuePolarContainer.polarEdges;
@@ -394,7 +397,7 @@ export class PolarMeasureValueMap {
                     polarEdges[edgeIndex] = newValue;
                 };
 
-                onEachValue(
+                const result = onEachValue(
                     new PolarValue({
                         value,
                         polarAzimuthInDegrees: azimuthInDegrees,
@@ -404,7 +407,16 @@ export class PolarMeasureValueMap {
                     edgeAbsoluteIndex,
                     valueSetter
                 );
+
+                if (result instanceof Promise) {
+                    isAsync = true;
+                    promises.push(result);
+                }
             }
+        }
+
+        if (isAsync) {
+            return Promise.all(promises).then(() => {});
         }
     }
 
@@ -418,8 +430,11 @@ export class PolarMeasureValueMap {
             azimuthIndex: number,
             edgeIndex: number,
             valueSetter: (newValue: number) => void
-        ) => void
+        ) => void | Promise<void>
     ) {
+        const promises: Promise<void>[] = [];
+        let isAsync = false;
+
         for (let edge = edgeMin; edge <= edgeMax; edge++) {
             for (const measureValuePolarContainer of this.builtMeasureValuePolarContainers) {
                 const azimuthInDegrees = measureValuePolarContainer.azimuth;
@@ -446,7 +461,7 @@ export class PolarMeasureValueMap {
                             polarEdges[edgeIndex] = newValue;
                         };
 
-                        onEachValue(
+                        const result = onEachValue(
                             new PolarValue({
                                 value,
                                 polarAzimuthInDegrees: azimuthInDegrees,
@@ -456,12 +471,20 @@ export class PolarMeasureValueMap {
                             edgeAbsoluteIndex,
                             valueSetter
                         );
+                        if (result instanceof Promise) {
+                            isAsync = true;
+                            promises.push(result);
+                        }
                     }
                     if (edge < edgeAbsoluteIndex) {
                         break;
                     }
                 }
             }
+        }
+
+        if (isAsync) {
+            return Promise.all(promises).then(() => {});
         }
     }
 }

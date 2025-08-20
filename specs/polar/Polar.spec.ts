@@ -54,7 +54,7 @@ describe('Polar', () => {
         );
     });
 
-    it('should iterate and filter', () => {
+    it('should iterate and filter', async () => {
         // some realistic polar setup
         const azTotal = 720;
         const distTotal = 255;
@@ -90,7 +90,7 @@ describe('Polar', () => {
 
         // iterate 1) on all 'count1' values, and set a new value for one pixel
         let count1 = 0;
-        const onEachValue1 = (
+        const onEachValue1 = async (
             polarValue: PolarValue,
             azimuthIndex: number,
             edgeIndex: number,
@@ -106,7 +106,7 @@ describe('Polar', () => {
                 valueSetter(polarValue.value + 10);
             }
         };
-        polarMeasureValue.iterate(onEachValue1);
+        await polarMeasureValue.iterate(onEachValue1);
 
         // verify 1) done
         expect(count1).eq(azTotal * distTotal);
@@ -143,7 +143,7 @@ describe('Polar', () => {
 
         // iterate 2) on not null 'count2' values, and again set a new value for one pixel
         let count2 = 0;
-        const onEachValue2 = (
+        const onEachValue2 = async (
             polarValue: PolarValue,
             azimuthIndex: number,
             edgeIndex: number,
@@ -159,7 +159,7 @@ describe('Polar', () => {
                 valueSetter(polarValue.value + 15);
             }
         };
-        filteredPolarMeasureValue.iterate(onEachValue2);
+        await filteredPolarMeasureValue.iterate(onEachValue2);
 
         // verify 2) done
         expect(count2).eq(2495);
@@ -226,7 +226,7 @@ describe('Polar', () => {
         ).eq(126);
     });
 
-    it('should use a map', () => {
+    it('should use a map', async () => {
         // some realistic polar setup
         const azTotal = 720;
         const distTotal = 255;
@@ -295,7 +295,7 @@ describe('Polar', () => {
         };
 
         iterateDone = 0;
-        polarMeasureValueMap.iterate(onEach);
+        await polarMeasureValueMap.iterate(onEach);
         expect(iterateDone).eq(2772);
         expect(testDone).eq(1);
         expect(iterateAzEd[0][0]).eq(3);
