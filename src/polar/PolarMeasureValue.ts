@@ -76,7 +76,7 @@ export class PolarMeasureValue implements IPolarMeasureValue {
     }
 
     getPolarsStringified(): string {
-        return JSON.stringify(this.getPolars());
+        return JSON.stringify(this.measureValuePolarContainers);
     }
 
     getPolars(): MeasureValuePolarContainer[] {
@@ -242,7 +242,7 @@ export class PolarMeasureValue implements IPolarMeasureValue {
 
     public toJSON() {
         return {
-            measureValuePolarContainers: this.getPolars(),
+            measureValuePolarContainers: this.measureValuePolarContainers,
             azimuthsCount: this.getAzimuthsCount(),
             polarEdgesCount: this.getPolarEdgesCount(),
         };
@@ -300,7 +300,7 @@ export class PolarMeasureValue implements IPolarMeasureValue {
 
     public getNotNullValuesCount(): number {
         let count = 0;
-        for (const [a, measureValuePolarContainer] of this.getPolars().entries()) {
+        for (const [a, measureValuePolarContainer] of this.measureValuePolarContainers.entries()) {
             count += measureValuePolarContainer.getNotNullValuesCount();
         }
         return count;
@@ -322,7 +322,7 @@ export class PolarMeasureValue implements IPolarMeasureValue {
     }
 
     public getMinMaxValues(): {min: number; max: number} | null {
-        const containers = this.getPolars();
+        const containers = this.measureValuePolarContainers;
         if (containers.length === 0) {
             return null;
         }
@@ -338,7 +338,7 @@ export class PolarMeasureValue implements IPolarMeasureValue {
     }
 
     protected count() {
-        const measureValuePolarContainers = this.getPolars();
+        const measureValuePolarContainers = this.measureValuePolarContainers;
         this.azimuthsCount = measureValuePolarContainers.length;
         if (this.azimuthsCount > 0) {
             let maxLength = 0;

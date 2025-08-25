@@ -80,7 +80,9 @@ export class Measure extends RaainNode {
         }
 
         // Helper function to aggregate min/max values from an array of objects
-        const aggregateMinMax = (values: Array<{getMinMaxValues: () => {min: number; max: number} | null}>) => {
+        const aggregateMinMax = (
+            values: Array<{getMinMaxValues: () => {min: number; max: number} | null}>
+        ) => {
             let minValue = Number.MAX_VALUE;
             let maxValue = Number.MIN_VALUE;
             let hasValues = false;
@@ -94,7 +96,7 @@ export class Measure extends RaainNode {
                 }
             }
 
-            return hasValues ? { min: minValue, max: maxValue } : null;
+            return hasValues ? {min: minValue, max: maxValue} : null;
         };
 
         // For IPolarMeasureValue[] type

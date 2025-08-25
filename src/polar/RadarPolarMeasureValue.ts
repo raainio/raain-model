@@ -99,6 +99,23 @@ export class RadarPolarMeasureValue
         return radarPolarMeasureValues;
     }
 
+    static From(obj: IPolarMeasureValue | any): RadarPolarMeasureValue {
+        let angle: number, axis: number, polarMeasureValue: PolarMeasureValue;
+
+        if (typeof obj.angle === 'number') {
+            angle = obj.angle;
+        }
+        if (typeof obj.axis === 'number') {
+            axis = obj.axis;
+        }
+
+        if (typeof obj.polarMeasureValue !== 'undefined') {
+            polarMeasureValue = obj.polarMeasureValue;
+        }
+
+        return new RadarPolarMeasureValue({polarMeasureValue, angle, axis});
+    }
+
     public toJSON() {
         const json = super.toJSON();
         return {

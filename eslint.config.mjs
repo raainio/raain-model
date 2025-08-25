@@ -51,8 +51,29 @@ export default [
     // JavaScript files (less strict)
     {
         files: ['**/*.js'],
+        languageOptions: {
+            globals: {
+                require: 'readonly',
+                process: 'readonly',
+                console: 'readonly',
+                module: 'readonly',
+                exports: 'readonly',
+                __dirname: 'readonly',
+                __filename: 'readonly',
+                Buffer: 'readonly',
+                global: 'readonly',
+                setTimeout: 'readonly',
+                clearTimeout: 'readonly',
+                setInterval: 'readonly',
+                clearInterval: 'readonly',
+                setImmediate: 'readonly',
+                clearImmediate: 'readonly',
+            },
+        },
         rules: {
             '@typescript-eslint/no-var-requires': 'off',
+            '@typescript-eslint/no-unused-vars': 'off',
+            '@typescript-eslint/no-require-imports': 'off',
             'no-console': 'off',
         },
     },

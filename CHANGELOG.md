@@ -9,6 +9,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- PolarMeasureValue to use directly measureValuePolarContainers
+- RadarPolarMeasureValue.From added
+
+## [3.0.25] - 2025-08-20
+
+### Changed
+
 - async PolarMeasureValue iteration capability
 
 ## [3.0.24] - 2025-08-07
