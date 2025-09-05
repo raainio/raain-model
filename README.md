@@ -11,12 +11,10 @@
 
 ## 🌟 Features
 
-- **Radar Data Processing**: Efficient processing of radar data for rain measurement
 - **Cartesian & Polar Coordinates**: Support for both coordinate systems
 - **Advanced Merging**: Sophisticated merging strategies for rain data
 - **Quality Assessment**: Built-in quality metrics for measurements
 - **TypeScript Support**: Full type safety and modern TypeScript features
-- **Performance Optimized**: Efficient data structures and algorithms
 
 ## 🚀 Installation
 
@@ -29,7 +27,7 @@ yarn add raain-model
 ## 📖 Quick Start
 
 ```typescript
-import {RainComputationMap, RainNode, RadarNode} from 'raain-model';
+import {RainNode, RadarNode} from 'raain-model';
 
 // Create a radar node
 const radarNode = new RadarNode({
@@ -48,24 +46,39 @@ const rainNode = new RainNode({
     radars: [radarNode]
 });
 
-// Process rain data
-const computation = new RainComputationMap({
-    id: 'comp1',
-    date: new Date(),
-    isReady: true,
-    map: [] // Your rain measurement data here
-});
 ```
 
 ## 📚 Documentation
 
 Visit [documentation](https://raainio.github.io/raain-model)
-and [swagger](https://api.sandbox.radartorain.com/v2/docs).
+and [API swagger](https://api.sandbox.radartorain.com/v2/docs).
+
+### API ↔ Model Mapping
+
+The following table lists which REST API endpoints return or accept which model classes in this library:
+
+| API endpoint (pattern)                                             | Exposes model class      | Notes                                     |
+|--------------------------------------------------------------------|--------------------------|-------------------------------------------|
+| `api/radars/:id`                                                   | `RadarNode`              | Radar station metadata                    |
+| `api/radars/:id/measures/:id`                                      | `RadarMeasure`           | Single radar measure                      |
+| `api/radars/:id?format=map&...`                                    | `RadarNodeMap`           | Map/coverage for a radar                  |
+| `api/gauges/:id`                                                   | `GaugeNode`              | Rain gauge metadata                       |
+| `api/gauges/:id/measures/:id`                                      | `GaugeMeasure`           | Single gauge measure                      |
+| `api/gauges/:id?format=map&begin=...`                              | `GaugeNodeMap`           | Gauge data as map over time window        |
+| `api/rains/:id`                                                    | `RainNode`               | Rain aggregation entity                   |
+| `api/rains/:id/computations/:computationId`                        | `RainComputation`        | One computation result (list of measures) |
+| `api/rains/:id/computations?format=id&begin=...`                   | `RainComputation[]`      | List of computations (IDs)                |
+| `api/rains/:id/computations/:computationId?format=map`             | `RainComputationMap`     | Computation as cartesian map              |
+| `api/rains/:id/computations?format=map&begin=...`                  | `RainComputationMap[]`   | List of maps over period                  |
+| `api/rains/:id/computations?format=compare&begin=...&gauges=[...]` | `RainComputationQuality` | Quality/compare metrics                   |
+| `api/notifications/:id`                                            | `EventNode`              | Notification/event payload                |
+| `api/teams?name=customerTeam`                                      | `TeamNode`               | Team lookup by name                       |
+| `api/teams/:id`                                                    | `PeopleNode`             | People related to a team                  |
 
 ### Memory Bank
 
 This project uses a Memory Bank for comprehensive documentation and context retention. The Memory Bank is located in the
-`.memory-bank` directory and contains the following files:
+[.memory-bank](./.memory-bank) directory and contains the following files:
 
 - `memory-bank-rules.md`: Rules to follow and to consider in all contexts
 - `projectbrief.md`: Overview of the project, core requirements, and goals
@@ -75,15 +88,15 @@ This project uses a Memory Bank for comprehensive documentation and context rete
 - `activeContext.md`: Current work focus, recent changes, and next steps
 - `progress.md`: What works, what's left to build, and known issues
 
-=> !! These files should always be considered as a context and keep up-to-date !!
+Note: These files are used by AI assistants whose memory resets between sessions. They MUST be reviewed at the start of
+every task and kept up-to-date.
 
 ### Key Components
 
-- `RainNode`: Core class for rain measurement nodes
-- `RadarNode`: Radar station representation
-- `RainComputationMap`: Advanced rain data processing
-- `CartesianTools`: Utilities for coordinate transformations
-- `SpeedMatrix`: Matrix operations for rain data
+- `RainNode`: Rain zone
+- `RadarNode`: Radar station
+- `RainComputationMap`: Rain computation data
+- `SpeedMatrix`: Quality matrix
 
 ## 🧪 Testing
 

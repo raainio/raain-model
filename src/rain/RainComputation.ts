@@ -6,7 +6,7 @@ import {RainMeasure} from './RainMeasure';
 import {MergeStrategy} from './MergeStrategy';
 
 /**
- *  api/rains/:rainId/computations/:computationId
+ *  api/rains/:id/computations/:computationId
  *  or as an array on
  *  api/rains/:id/computations?format=id&begin=...
  */

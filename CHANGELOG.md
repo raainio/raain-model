@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- LatLng accepts latitude/longitude and lat/lng
+- Some Unit Tests
+
+## [3.0.26] - 2025-08-25
+
 ### Changed
 
 - PolarMeasureValue to use directly measureValuePolarContainers

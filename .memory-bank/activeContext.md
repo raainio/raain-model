@@ -6,7 +6,7 @@ The current focus of the RAAIN Model project is on:
 
 1. **Memory Bank Implementation**: Establishing a comprehensive Memory Bank structure to improve project documentation and context retention.
 
-2. **Version 3.0.23 Maintenance**: Maintaining and improving the recently released version 3.0.23, addressing any issues that arise.
+2. **Version 3.0.26 Maintenance**: Maintaining and improving the recently released version 3.0.26, addressing any issues that arise.
 
 3. **TypeScript 5.0.4 Compatibility**: Ensuring full compatibility with TypeScript 5.0.4 and leveraging its features.
 
@@ -22,10 +22,26 @@ The current focus of the RAAIN Model project is on:
 
 Based on the CHANGELOG.md, the most recent changes include:
 
+### Version 3.0.26 (2025-08-25)
+
+#### Changed
+- Maintenance release with internal improvements and documentation updates
+
+### Version 3.0.25 (2025-08-20)
+
+#### Changed
+- async PolarMeasureValue iteration capability
+
+### Version 3.0.24 (2025-08-07)
+
+#### Changed
+- Enforce PolarMeasureValue count
+
 ### Version 3.0.23 (2025-08-05)
 
 #### Changed
 - Maintenance release with internal improvements and documentation updates
+- Reduce minMax searching memory effort
 
 ### Version 3.0.22 (2025-08-05)
 

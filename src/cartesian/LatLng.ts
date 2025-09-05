@@ -4,13 +4,31 @@ export class LatLng {
     public lat: number;
     public lng: number;
 
-    constructor(json: {lat: number; lng: number}) {
-        if (typeof json?.lat === 'undefined' || typeof json?.lng === 'undefined') {
+    constructor(json: {lat: number; lng: number} | {latitude: number; longitude: number}) {
+        const hasLatLng =
+            typeof (json as any)?.lat !== 'undefined' && typeof (json as any)?.lng !== 'undefined';
+        const hasLatitudeLongitude =
+            typeof (json as any)?.latitude !== 'undefined' &&
+            typeof (json as any)?.longitude !== 'undefined';
+
+        if (!hasLatLng && !hasLatitudeLongitude) {
             throw new Error('LatLng needs valid latitude && longitude');
         }
 
-        this.lat = json.lat;
-        this.lng = json.lng;
+        const lat = hasLatLng ? (json as any).lat : (json as any).latitude;
+        const lng = hasLatLng ? (json as any).lng : (json as any).longitude;
+
+        if (
+            typeof lat !== 'number' ||
+            typeof lng !== 'number' ||
+            Number.isNaN(lat) ||
+            Number.isNaN(lng)
+        ) {
+            throw new Error('LatLng needs numeric latitude && longitude');
+        }
+
+        this.lat = lat;
+        this.lng = lng;
     }
 
     public equals(v: LatLng) {

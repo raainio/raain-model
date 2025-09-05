@@ -102,12 +102,7 @@ export class GaugeNode extends RaainNode {
      * @returns The configuration object or null if not set
      */
     public getConfiguration(): any {
-        try {
-            return JSON.parse(this.configurationAsJSON);
-        } catch (e) {
-            // Return null if configuration cannot be parsed
-        }
-        return null;
+        return RaainNode.parseJsonLikeOrNull(this.configurationAsJSON);
     }
 
     /**

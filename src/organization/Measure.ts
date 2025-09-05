@@ -61,12 +61,7 @@ export class Measure extends RaainNode {
     }
 
     public getConfiguration(): any {
-        try {
-            return JSON.parse(this.configurationAsJSON);
-        } catch (e) {
-            // Return null if configuration cannot be parsed
-        }
-        return null;
+        return RaainNode.parseJsonLikeOrNull(this.configurationAsJSON);
     }
 
     public getMinMaxValues(): {min: number; max: number} | null {

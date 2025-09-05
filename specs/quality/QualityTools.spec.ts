@@ -63,4 +63,64 @@ describe('QualityTools', () => {
         createdFilledWithAnyNDimArray[0][1][2].push('test');
         expect(createdFilledWithAnyNDimArray[0][1][2][0]).eq('test');
     });
+
+    it('should find index when pair exists', () => {
+        const arr = [
+            [1, 2],
+            [3, 4],
+            [5, 6],
+        ];
+        expect(QualityTools.IndexOfDualArray(arr, [1, 2])).eq(0);
+        expect(QualityTools.IndexOfDualArray(arr, [3, 4])).eq(1);
+        expect(QualityTools.IndexOfDualArray(arr, [5, 6])).eq(2);
+    });
+
+    it('should return -1 when pair does not exist', () => {
+        const arr = [
+            [1, 2],
+            [3, 4],
+        ];
+        expect(QualityTools.IndexOfDualArray(arr, [2, 1])).eq(-1);
+        expect(QualityTools.IndexOfDualArray(arr, [3, 5])).eq(-1);
+        expect(QualityTools.IndexOfDualArray(arr, [0, 0])).eq(-1);
+    });
+
+    it('should handle string tuples and mixed values', () => {
+        const arr: any[] = [
+            ['a', 'b'],
+            ['x', 'y'],
+            [10, '10'],
+        ];
+        expect(QualityTools.IndexOfDualArray(arr, ['a', 'b'])).eq(0);
+        expect(QualityTools.IndexOfDualArray(arr, ['x', 'y'])).eq(1);
+        expect(QualityTools.IndexOfDualArray(arr, [10, '10'])).eq(2);
+        expect(QualityTools.IndexOfDualArray(arr, ['10', 10])).eq(-1);
+    });
+
+    it('should treat deep equality by reference for third level arrays (not applicable, only compares first two)', () => {
+        const arr: any[] = [
+            [{id: 1}, {id: 2}],
+            [{}, []],
+        ];
+        // It compares value[0] === itemToFind[0] etc., so references must match.
+        const obj1 = {id: 1};
+        const obj2 = {id: 2};
+        arr[0] = [obj1, obj2];
+        expect(QualityTools.IndexOfDualArray(arr, [obj1, obj2])).eq(0);
+        expect(QualityTools.IndexOfDualArray(arr, [{id: 1}, {id: 2}])).eq(-1);
+    });
+
+    it('should return 0 for non-finite numbers', () => {
+        expect(QualityTools.Precision(NaN)).eq(0);
+        expect(QualityTools.Precision(Infinity)).eq(0);
+        expect(QualityTools.Precision(-Infinity)).eq(0);
+    });
+
+    it('should return number of decimal places', () => {
+        expect(QualityTools.Precision(0)).eq(0);
+        expect(QualityTools.Precision(1)).eq(0);
+        expect(QualityTools.Precision(1.2)).eq(1);
+        expect(QualityTools.Precision(1.23)).eq(2);
+        expect(QualityTools.Precision(1.2345)).eq(4);
+    });
 });

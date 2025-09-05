@@ -3,7 +3,7 @@ import {RadarNode} from './RadarNode';
 import {Link, RaainNode, TeamNode} from '../organization';
 
 /**
- *  api/radars/:radarId?format=map&...
+ *  api/radars/:id?format=map&...
  */
 export class RadarNodeMap extends RadarNode {
     public date: Date;

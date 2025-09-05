@@ -50,11 +50,11 @@
 
 ## Current Status
 
-The project is currently in a stable state with version 3.0.23 released. The library is fully functional and being used in production by radartorain.com services. Active development is focused on maintenance, documentation improvements, code quality enhancements, and incremental feature additions.
+The project is currently in a stable state with version 3.0.26 released. The library is fully functional and being used in production by radartorain.com services. Active development is focused on maintenance, documentation improvements, code quality enhancements, and incremental feature additions.
 
 ### Version Status
-- Latest release: 3.0.23 (2025-08-05)
-- Unreleased changes: None at this time
+- Latest release: 3.0.26 (2025-08-25)
+- Unreleased changes: 3.0.27 (in progress)
 - Development status: Active maintenance
 - Stability: Production-ready
 

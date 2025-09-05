@@ -68,6 +68,21 @@ export class RaainNode implements IVersion {
         this._links = RaainNode._getPurifiedLinks(links);
     }
 
+    /**
+     * Parse a JSON string and return only object/array; return null for primitives or on error.
+     */
+    protected static parseJsonLikeOrNull(jsonStr: string): any {
+        try {
+            const parsed = JSON.parse(jsonStr);
+            if (parsed !== null && typeof parsed === 'object') {
+                return parsed;
+            }
+        } catch (e) {
+            // ignore
+        }
+        return null;
+    }
+
     private static _getPurifiedLinks(linksToPurify: any[]): Link[] {
         if (!linksToPurify || linksToPurify.length === 0) {
             return [];
