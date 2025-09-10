@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [3.0.28] - 2025-09-10
+
 ### Changed
 
 - PolarMeasureValueMap filter should be public
