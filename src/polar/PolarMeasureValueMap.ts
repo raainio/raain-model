@@ -11,7 +11,7 @@ export class PolarMeasureValueMap {
 
     constructor(
         public polarMeasureValue: PolarMeasureValue,
-        protected buildPolarFilter: PolarFilter = new PolarFilter()
+        public buildPolarFilter: PolarFilter = new PolarFilter()
     ) {
         this.buildFromPolar();
     }

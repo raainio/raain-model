@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- PolarMeasureValueMap filter should be public
+
+## [3.0.27] - 2025-09-05
+
 ### Added
 
 - LatLng accepts latitude/longitude and lat/lng
