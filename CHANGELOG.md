@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [3.0.29] - 2025-09-18
+
 ### Changed
 
 - Enforce PolarMeasureValue and PolarMeasureValueMap for azimuth that are not "rounded"
