@@ -95,12 +95,10 @@ export class PolarMeasureValue implements IPolarMeasureValue {
                 polars = JSON.parse(polars);
             }
 
-            this.measureValuePolarContainers = polars.map(
-                (convertedPolar) => new MeasureValuePolarContainer(convertedPolar)
-            );
+            this.setContainersAndSortThemByAzimuth(polars);
         } catch (e) {
             // console.warn('setPolarsAsString pb: ', e, typeof s, s);
-            this.measureValuePolarContainers = [];
+            this.setContainersAndSortThemByAzimuth([]);
         }
 
         this.countUnknown();
@@ -114,63 +112,79 @@ export class PolarMeasureValue implements IPolarMeasureValue {
         if (!('length' in parsed)) {
             parsed = [];
         }
-        this.measureValuePolarContainers = parsed;
+        this.setContainersAndSortThemByAzimuth(parsed);
 
         if (options.resetCount) {
             this.countUnknown();
         }
     }
 
-    getPolarValue(json: {azimuthInDegrees: number; distanceInMeters: number}): PolarValue {
-        if (json.azimuthInDegrees < 0 || json.azimuthInDegrees > 360) {
-            console.warn(
-                '### raain-model > getPolarValue : strange azimuth:',
-                json.azimuthInDegrees
-            );
+    getPolarValue(json: {
+        azimuthInDegrees: number;
+        distanceInMeters: number;
+        rounded?: boolean;
+    }): PolarValue {
+        if (!this.validateAzimuth(json.azimuthInDegrees, 'getPolarValue', json.rounded)) {
             return null;
         }
 
         let edgeValue = 0;
         let distance = this.getDefaultDistance();
+        let polarAzimuthInDegrees = json.azimuthInDegrees;
+        const polarDistanceInMeters = json.distanceInMeters;
 
-        const measureValuePolarContainersFound = this.measureValuePolarContainers.filter(
-            (c) => c.azimuth === json.azimuthInDegrees
+        const measureValuePolarContainersFound = this.findContainersByAzimuth(
+            json.azimuthInDegrees,
+            json.rounded
         );
         if (measureValuePolarContainersFound.length === 1) {
             const measureValuePolarContainer = measureValuePolarContainersFound[0];
             distance = measureValuePolarContainer.distance;
-            const edgeIndex =
-                json.distanceInMeters / distance - 1 - measureValuePolarContainer.edgeOffset;
+            const edgeIndex = this.calculateEdgeIndex(
+                json.distanceInMeters,
+                distance,
+                measureValuePolarContainer.edgeOffset
+            );
+            polarAzimuthInDegrees = measureValuePolarContainer.azimuth;
 
             if (0 <= edgeIndex && edgeIndex < measureValuePolarContainer.polarEdges.length) {
                 edgeValue = measureValuePolarContainer.polarEdges[edgeIndex];
             }
+        } else {
+            return null;
         }
 
         return new PolarValue({
             value: edgeValue,
-            polarAzimuthInDegrees: json.azimuthInDegrees,
-            polarDistanceInMeters: json.distanceInMeters,
+            polarAzimuthInDegrees,
+            polarDistanceInMeters,
         });
     }
 
-    setPolarValue(json: {azimuthInDegrees: number; distanceInMeters: number; value: number}): void {
-        if (json.azimuthInDegrees < 0 || json.azimuthInDegrees > 360) {
-            console.warn(
-                '### raain-model > setPolarValue : strange azimuth:',
-                json.azimuthInDegrees
-            );
-            return null;
+    setPolarValue(json: {
+        azimuthInDegrees: number;
+        distanceInMeters: number;
+        value: number;
+        rounded?: boolean;
+    }): void {
+        if (!this.validateAzimuth(json.azimuthInDegrees, 'setPolarValue', json.rounded)) {
+            return;
         }
 
         let distance = this.getDefaultDistance();
-        const azimuth = json.azimuthInDegrees;
-        const found = this.measureValuePolarContainers.filter((c) => c.azimuth === azimuth);
-        if (found.length === 1) {
-            const measureValuePolarContainer = found[0];
+        const measureValuePolarContainersFound = this.findContainersByAzimuth(
+            json.azimuthInDegrees,
+            json.rounded
+        );
+
+        if (measureValuePolarContainersFound.length === 1) {
+            const measureValuePolarContainer = measureValuePolarContainersFound[0];
             distance = measureValuePolarContainer.distance;
-            const edgeIndex =
-                json.distanceInMeters / distance - 1 - measureValuePolarContainer.edgeOffset;
+            const edgeIndex = this.calculateEdgeIndex(
+                json.distanceInMeters,
+                distance,
+                measureValuePolarContainer.edgeOffset
+            );
 
             if (0 <= edgeIndex && edgeIndex < measureValuePolarContainer.polarEdges.length) {
                 measureValuePolarContainer.polarEdges[edgeIndex] = json.value;
@@ -195,12 +209,17 @@ export class PolarMeasureValue implements IPolarMeasureValue {
                         );
                 }
             }
-        } else if (found.length === 0) {
+        } else if (measureValuePolarContainersFound.length === 0) {
             console.warn('### raain-model > setPolarValue : extending measureValuePolarContainers');
             const polarEdges = [json.value];
             const edgeOffset = json.distanceInMeters / distance - 1;
             this.measureValuePolarContainers.push(
-                new MeasureValuePolarContainer({azimuth, distance, polarEdges, edgeOffset})
+                new MeasureValuePolarContainer({
+                    azimuth: json.azimuthInDegrees,
+                    distance,
+                    polarEdges,
+                    edgeOffset,
+                })
             );
         }
     }
@@ -213,12 +232,13 @@ export class PolarMeasureValue implements IPolarMeasureValue {
             valueSetter: (newValue: number) => void
         ) => Promise<void>
     ) {
+        let azimuthIndex = 0;
         for (const measureValuePolarContainer of this.measureValuePolarContainers) {
             const azimuth = measureValuePolarContainer.azimuth;
             const distance = measureValuePolarContainer.distance;
             const polarEdges = measureValuePolarContainer.polarEdges;
 
-            const azimuthIndex = (azimuth * this.getAzimuthsCount()) / 360;
+            // azimuthIndex = (azimuth * this.getAzimuthsCount()) / 360;
             for (const [edgeIndex, value] of polarEdges.entries()) {
                 const edgeAbsoluteIndex = edgeIndex + measureValuePolarContainer.edgeOffset;
 
@@ -237,6 +257,7 @@ export class PolarMeasureValue implements IPolarMeasureValue {
                     valueSetter
                 );
             }
+            azimuthIndex++;
         }
     }
 
@@ -268,21 +289,11 @@ export class PolarMeasureValue implements IPolarMeasureValue {
         let measureValuePolarContainers = [];
         for (const measureValuePolarContainer of this.measureValuePolarContainers) {
             let filteredMeasureValuePolarContainer = measureValuePolarContainer;
-            if (
-                measureValuePolarContainer.getFiltered &&
-                filteredMeasureValuePolarContainer.getNotNullValuesCount
-            ) {
+            if (measureValuePolarContainer.getFiltered) {
                 filteredMeasureValuePolarContainer =
                     measureValuePolarContainer.getFiltered(options);
-                if (
-                    options.nullValues &&
-                    filteredMeasureValuePolarContainer.getNotNullValuesCount()
-                ) {
-                    measureValuePolarContainers.push(filteredMeasureValuePolarContainer);
-                }
-            } else {
-                measureValuePolarContainers.push(filteredMeasureValuePolarContainer);
             }
+            measureValuePolarContainers.push(filteredMeasureValuePolarContainer);
         }
 
         if (options.ordered) {
@@ -337,6 +348,10 @@ export class PolarMeasureValue implements IPolarMeasureValue {
         return calculateMinMax(allValues);
     }
 
+    public getAzimuthsInDegrees() {
+        return this.measureValuePolarContainers.map((c) => c.azimuth);
+    }
+
     protected count() {
         const measureValuePolarContainers = this.measureValuePolarContainers;
         this.azimuthsCount = measureValuePolarContainers.length;
@@ -357,5 +372,63 @@ export class PolarMeasureValue implements IPolarMeasureValue {
     protected countUnknown() {
         this.azimuthsCount = -1;
         this.polarEdgesCount = -1;
+    }
+
+    private validateAzimuth(
+        azimuthInDegrees: number,
+        methodName: string,
+        rounded: boolean
+    ): boolean {
+        if (!rounded) {
+            if (azimuthInDegrees < 0 || azimuthInDegrees > 360) {
+                console.warn(
+                    `### raain-model > ${methodName} : strange azimuth:`,
+                    azimuthInDegrees
+                );
+                return false;
+            }
+        } else {
+            if (Math.round(azimuthInDegrees) < 0 || Math.round(azimuthInDegrees) > 360) {
+                console.warn(
+                    `### raain-model > ${methodName} : strange azimuth:`,
+                    azimuthInDegrees
+                );
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private findContainersByAzimuth(
+        azimuthInDegrees: number,
+        rounded?: boolean
+    ): MeasureValuePolarContainer[] {
+        const roundPrecision = 10;
+        return this.measureValuePolarContainers.filter((c) => {
+            if (!rounded) {
+                return c.azimuth === azimuthInDegrees;
+            } else {
+                return (
+                    Math.round(c.azimuth * roundPrecision) / roundPrecision ===
+                    Math.round(azimuthInDegrees * roundPrecision) / roundPrecision
+                );
+            }
+        });
+    }
+
+    private calculateEdgeIndex(
+        stepDistanceInMeters: number,
+        containerDistance: number,
+        edgeOffset: number
+    ) {
+        return stepDistanceInMeters / containerDistance - 1 - edgeOffset;
+    }
+
+    private setContainersAndSortThemByAzimuth(
+        measureValuePolarContainers: MeasureValuePolarContainer[]
+    ) {
+        this.measureValuePolarContainers = measureValuePolarContainers
+            .map((c) => new MeasureValuePolarContainer(c))
+            .sort((c1, c2) => c1.azimuth - c2.azimuth);
     }
 }

@@ -148,7 +148,10 @@ export class PolarMeasureValueMap {
         }
 
         const measureValuePolarContainer = this.builtMeasureValuePolarContainers[azimuthIndex];
-        const {edgeIndex} = this.updatedEdge(json.edgeIndex, measureValuePolarContainer);
+        const {edgeIndex, distanceInMeters} = this.updatedEdge(
+            json.edgeIndex,
+            measureValuePolarContainer
+        );
         if (edgeIndex < 0) {
             throw new Error(
                 `Impossible to set ${JSON.stringify(json)} in this optimized polar structure`
@@ -156,6 +159,12 @@ export class PolarMeasureValueMap {
         }
 
         measureValuePolarContainer.polarEdges[edgeIndex] = json.value;
+
+        return new PolarValue({
+            value: json.value,
+            polarAzimuthInDegrees: measureValuePolarContainer.azimuth,
+            polarDistanceInMeters: distanceInMeters,
+        });
     }
 
     iterate(
@@ -273,16 +282,26 @@ export class PolarMeasureValueMap {
                 ? this.buildPolarFilter.edgeMax
                 : polarEdgesCount - 1;
 
-        for (let azIndex = azimuthMin; azIndex <= azimuthMax; azIndex++) {
-            const azimuthInDegrees = (azIndex * 360) / azimuthsCount;
+        const azimuthsInDegrees = this.polarMeasureValue.getAzimuthsInDegrees();
+        let azimuthIndex = -1;
+        for (const azimuthInDegrees of azimuthsInDegrees) {
+            azimuthIndex++;
+            if (azimuthIndex < azimuthMin || azimuthIndex > azimuthMax) {
+                continue;
+            }
+
             const polarEdges = [];
             for (let edgeIndex = edgeMin; edgeIndex <= edgeMax; edgeIndex++) {
                 const distanceInMeters = defaultDistanceBetweenInEdgeInMeters * (edgeIndex + 1);
                 const polarValue = this.polarMeasureValue.getPolarValue({
                     azimuthInDegrees,
                     distanceInMeters,
+                    rounded: true,
                 });
-                polarEdges.push(polarValue.value);
+                if (!polarValue) {
+                    console.warn(`polarValue mismatch on az:${azimuthInDegrees}, set 0 as default`);
+                }
+                polarEdges.push(polarValue?.value ?? 0);
             }
             builtMeasureValuePolarContainers.push(
                 new MeasureValuePolarContainer({
@@ -316,7 +335,7 @@ export class PolarMeasureValueMap {
             console.warn('### raain-model > Map strange azimuthInDegrees:', azimuthInDegrees);
         }
 
-        return {azimuthIndex: azimuthIndex1, azimuthInDegrees};
+        return {azimuthIndex: azimuthIndex1, azimuthInDegrees, azimuthIndexAbsolute};
     }
 
     protected updatedEdge(
@@ -367,12 +386,16 @@ export class PolarMeasureValueMap {
         const promises: Promise<void>[] = [];
         let isAsync = false;
 
+        let azimuthAbsoluteIndex = -1;
+        let updatedAzimuth = -1;
+        while (updatedAzimuth < 0 && azimuthAbsoluteIndex < azimuthMax) {
+            const upd = this.updatedAzimuth(++azimuthAbsoluteIndex);
+            updatedAzimuth = upd.azimuthIndexAbsolute;
+        }
+
+        azimuthAbsoluteIndex--;
         for (const measureValuePolarContainer of this.builtMeasureValuePolarContainers) {
-            const azimuthInDegrees = measureValuePolarContainer.azimuth;
-            const polarEdges = measureValuePolarContainer.polarEdges;
-            const azimuthAbsoluteIndex = Math.round(
-                (azimuthInDegrees * this.polarMeasureValue.getAzimuthsCount()) / 360
-            );
+            azimuthAbsoluteIndex++;
             if (azimuthAbsoluteIndex < azimuthMin) {
                 continue;
             }
@@ -380,6 +403,8 @@ export class PolarMeasureValueMap {
                 break;
             }
 
+            const azimuthInDegrees = measureValuePolarContainer.azimuth;
+            const polarEdges = measureValuePolarContainer.polarEdges;
             for (const [edgeIndex, value] of polarEdges.entries()) {
                 const updated = this.updatedEdge(edgeIndex, measureValuePolarContainer, {
                     reverse: true,
@@ -436,18 +461,25 @@ export class PolarMeasureValueMap {
         let isAsync = false;
 
         for (let edge = edgeMin; edge <= edgeMax; edge++) {
+            let azimuthAbsoluteIndex = -1;
+            let updatedAzimuth = -1;
+            while (updatedAzimuth < 0 && azimuthAbsoluteIndex < azimuthMax) {
+                const upd = this.updatedAzimuth(++azimuthAbsoluteIndex);
+                updatedAzimuth = upd.azimuthIndexAbsolute;
+            }
+
+            azimuthAbsoluteIndex--;
             for (const measureValuePolarContainer of this.builtMeasureValuePolarContainers) {
-                const azimuthInDegrees = measureValuePolarContainer.azimuth;
-                const polarEdges = measureValuePolarContainer.polarEdges;
-                const azimuthAbsoluteIndex = Math.round(
-                    (azimuthInDegrees * this.polarMeasureValue.getAzimuthsCount()) / 360
-                );
+                azimuthAbsoluteIndex++;
                 if (azimuthAbsoluteIndex < azimuthMin) {
                     continue;
                 }
                 if (azimuthMax < azimuthAbsoluteIndex) {
                     break;
                 }
+
+                const azimuthInDegrees = measureValuePolarContainer.azimuth;
+                const polarEdges = measureValuePolarContainer.polarEdges;
 
                 for (const [edgeIndex, value] of polarEdges.entries()) {
                     const updated = this.updatedEdge(edgeIndex, measureValuePolarContainer, {

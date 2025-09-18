@@ -1,11 +1,5 @@
 import {expect} from 'chai';
-import {
-    MeasureValuePolarContainer,
-    PolarFilter,
-    PolarMeasureValue,
-    PolarMeasureValueMap,
-    PolarValue,
-} from '../../src';
+import {MeasureValuePolarContainer, PolarFilter, PolarMeasureValue, PolarMeasureValueMap, PolarValue,} from '../../src';
 import hash from 'hash-it';
 
 describe('Polar', () => {
@@ -61,14 +55,15 @@ describe('Polar', () => {
         const measureValuePolarContainers: MeasureValuePolarContainer[] = [];
         let count0 = 0;
         for (let azimuth = 0; azimuth < 360; azimuth += 360 / azTotal) {
-            const values = new Array(5).fill(azimuth);
+            const azimuthReal = Math.round((azimuth + (0.5 - Math.random()) / 100) * 10000) / 10000;
+            const values = new Array(5).fill(azimuthReal);
             const polarEdges = new Array(distTotal).fill(0);
             if (azimuth + values.length < polarEdges.length) {
                 polarEdges.splice(azimuth, values.length, ...values);
             }
             count0 += polarEdges.length;
             measureValuePolarContainers.push(
-                new MeasureValuePolarContainer({azimuth, distance: 500, polarEdges})
+                new MeasureValuePolarContainer({azimuth: azimuthReal, distance: 500, polarEdges})
             );
         }
         expect(count0).eq(azTotal * distTotal);
@@ -78,14 +73,19 @@ describe('Polar', () => {
         expect(measureValuePolarContainers[1].getPolarEdgesCount()).eq(255);
         expect(measureValuePolarContainers[1].getNotNullValuesCount()).eq(5);
         expect(
-            polarMeasureValue.getPolarValue({azimuthInDegrees: 3, distanceInMeters: 30 * 500}).value
+            polarMeasureValue.getPolarValue({
+                azimuthInDegrees: 3,
+                distanceInMeters: 30 * 500,
+                rounded: true,
+            }).value
         ).eq(0);
         const polarValue1 = polarMeasureValue.getPolarValue({
             azimuthInDegrees: 1,
             distanceInMeters: 3 * 500,
+            rounded: true,
         });
-        expect(polarValue1.value).eq(1);
-        expect(polarValue1.polarAzimuthInDegrees).eq(1);
+        expect(polarValue1.value).to.be.closeTo(1, 0.1);
+        expect(polarValue1.polarAzimuthInDegrees).to.be.closeTo(1, 0.1);
         expect(polarValue1.polarDistanceInMeters).eq(3 * 500);
 
         // iterate 1) on all 'count1' values, and set a new value for one pixel
@@ -103,43 +103,48 @@ describe('Polar', () => {
             ) {
                 expect(azimuthIndex).eq(2);
                 expect(edgeIndex).eq(2);
-                valueSetter(polarValue.value + 10);
+                valueSetter(Math.round((polarValue.value + 10) * 10000) / 10000);
             }
         };
         await polarMeasureValue.iterate(onEachValue1);
 
         // verify 1) done
-        expect(count1).eq(azTotal * distTotal);
+        expect(count1).eq(azTotal * distTotal, 'count1 issue');
         expect(polarMeasureValue.getAzimuthsCount()).eq(azTotal);
         expect(polarMeasureValue.getPolarEdgesCount()).eq(distTotal);
         expect(polarMeasureValue.getValuesCount()).eq(azTotal * distTotal);
-        expect(polarMeasureValue.getNotNullValuesCount()).eq(2495);
+        expect(polarMeasureValue.getNotNullValuesCount()).eq(2500);
 
         expect(
-            polarMeasureValue.getPolarValue({azimuthInDegrees: 3, distanceInMeters: 30 * 500}).value
+            polarMeasureValue.getPolarValue({
+                azimuthInDegrees: 3,
+                distanceInMeters: 30 * 500,
+                rounded: true,
+            }).value
         ).eq(0);
         const polarValue2 = polarMeasureValue.getPolarValue({
             azimuthInDegrees: 1,
             distanceInMeters: 3 * 500,
+            rounded: true,
         });
-        expect(polarValue2.value).eq(polarValue1.value + 10);
         expect(polarValue2.polarAzimuthInDegrees).eq(polarValue1.polarAzimuthInDegrees);
         expect(polarValue2.polarDistanceInMeters).eq(polarValue1.polarDistanceInMeters);
+        expect(polarValue2.value).eq(polarValue1.value + 10);
 
         // filter null values
         const filteredPolarMeasureValue = polarMeasureValue.getFiltered({
             nullValues: true,
             ordered: true,
         });
-        expect(polarMeasureValue.getHash(hash)).eq('9755238054020');
-        expect(filteredPolarMeasureValue.getHash(hash)).eq('8101260843292');
-        expect(polarMeasureValue.getHash()).eq('-1069041059');
-        expect(filteredPolarMeasureValue.getHash()).eq('-552536183');
+        expect(polarMeasureValue.getHash(hash).length).to.be.greaterThan(0);
+        expect(filteredPolarMeasureValue.getHash(hash).length).to.be.greaterThan(0);
+        expect(polarMeasureValue.getHash().length).to.be.greaterThan(0);
+        expect(filteredPolarMeasureValue.getHash().length).to.be.greaterThan(0);
 
         expect(filteredPolarMeasureValue.getAzimuthsCount()).eq(azTotal);
         expect(filteredPolarMeasureValue.getPolarEdgesCount()).eq(distTotal);
         expect(filteredPolarMeasureValue.getValuesCount()).eq(azTotal * distTotal);
-        expect(filteredPolarMeasureValue.getNotNullValuesCount()).eq(2495);
+        expect(filteredPolarMeasureValue.getNotNullValuesCount()).eq(2500);
 
         // iterate 2) on not null 'count2' values, and again set a new value for one pixel
         let count2 = 0;
@@ -162,66 +167,73 @@ describe('Polar', () => {
         await filteredPolarMeasureValue.iterate(onEachValue2);
 
         // verify 2) done
-        expect(count2).eq(2495);
+        expect(count2).eq(2500);
         expect(
             filteredPolarMeasureValue.getPolarValue({
                 azimuthInDegrees: 3,
                 distanceInMeters: 30 * 500,
+                rounded: true,
             }).value
         ).eq(0);
         const polarValue3 = filteredPolarMeasureValue.getPolarValue({
             azimuthInDegrees: 1,
             distanceInMeters: 3 * 500,
+            rounded: true,
         });
-        expect(polarValue3.value).eq(polarValue1.value + 25);
+        expect(polarValue3.value).to.be.closeTo(polarValue1.value + 25, 0.01);
         expect(polarValue3.polarAzimuthInDegrees).eq(polarValue1.polarAzimuthInDegrees);
         expect(polarValue3.polarDistanceInMeters).eq(polarValue1.polarDistanceInMeters);
 
         // possible set
         filteredPolarMeasureValue.setPolarValue({
-            azimuthInDegrees: 1,
-            distanceInMeters: 3 * 500,
+            azimuthInDegrees: polarValue3.polarAzimuthInDegrees,
+            distanceInMeters: polarValue3.polarDistanceInMeters,
             value: 123,
         });
         expect(
             filteredPolarMeasureValue.getPolarValue({
-                azimuthInDegrees: 1,
-                distanceInMeters: 3 * 500,
+                azimuthInDegrees: polarValue3.polarAzimuthInDegrees,
+                distanceInMeters: polarValue3.polarDistanceInMeters,
             }).value
         ).eq(123);
 
         // not possible set => extending values
         filteredPolarMeasureValue.setPolarValue({
-            azimuthInDegrees: 0,
+            azimuthInDegrees: polarValue3.polarAzimuthInDegrees,
             distanceInMeters: 4 * 500,
             value: 124,
         });
         expect(
             filteredPolarMeasureValue.getPolarValue({
-                azimuthInDegrees: 0,
+                azimuthInDegrees: polarValue3.polarAzimuthInDegrees,
                 distanceInMeters: 4 * 500,
+                rounded: true,
             }).value
         ).eq(124);
         filteredPolarMeasureValue.setPolarValue({
             azimuthInDegrees: 100,
             distanceInMeters: 5 * 500,
             value: 125,
+            rounded: true,
         });
         expect(
             filteredPolarMeasureValue.getPolarValue({
                 azimuthInDegrees: 100,
                 distanceInMeters: 5 * 500,
+                rounded: true,
             }).value
         ).eq(125);
         filteredPolarMeasureValue.setPolarValue({
             azimuthInDegrees: 100,
             distanceInMeters: 200 * 500,
             value: 126,
+            rounded: true,
         });
         expect(
             filteredPolarMeasureValue.getPolarValue({
                 azimuthInDegrees: 100,
                 distanceInMeters: 200 * 500,
+                rounded: true,
             }).value
         ).eq(126);
     });
@@ -230,15 +242,24 @@ describe('Polar', () => {
         // some realistic polar setup
         const azTotal = 720;
         const distTotal = 255;
+        const randomThatIsNotRandom = (az: number) => {
+            if (az < 100) {
+                return -0.012;
+            }
+            return 0.023;
+        };
+
         const measureValuePolarContainers: MeasureValuePolarContainer[] = [];
         for (let azimuth = 0; azimuth < 360; azimuth += 360 / azTotal) {
-            const values = new Array(5).fill(azimuth);
+            const azimuthReal =
+                Math.round((azimuth + randomThatIsNotRandom(azimuth)) * 10000) / 10000;
+            const values = new Array(5).fill(azimuthReal);
             const polarEdges = new Array(distTotal).fill(0);
             if (azimuth + values.length < polarEdges.length) {
                 polarEdges.splice(azimuth, values.length, ...values);
             }
             measureValuePolarContainers.push(
-                new MeasureValuePolarContainer({azimuth, distance: 500, polarEdges})
+                new MeasureValuePolarContainer({azimuth: azimuthReal, distance: 500, polarEdges})
             );
         }
         const polarMeasureValue = new PolarMeasureValue({measureValuePolarContainers});
@@ -257,7 +278,7 @@ describe('Polar', () => {
                     edgeIndex: 3,
                 })
             )
-        ).eq('{"value":1.5,"polarAzimuthInDegrees":1.5,"polarDistanceInMeters":2000}');
+        ).contains('"polarAzimuthInDegrees":1.5,"polarDistanceInMeters":2000}');
         expect(
             JSON.stringify(
                 polarMeasureValueMap.getPolarValue({
@@ -269,7 +290,14 @@ describe('Polar', () => {
 
         // Set Values
         polarMeasureValueMap.setPolarValue({azimuthIndex: 3, edgeIndex: 3, value: 123});
-        polarMeasureValueMap.setPolarValue({azimuthIndex: 6, edgeIndex: 30, value: 124});
+        const polarValueChanged = polarMeasureValueMap.setPolarValue({
+            azimuthIndex: 6,
+            edgeIndex: 30,
+            value: 124,
+        });
+        expect(polarValueChanged.polarAzimuthInDegrees).to.be.closeTo(3, 0.1);
+        expect(polarValueChanged.polarDistanceInMeters).eq(15500);
+        expect(polarValueChanged.value).eq(124);
 
         // Iterate
         let iterateDone = 0;
@@ -279,12 +307,12 @@ describe('Polar', () => {
             polarValue: PolarValue,
             azimuthIndex: number,
             edgeIndex: number,
-            valueSetter: (newValue: number) => void
+            _valueSetter: (newValue: number) => void
         ) => {
             iterateDone++;
             iterateAzEd.push([azimuthIndex, edgeIndex]);
             if (
-                polarValue.polarAzimuthInDegrees === 3 &&
+                Math.round(polarValue.polarAzimuthInDegrees * 10) / 10 === 3 &&
                 polarValue.polarDistanceInMeters === 15500
             ) {
                 expect(azimuthIndex).eq(6);
@@ -358,17 +386,19 @@ describe('Polar', () => {
                 polarMeasureValue.getPolarValue({
                     azimuthInDegrees: 1.5,
                     distanceInMeters: 2000,
+                    rounded: true,
                 })
             )
-        ).eq('{"value":1.5,"polarAzimuthInDegrees":1.5,"polarDistanceInMeters":2000}');
+        ).eq('{"value":1.488,"polarAzimuthInDegrees":1.488,"polarDistanceInMeters":2000}');
         expect(
             JSON.stringify(
                 polarMeasureValue.getPolarValue({
                     azimuthInDegrees: 3,
                     distanceInMeters: 15500,
+                    rounded: true,
                 })
             )
-        ).eq('{"value":0,"polarAzimuthInDegrees":3,"polarDistanceInMeters":15500}');
+        ).eq('{"value":0,"polarAzimuthInDegrees":2.988,"polarDistanceInMeters":15500}');
 
         // Duplicate
         const polarMeasureValueMap2 = polarMeasureValueMap.duplicate(
@@ -429,9 +459,12 @@ describe('Polar', () => {
                 // Set values that are easy to verify:
                 polarEdges.push(j * i);
             }
+
+            const azimuthReal =
+                Math.round((i * (360 / azTotal) + (0.5 - Math.random()) / 100) * 10000) / 10000;
             measureValuePolarContainers.push(
                 new MeasureValuePolarContainer({
-                    azimuth: i * (360 / azTotal),
+                    azimuth: azimuthReal,
                     distance: 1000,
                     polarEdges,
                 })

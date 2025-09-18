@@ -1,5 +1,3 @@
-import {CartesianTools} from './CartesianTools';
-
 export class LatLng {
     public lat: number;
     public lng: number;
@@ -31,6 +29,22 @@ export class LatLng {
         this.lng = lng;
     }
 
+    private static roundLatLngLocal(
+        latOrLng: number,
+        scale: number,
+        needPrecision = false
+    ): number {
+        const result = Math.round(latOrLng / scale) * scale;
+        if (!needPrecision) {
+            return result;
+        }
+        return parseFloat(parseFloat('' + result).toPrecision(12));
+    }
+
+    private static limitWithPrecisionLocal(latOrLng: number, precision = 12): number {
+        return parseFloat(parseFloat('' + latOrLng).toPrecision(precision));
+    }
+
     public equals(v: LatLng) {
         return this.lat === v.lat && this.lng === v.lng;
     }
@@ -42,13 +56,13 @@ export class LatLng {
     }
 
     rounded(scale: LatLng) {
-        this.lat = CartesianTools.RoundLatLng(this.lat, scale.lat, true);
-        this.lng = CartesianTools.RoundLatLng(this.lng, scale.lng, true);
+        this.lat = LatLng.roundLatLngLocal(this.lat, scale.lat, true);
+        this.lng = LatLng.roundLatLngLocal(this.lng, scale.lng, true);
     }
 
     limitPrecision(precision = 12) {
-        this.lat = CartesianTools.LimitWithPrecision(this.lat, precision);
-        this.lng = CartesianTools.LimitWithPrecision(this.lng, precision);
+        this.lat = LatLng.limitWithPrecisionLocal(this.lat, precision);
+        this.lng = LatLng.limitWithPrecisionLocal(this.lng, precision);
     }
 
     toJSON() {
