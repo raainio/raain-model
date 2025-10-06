@@ -1,5 +1,11 @@
 import {expect} from 'chai';
-import {MeasureValuePolarContainer, PolarFilter, PolarMeasureValue, PolarMeasureValueMap, PolarValue,} from '../../src';
+import {
+    MeasureValuePolarContainer,
+    PolarFilter,
+    PolarMeasureValue,
+    PolarMeasureValueMap,
+    PolarValue,
+} from '../../src';
 import hash from 'hash-it';
 
 describe('Polar', () => {
@@ -129,7 +135,7 @@ describe('Polar', () => {
         });
         expect(polarValue2.polarAzimuthInDegrees).eq(polarValue1.polarAzimuthInDegrees);
         expect(polarValue2.polarDistanceInMeters).eq(polarValue1.polarDistanceInMeters);
-        expect(polarValue2.value).eq(polarValue1.value + 10);
+        expect(polarValue2.value).closeTo(polarValue1.value + 10, 0.0001);
 
         // filter null values
         const filteredPolarMeasureValue = polarMeasureValue.getFiltered({

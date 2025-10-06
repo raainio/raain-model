@@ -4,4 +4,7 @@ export * from './RainComputationQuality';
 export * from './RainComputationAbstract';
 export * from './RainComputation';
 export * from './RainComputationMap';
+export * from './RainComputationCumulative';
+export * from './RainSpeed';
+export * from './RainSpeedMap';
 export * from './MergeStrategy';

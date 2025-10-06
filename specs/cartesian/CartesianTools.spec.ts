@@ -299,4 +299,26 @@ describe('CartesianTools', () => {
         const pixelCount4 = cartesianTools.howManyPixelsInEarthMap(southWest2, southWest2);
         expect(pixelCount4).eq(0);
     });
+
+    it('should getSquaresInAreaFromEarthMap on a small area around 0/0 for 100km width', () => {
+        const tools = new CartesianTools(0.01);
+        const widthKm = 100;
+
+        const areaSW = new LatLng({lat: -0.1, lng: -0.2});
+        const areaNE = new LatLng({lat: 0.5, lng: 0.5});
+
+        const squares = tools.getSquaresInAreaFromEarthMap(widthKm, areaSW, areaNE);
+        expect(squares.length).to.eq(4);
+
+        // Expect at least the square centered at 0,0 to be present
+        const expectedSquare = tools.getSquareFromWidthAndCenter(
+            widthKm,
+            new LatLng({lat: 0, lng: 0})
+        );
+
+        const found = squares.some(
+            ([sw, ne]) => sw.equals(expectedSquare[0]) && ne.equals(expectedSquare[1])
+        );
+        expect(found).to.equal(true);
+    });
 });

@@ -51,7 +51,7 @@ const rainNode = new RainNode({
 ## 📚 Documentation
 
 Visit [documentation](https://raainio.github.io/raain-model)
-and [API swagger](https://api.sandbox.radartorain.com/v2/docs).
+and [API swagger](https://api.sandbox.radartorain.com/v3/docs).
 
 ### API ↔ Model Mapping
 

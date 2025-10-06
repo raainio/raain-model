@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- RainSpeed and RainSpeedMap: storing and manipulating the speed of rains
+- RainComputationCumulative: equivalent to RainComputation but with a cumulative result
+
+## [3.0.29] - 2025-09-18
+
 ### Changed
 
 - Enforce PolarMeasureValue and PolarMeasureValueMap for azimuth that are not "rounded"

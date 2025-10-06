@@ -56,8 +56,32 @@ export class CartesianMeasureValue implements ICartesianMeasureValue {
         return this.cartesianValues;
     }
 
-    setCartesianValues(cartesianValues: CartesianValue[]): void {
-        this.cartesianValues = cartesianValues;
+    setCartesianValues(cartesianValues: CartesianValue[], options?: {merge: boolean}): void {
+        let merged: CartesianValue[] = cartesianValues;
+
+        if (options?.merge) {
+            // Merge duplicates (same lat,lng) by averaging their values
+            const map = new Map<string, {sum: number; count: number; lat: number; lng: number}>();
+            for (const v of cartesianValues || []) {
+                if (v === null) {
+                    continue;
+                }
+                const key = `${v.lat}:${v.lng}`;
+                const current = map.get(key);
+                if (current) {
+                    current.sum += v.value;
+                    current.count += 1;
+                } else {
+                    map.set(key, {sum: v.value, count: 1, lat: v.lat, lng: v.lng});
+                }
+            }
+            merged = [];
+            for (const {sum, count, lat, lng} of map.values()) {
+                merged.push(new CartesianValue({lat, lng, value: sum / count}));
+            }
+        }
+
+        this.cartesianValues = merged;
     }
 
     setCartesianValuesAsString(s: string): void {

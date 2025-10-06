@@ -42,6 +42,16 @@ export class CartesianTools {
         return parseFloat(parseFloat('' + latOrLng).toPrecision(precision));
     }
 
+    public static NormalizeLongitude(lng: number): number {
+        // Normalize longitude to [-180, 180)
+        return ((lng + 540) % 360) - 180;
+    }
+
+    public static ClampLatitude(lat: number): number {
+        // Clamp latitude to [-90, 90]
+        return Math.max(-90, Math.min(90, lat));
+    }
+
     public static IsEqualsLatLng(
         latOrLng1: number,
         latOrLng2: number,
@@ -410,6 +420,72 @@ export class CartesianTools {
         return [southWest, northEast];
     }
 
+    public getSquaresInAreaFromEarthMap(
+        widthInKm: number,
+        southWest: LatLng,
+        northEast: LatLng
+    ): [LatLng, LatLng][] {
+        // Normalize bounds
+        const minLat = Math.min(southWest.lat, northEast.lat);
+        const maxLat = Math.max(southWest.lat, northEast.lat);
+        const minLng = Math.min(southWest.lng, northEast.lng);
+        const maxLng = Math.max(southWest.lng, northEast.lng);
+
+        if (widthInKm <= 0) {
+            return [];
+        }
+
+        const halfWidthKm = widthInKm / 2;
+        const latHalfDeg = halfWidthKm / 111.32; // approx km per degree latitude
+        const latStep = 2 * latHalfDeg;
+
+        // Helper: check intersection of two axis-aligned rects [SW, NE]
+        const intersects = (aSW: LatLng, aNE: LatLng, bSW: LatLng, bNE: LatLng) => {
+            return (
+                aSW.lat <= bNE.lat && aNE.lat >= bSW.lat && aSW.lng <= bNE.lng && aNE.lng >= bSW.lng
+            );
+        };
+
+        // Determine k ranges for latitude centers aligned so that 0 is a center if within range
+        const kLatStart = Math.floor(minLat / latStep);
+        const kLatEnd = Math.ceil(maxLat / latStep);
+
+        const results: [LatLng, LatLng][] = [];
+
+        for (let kLat = kLatStart; kLat <= kLatEnd; kLat++) {
+            const latCenter = CartesianTools.LimitWithPrecision(kLat * latStep);
+
+            // compute longitude step for this latitude so that squares are ~widthInKm wide in km
+            const cosLat = Math.cos(CartesianTools.DegToRad(latCenter));
+            const safeCos = Math.max(cosLat, 1e-6); // avoid division by zero near poles
+            const lngHalfDeg = halfWidthKm / (111.32 * safeCos);
+            const lngStep = 2 * lngHalfDeg;
+
+            const kLngStart = Math.floor(minLng / lngStep);
+            const kLngEnd = Math.ceil(maxLng / lngStep);
+
+            for (let kLng = kLngStart; kLng <= kLngEnd; kLng++) {
+                const lngCenter = CartesianTools.LimitWithPrecision(kLng * lngStep);
+                const center = new LatLng({lat: latCenter, lng: lngCenter});
+
+                const square = this.getSquareFromWidthAndCenter(widthInKm, center);
+                // square is already snapped to EarthMap grid via getLatLngFromEarthMap
+                if (
+                    intersects(
+                        square[0],
+                        square[1],
+                        new LatLng({lat: minLat, lng: minLng}),
+                        new LatLng({lat: maxLat, lng: maxLng})
+                    )
+                ) {
+                    results.push(square);
+                }
+            }
+        }
+
+        return results;
+    }
+
     public adjustRainNodeWithSquareWidth(rainNode: RainNode, widthInKm: number) {
         const latLngRects: [LatLng, LatLng][] = [
             this.getSquareFromWidthAndCenter(widthInKm, rainNode.getCenter()),
@@ -417,7 +493,6 @@ export class CartesianTools {
         rainNode.latLngRectsAsJSON = JSON.stringify(latLngRects);
     }
 
-    // Count how many pixels you have from a square defined by southwest and northeast coordinates
     public howManyPixelsInEarthMap(southWest: LatLng, northEast: LatLng): number {
         // Initialize the earth map
         const earthMap = EarthMap.initialize(this);

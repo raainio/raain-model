@@ -157,7 +157,6 @@ export class RaainNode implements IVersion {
         if (!linkType) {
             return this._links;
         }
-        // return this.links.filter(l => l && l.rel && linkType === l.rel);
         return this._links.filter((l) => l.getLinkType() === linkType);
     }
 

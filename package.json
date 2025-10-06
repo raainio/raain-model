@@ -1,6 +1,6 @@
 {
   "name": "raain-model",
-  "version": "3.0.29",
+  "version": "3.0.30",
   "author": "contact@radartorain.com",
   "homepage": "https://github.com/raainio/raain-model",
   "description": "radartorain.com api model",
@@ -32,28 +32,29 @@
     "docs:serve": "npx serve docs"
   },
   "devDependencies": {
+    "@eslint/eslintrc": "^3.3.1",
+    "@eslint/js": "^9.29.0",
     "@testdeck/mocha": "^0.3.3",
     "@types/chai": "^4.3.10",
+    "@types/chai-spies": "^1.0.6",
     "@types/mocha": "^10.0.1",
     "@types/node": "^20.8.8",
+    "@typescript-eslint/eslint-plugin": "^8.34.0",
+    "@typescript-eslint/parser": "^8.34.0",
     "chai": "^4.3.10",
     "chai-as-promised": "^7.1.1",
     "chai-spies": "^1.1.0",
-    "hash-it": "^6.0.0",
-    "mocha": "^10.2.0",
-    "nyc": "^17.1.0",
-    "ts-node": "^8.10.2",
-    "tslint": "^6.1.3",
-    "typedoc": "^0.25.12",
-    "typescript": "^5.0.4",
     "eslint": "^9.28.0",
     "eslint-config-prettier": "^10.1.5",
     "eslint-plugin-import": "^2.31.0",
     "eslint-plugin-prettier": "^5.4.1",
+    "hash-it": "^6.0.0",
+    "mocha": "^10.2.0",
+    "nyc": "^17.1.0",
     "prettier": "^3.5.3",
-    "@typescript-eslint/eslint-plugin": "^8.34.0",
-    "@typescript-eslint/parser": "^8.34.0",
-    "@eslint/js": "^9.29.0",
-    "@eslint/eslintrc": "^3.3.1"
+    "ts-node": "^8.10.2",
+    "tslint": "^6.1.3",
+    "typedoc": "^0.25.12",
+    "typescript": "^5.0.4"
   }
 }
