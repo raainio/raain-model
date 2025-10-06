@@ -1,7 +1,7 @@
 import * as chai from 'chai';
 import {expect} from 'chai';
+import * as chaiSpies from 'chai-spies';
 import {CartesianTools, LatLng, RainSpeed} from '../../src';
-import chaiSpies = require('chai-spies');
 
 chai.use(chaiSpies);
 
