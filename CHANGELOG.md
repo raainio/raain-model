@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- RainSpeed and RainSpeedMap: map => rainSpeeds and fixing init
+
+## [3.0.30] - 2025-10-06
+
 ### Added
 
 - RainSpeed and RainSpeedMap: storing and manipulating the speed of rains

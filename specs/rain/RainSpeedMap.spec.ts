@@ -16,9 +16,8 @@ describe('RainSpeedMap', () => {
             }),
         ];
         const date = new Date(1710000000000);
-        const map = new RainSpeedMap({map: speeds, date});
-        expect(map.map).to.equal(speeds);
-        expect(map.map.length).eq(2);
+        const map = new RainSpeedMap({rainSpeeds: speeds, date});
+        expect(map.rainSpeeds.length).eq(2);
         expect(map.date?.getTime()).eq(1710000000000);
     });
 
@@ -34,15 +33,23 @@ describe('RainSpeedMap', () => {
 
         const rs1 = new RainSpeed({azimuthInDegrees: 0, speedInMetersPerSec: 1, latLngs: [area1]});
         const rs2 = new RainSpeed({azimuthInDegrees: 90, speedInMetersPerSec: 2, latLngs: [area2]});
-        const map = new RainSpeedMap({map: [rs1, rs2]});
+        const map = new RainSpeedMap({rainSpeeds: [rs1, rs2]});
 
         // All three point shapes fall inside both areas; the first matching RainSpeed should be returned
-        expect(map.getRainSpeed(new LatLng({lat: 0, lng: 0}))).to.equal(rs1);
-        expect(map.getRainSpeed({lat: 0, lng: 0} as any)).to.equal(rs1);
-        expect(map.getRainSpeed({latitude: 0, longitude: 0} as any)).to.equal(rs1);
+        expect(map.getRainSpeed(new LatLng({lat: 0, lng: 0})).speedInMetersPerSec).to.equal(
+            rs1.speedInMetersPerSec
+        );
+        expect(map.getRainSpeed({lat: 0, lng: 0} as any).speedInMetersPerSec).to.equal(
+            rs1.speedInMetersPerSec
+        );
+        expect(map.getRainSpeed({latitude: 0, longitude: 0} as any).speedInMetersPerSec).to.equal(
+            rs1.speedInMetersPerSec
+        );
 
         // Inclusive boundary check (point on the edge)
-        expect(map.getRainSpeed(new LatLng({lat: 1, lng: 1}))).to.equal(rs1);
+        expect(map.getRainSpeed(new LatLng({lat: 1, lng: 1})).speedInMetersPerSec).to.equal(
+            rs1.speedInMetersPerSec
+        );
     });
 
     it('transpose: inside exactly one area moves point east along azimuth', () => {
@@ -51,7 +58,7 @@ describe('RainSpeedMap', () => {
             LatLng,
         ];
         const rs = new RainSpeed({azimuthInDegrees: 90, speedInMetersPerSec: 10, latLngs: [area]});
-        const map = new RainSpeedMap({map: [rs]});
+        const map = new RainSpeedMap({rainSpeeds: [rs]});
 
         const start = new CartesianValue({value: 5, lat: 0, lng: 0});
         const minutes = 60; // 10 m/s * 3600 s = 36,000 m ≈ 0.323° longitude at equator
@@ -69,7 +76,7 @@ describe('RainSpeedMap', () => {
             LatLng,
         ];
         const rs = new RainSpeed({azimuthInDegrees: 0, speedInMetersPerSec: 10, latLngs: [area]});
-        const map = new RainSpeedMap({map: [rs]});
+        const map = new RainSpeedMap({rainSpeeds: [rs]});
 
         const start = new CartesianValue({value: 1, lat: 0, lng: 0});
         const minutes = 30; // 18,000 m ≈ 0.162° latitude
@@ -89,7 +96,7 @@ describe('RainSpeedMap', () => {
             speedInMetersPerSec: 20,
             latLngs: [farArea],
         });
-        const map = new RainSpeedMap({map: [rs]});
+        const map = new RainSpeedMap({rainSpeeds: [rs]});
 
         const start = new CartesianValue({value: 7, lat: 0, lng: 0});
         const out = map.transpose(start, 15);
@@ -109,7 +116,7 @@ describe('RainSpeedMap', () => {
         ];
         const rs1 = new RainSpeed({azimuthInDegrees: 0, speedInMetersPerSec: 5, latLngs: [area1]});
         const rs2 = new RainSpeed({azimuthInDegrees: 90, speedInMetersPerSec: 5, latLngs: [area2]});
-        const map = new RainSpeedMap({map: [rs1, rs2]});
+        const map = new RainSpeedMap({rainSpeeds: [rs1, rs2]});
 
         const start = new CartesianValue({value: 3, lat: 0, lng: 0});
         const out = map.transpose(start, 10);
@@ -124,7 +131,7 @@ describe('RainSpeedMap', () => {
             LatLng,
         ];
         const rs = new RainSpeed({azimuthInDegrees: 45, speedInMetersPerSec: 0, latLngs: [area]});
-        const map = new RainSpeedMap({map: [rs]});
+        const map = new RainSpeedMap({rainSpeeds: [rs]});
 
         const start = new CartesianValue({value: 9, lat: 0.2, lng: -0.1});
         const out1 = map.transpose(start, 15); // speed 0
@@ -132,7 +139,7 @@ describe('RainSpeedMap', () => {
         expect(out1.lng).eq(-0.1);
 
         const rs2 = new RainSpeed({azimuthInDegrees: 45, speedInMetersPerSec: 10, latLngs: [area]});
-        const map2 = new RainSpeedMap({map: [rs2]});
+        const map2 = new RainSpeedMap({rainSpeeds: [rs2]});
         const out2 = map2.transpose(start, 0); // minutes 0
         expect(out2.lat).eq(0.2);
         expect(out2.lng).eq(-0.1);

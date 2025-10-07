@@ -20,7 +20,9 @@ export class RainSpeed {
         this.azimuthInDegrees = json.azimuthInDegrees;
         this.speedInMetersPerSec = json.speedInMetersPerSec;
         this.trustRatio = json.trustRatio ?? -1;
-        this.date = json.date;
+        if (json.date) {
+            this.date = json.date;
+        }
         this.setArea(json.latLngs);
     }
 

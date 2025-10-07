@@ -40,14 +40,16 @@ export class RainComputationCumulative extends RainComputationAbstract {
         this.cumulative = json.cumulative;
     }
 
-    protected _cumulative: RainCartesianMeasureValue;
+    protected _cumulative?: RainCartesianMeasureValue;
 
     public get cumulative() {
         return this._cumulative;
     }
 
-    public set cumulative(cumulative: RainCartesianMeasureValue) {
-        this._cumulative = new RainCartesianMeasureValue(cumulative as any);
+    public set cumulative(cumulative: RainCartesianMeasureValue | undefined) {
+        if (cumulative) {
+            this._cumulative = new RainCartesianMeasureValue(cumulative as any);
+        }
     }
 
     public toJSON(options = {stringify: false}) {
@@ -56,7 +58,7 @@ export class RainComputationCumulative extends RainComputationAbstract {
             ...json,
             provider: this.provider,
             timeStepInMinutes: this.timeStepInMinutes,
-            cumulative: this._cumulative.toJSON(options),
+            cumulative: this._cumulative?.toJSON(options),
         };
     }
 

@@ -5,12 +5,14 @@ import {CartesianTools, CartesianValue, LatLng} from '../cartesian';
  *  api/rains/:rainId/computations/:rainHistoryId/speeds => RainSpeedMap.map => RainSpeed[]
  */
 export class RainSpeedMap {
-    public map: RainSpeed[];
+    public rainSpeeds: RainSpeed[];
     public date?: Date;
 
-    constructor(json: {map: RainSpeed[]; date?: Date}) {
-        this.map = json.map;
-        this.date = json.date;
+    constructor(json: {rainSpeeds: RainSpeed[]; date?: Date}) {
+        this.rainSpeeds = json.rainSpeeds.map((s) => new RainSpeed(s));
+        if (json.date) {
+            this.date = new Date(json.date);
+        }
     }
 
     getRainSpeed(
@@ -42,7 +44,7 @@ export class RainSpeedMap {
         }
 
         // retrieve the first RainSpeed whose area contains the point
-        for (const rs of this.map ?? []) {
+        for (const rs of this.rainSpeeds ?? []) {
             const rects = rs?.latLngs ?? [];
             for (const rect of rects) {
                 const [p1, p2] = rect || ([] as unknown as [LatLng, LatLng]);
@@ -68,7 +70,7 @@ export class RainSpeedMap {
         const lng = cartesianValue.lng;
 
         // find matching RainSpeed areas that contain the point
-        const matches = this.map.filter((rs) =>
+        const matches = this.rainSpeeds.filter((rs) =>
             (rs?.latLngs ?? []).some(([p1, p2]) => {
                 if (!p1 || !p2) {
                     return false;
