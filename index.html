@@ -4,22 +4,39 @@
 <a href="https://eslint.org/"><img src="https://img.shields.io/badge/ESLint-9.28.0-purple.svg" alt="ESLint"></a>
 <a href="https://github.com/raainio/raain-model/actions"><img src="https://github.com/raainio/raain-model/actions/workflows/ci.yml/badge.svg" alt="Build Status"></a></p>
 <blockquote>
-<p>A TypeScript library for radar-based rain measurement and analysis, used in <a href="https://radartorain.com">radartorain.com</a>
-services.</p>
+<p>Shared TypeScript data models and utilities for radar-based rainfall analysis, used across
+all <a href="https://radartorain.com">radartorain.com</a> services.</p>
 </blockquote>
+<a id="md:overview" class="tsd-anchor"></a><h2><a href="#md:overview">Overview</a></h2><p><strong>raain-model</strong> is the foundational model library for the Raain ecosystem, providing type-safe data structures,
+coordinate transformations, and measurement utilities for converting weather radar data into actionable rainfall
+measurements.</p>
 <a id="md:🌟-features" class="tsd-anchor"></a><h2><a href="#md:🌟-features">🌟 Features</a></h2><ul>
-<li><strong>Cartesian &amp; Polar Coordinates</strong>: Support for both coordinate systems</li>
-<li><strong>Advanced Merging</strong>: Sophisticated merging strategies for rain data</li>
-<li><strong>Quality Assessment</strong>: Built-in quality metrics for measurements</li>
-<li><strong>TypeScript Support</strong>: Full type safety and modern TypeScript features</li>
+<li><strong>Dual Coordinate Systems</strong>: Full support for both Cartesian (x, y) and Polar (azimuth, range) coordinate systems</li>
+<li><strong>Radar &amp; Gauge Integration</strong>: Models for radar stations, rain gauges, and their measurements</li>
+<li><strong>Quality Assessment</strong>: Built-in quality metrics and comparison tools for radar vs gauge validation</li>
+<li><strong>Rain Computations</strong>: Aggregated rain calculations with map representations and cumulative tracking</li>
+<li><strong>Speed &amp; History Tracking</strong>: Rain speed monitoring and historical data management</li>
+<li><strong>Organization Models</strong>: Team management, user roles, and notification events</li>
+<li><strong>Type Safety</strong>: Full TypeScript support with comprehensive type definitions</li>
+<li><strong>Coordinate Transformations</strong>: CartesianTools and EarthMap utilities for geographic calculations</li>
 </ul>
 <a id="md:🚀-installation" class="tsd-anchor"></a><h2><a href="#md:🚀-installation">🚀 Installation</a></h2><pre><code class="language-bash"><span class="hl-0">npm</span><span class="hl-1"> </span><span class="hl-2">install</span><span class="hl-1"> </span><span class="hl-2">raain-model</span><br/><span class="hl-3"># or</span><br/><span class="hl-0">yarn</span><span class="hl-1"> </span><span class="hl-2">add</span><span class="hl-1"> </span><span class="hl-2">raain-model</span>
 </code><button>Copy</button></pre>
-<a id="md:📖-quick-start" class="tsd-anchor"></a><h2><a href="#md:📖-quick-start">📖 Quick Start</a></h2><pre><code class="language-typescript"><span class="hl-4">import</span><span class="hl-1"> {</span><span class="hl-5">RainNode</span><span class="hl-1">, </span><span class="hl-5">RadarNode</span><span class="hl-1">} </span><span class="hl-4">from</span><span class="hl-1"> </span><span class="hl-2">&#39;raain-model&#39;</span><span class="hl-1">;</span><br/><br/><span class="hl-3">// Create a radar node</span><br/><span class="hl-6">const</span><span class="hl-1"> </span><span class="hl-7">radarNode</span><span class="hl-1"> = </span><span class="hl-6">new</span><span class="hl-1"> </span><span class="hl-0">RadarNode</span><span class="hl-1">({</span><br/><span class="hl-1">    </span><span class="hl-5">id:</span><span class="hl-1"> </span><span class="hl-2">&#39;radar1&#39;</span><span class="hl-1">,</span><br/><span class="hl-1">    </span><span class="hl-5">latitude:</span><span class="hl-1"> </span><span class="hl-8">48.8566</span><span class="hl-1">,</span><br/><span class="hl-1">    </span><span class="hl-5">longitude:</span><span class="hl-1"> </span><span class="hl-8">2.3522</span><span class="hl-1">,</span><br/><span class="hl-1">    </span><span class="hl-5">name:</span><span class="hl-1"> </span><span class="hl-2">&#39;Paris Radar&#39;</span><span class="hl-1">,</span><br/><span class="hl-1">    </span><span class="hl-5">team:</span><span class="hl-1"> </span><span class="hl-6">null</span><br/><span class="hl-1">});</span><br/><br/><span class="hl-3">// Create a rain node</span><br/><span class="hl-6">const</span><span class="hl-1"> </span><span class="hl-7">rainNode</span><span class="hl-1"> = </span><span class="hl-6">new</span><span class="hl-1"> </span><span class="hl-0">RainNode</span><span class="hl-1">({</span><br/><span class="hl-1">    </span><span class="hl-5">id:</span><span class="hl-1"> </span><span class="hl-2">&#39;rain1&#39;</span><span class="hl-1">,</span><br/><span class="hl-1">    </span><span class="hl-5">name:</span><span class="hl-1"> </span><span class="hl-2">&#39;Paris Rain&#39;</span><span class="hl-1">,</span><br/><span class="hl-1">    </span><span class="hl-5">team:</span><span class="hl-1"> </span><span class="hl-6">null</span><span class="hl-1">,</span><br/><span class="hl-1">    </span><span class="hl-5">radars:</span><span class="hl-1"> [</span><span class="hl-5">radarNode</span><span class="hl-1">]</span><br/><span class="hl-1">});</span><br/>
+<a id="md:📖-quick-start" class="tsd-anchor"></a><h2><a href="#md:📖-quick-start">📖 Quick Start</a></h2><pre><code class="language-typescript"><span class="hl-4">import</span><span class="hl-1"> {</span><span class="hl-5">RainNode</span><span class="hl-1">, </span><span class="hl-5">RadarNode</span><span class="hl-1">, </span><span class="hl-5">GaugeNode</span><span class="hl-1">, </span><span class="hl-5">RainComputationMap</span><span class="hl-1">} </span><span class="hl-4">from</span><span class="hl-1"> </span><span class="hl-2">&#39;raain-model&#39;</span><span class="hl-1">;</span><br/><br/><span class="hl-3">// Create a radar node</span><br/><span class="hl-6">const</span><span class="hl-1"> </span><span class="hl-7">radarNode</span><span class="hl-1"> = </span><span class="hl-6">new</span><span class="hl-1"> </span><span class="hl-0">RadarNode</span><span class="hl-1">({</span><br/><span class="hl-1">    </span><span class="hl-5">id:</span><span class="hl-1"> </span><span class="hl-2">&#39;radar1&#39;</span><span class="hl-1">,</span><br/><span class="hl-1">    </span><span class="hl-5">latitude:</span><span class="hl-1"> </span><span class="hl-8">48.8566</span><span class="hl-1">,</span><br/><span class="hl-1">    </span><span class="hl-5">longitude:</span><span class="hl-1"> </span><span class="hl-8">2.3522</span><span class="hl-1">,</span><br/><span class="hl-1">    </span><span class="hl-5">name:</span><span class="hl-1"> </span><span class="hl-2">&#39;Paris Radar&#39;</span><span class="hl-1">,</span><br/><span class="hl-1">    </span><span class="hl-5">team:</span><span class="hl-1"> </span><span class="hl-6">null</span><br/><span class="hl-1">});</span><br/><br/><span class="hl-3">// Create a rain gauge node</span><br/><span class="hl-6">const</span><span class="hl-1"> </span><span class="hl-7">gaugeNode</span><span class="hl-1"> = </span><span class="hl-6">new</span><span class="hl-1"> </span><span class="hl-0">GaugeNode</span><span class="hl-1">({</span><br/><span class="hl-1">    </span><span class="hl-5">id:</span><span class="hl-1"> </span><span class="hl-2">&#39;gauge1&#39;</span><span class="hl-1">,</span><br/><span class="hl-1">    </span><span class="hl-5">latitude:</span><span class="hl-1"> </span><span class="hl-8">48.8566</span><span class="hl-1">,</span><br/><span class="hl-1">    </span><span class="hl-5">longitude:</span><span class="hl-1"> </span><span class="hl-8">2.3522</span><span class="hl-1">,</span><br/><span class="hl-1">    </span><span class="hl-5">name:</span><span class="hl-1"> </span><span class="hl-2">&#39;Paris Gauge&#39;</span><span class="hl-1">,</span><br/><span class="hl-1">    </span><span class="hl-5">team:</span><span class="hl-1"> </span><span class="hl-6">null</span><br/><span class="hl-1">});</span><br/><br/><span class="hl-3">// Create a rain node with radar coverage</span><br/><span class="hl-6">const</span><span class="hl-1"> </span><span class="hl-7">rainNode</span><span class="hl-1"> = </span><span class="hl-6">new</span><span class="hl-1"> </span><span class="hl-0">RainNode</span><span class="hl-1">({</span><br/><span class="hl-1">    </span><span class="hl-5">id:</span><span class="hl-1"> </span><span class="hl-2">&#39;rain1&#39;</span><span class="hl-1">,</span><br/><span class="hl-1">    </span><span class="hl-5">name:</span><span class="hl-1"> </span><span class="hl-2">&#39;Paris Rain Zone&#39;</span><span class="hl-1">,</span><br/><span class="hl-1">    </span><span class="hl-5">team:</span><span class="hl-1"> </span><span class="hl-6">null</span><span class="hl-1">,</span><br/><span class="hl-1">    </span><span class="hl-5">radars:</span><span class="hl-1"> [</span><span class="hl-5">radarNode</span><span class="hl-1">],</span><br/><span class="hl-1">    </span><span class="hl-5">gauges:</span><span class="hl-1"> [</span><span class="hl-5">gaugeNode</span><span class="hl-1">]</span><br/><span class="hl-1">});</span>
 </code><button>Copy</button></pre>
 <a id="md:📚-documentation" class="tsd-anchor"></a><h2><a href="#md:📚-documentation">📚 Documentation</a></h2><p>Visit <a href="https://raainio.github.io/raain-model">documentation</a>
 and <a href="https://api.sandbox.radartorain.com/v3/docs">API swagger</a>.</p>
-<a id="md:api-↔-model-mapping" class="tsd-anchor"></a><h3><a href="#md:api-↔-model-mapping">API ↔ Model Mapping</a></h3><p>The following table lists which REST API endpoints return or accept which model classes in this library:</p>
+<a id="md:api-↔-model-mapping" class="tsd-anchor"></a><h3><a href="#md:api-↔-model-mapping">API ↔ Model Mapping</a></h3><blockquote>
+<p><strong>⚠️ IMPORTANT</strong>: Keep this section up to date when adding new API endpoints or model classes. This mapping is
+critical for API consumers to understand which models to expect from each endpoint.
+<strong>Validation Rules:</strong></p>
+<ul>
+<li>Every endpoint listed here MUST exist in Raain Api Routes</li>
+<li>Every model class MUST have the endpoint documented in its source file header (e.g., <code>RainNode.ts</code>)</li>
+<li>Before adding an endpoint, verify it exists in both locations</li>
+</ul>
+</blockquote>
+<p>The following table lists which REST API endpoints return or accept which model classes in this library:</p>
 <table>
 <thead>
 <tr>
@@ -34,14 +51,14 @@ and <a href="https://api.sandbox.radartorain.com/v3/docs">API swagger</a>.</p>
 <td>Radar station metadata</td>
 </tr>
 <tr>
-<td><code>api/radars/:id/measures/:id</code></td>
+<td><code>api/radars/:id/measures/:measureId</code></td>
 <td><code>RadarMeasure</code></td>
-<td>Single radar measure</td>
+<td>Single radar measure with polar data</td>
 </tr>
 <tr>
-<td><code>api/radars/:id?format=map&amp;...</code></td>
-<td><code>RadarNodeMap</code></td>
-<td>Map/coverage for a radar</td>
+<td><code>api/radars/:id/measures?begin=...&amp;end=...</code></td>
+<td><code>RadarMeasure[]</code></td>
+<td>List of radar measures for date range</td>
 </tr>
 <tr>
 <td><code>api/gauges/:id</code></td>
@@ -49,9 +66,9 @@ and <a href="https://api.sandbox.radartorain.com/v3/docs">API swagger</a>.</p>
 <td>Rain gauge metadata</td>
 </tr>
 <tr>
-<td><code>api/gauges/:id/measures/:id</code></td>
-<td><code>GaugeMeasure</code></td>
-<td>Single gauge measure</td>
+<td><code>api/gauges/:id/measures?begin=...&amp;end=...</code></td>
+<td><code>GaugeMeasure[]</code></td>
+<td>List of gauge measures for date range</td>
 </tr>
 <tr>
 <td><code>api/gauges/:id?format=map&amp;begin=...</code></td>
@@ -61,12 +78,12 @@ and <a href="https://api.sandbox.radartorain.com/v3/docs">API swagger</a>.</p>
 <tr>
 <td><code>api/rains/:id</code></td>
 <td><code>RainNode</code></td>
-<td>Rain aggregation entity</td>
+<td>Rain zone entity</td>
 </tr>
 <tr>
 <td><code>api/rains/:id/computations/:computationId</code></td>
 <td><code>RainComputation</code></td>
-<td>One computation result (list of measures)</td>
+<td>One computation result</td>
 </tr>
 <tr>
 <td><code>api/rains/:id/computations?format=id&amp;begin=...</code></td>
@@ -84,47 +101,97 @@ and <a href="https://api.sandbox.radartorain.com/v3/docs">API swagger</a>.</p>
 <td>List of maps over period</td>
 </tr>
 <tr>
-<td><code>api/rains/:id/computations?format=compare&amp;begin=...&amp;gauges=[...]</code></td>
-<td><code>RainComputationQuality</code></td>
-<td>Quality/compare metrics</td>
+<td><code>api/rains/:id/computations/:computationId/speeds</code></td>
+<td><code>RainSpeedMap</code></td>
+<td>Rain speed map for a computation</td>
 </tr>
 <tr>
-<td><code>api/notifications/:id</code></td>
-<td><code>EventNode</code></td>
-<td>Notification/event payload</td>
+<td><code>api/rains/:id/computations/:computationId/compares?date=...</code></td>
+<td><code>RainComputationQuality[]</code></td>
+<td>Quality/compare metrics (radar vs gauge)</td>
 </tr>
 <tr>
-<td><code>api/teams?name=customerTeam</code></td>
+<td><code>api/rains/:id/cumulative/:cumulativeId</code></td>
+<td><code>RainComputationCumulative</code></td>
+<td>Cumulative computation</td>
+</tr>
+<tr>
+<td><code>api/notifications</code></td>
+<td><code>EventNode[]</code></td>
+<td>List of user notifications</td>
+</tr>
+<tr>
+<td><code>api/teams/:id</code></td>
+<td><code>TeamNode</code></td>
+<td>Team/organization entity</td>
+</tr>
+<tr>
+<td><code>api/teams?name=...</code></td>
 <td><code>TeamNode</code></td>
 <td>Team lookup by name</td>
 </tr>
 <tr>
-<td><code>api/teams/:id</code></td>
-<td><code>PeopleNode</code></td>
+<td><code>api/teams/:id/people</code></td>
+<td><code>PeopleNode[]</code></td>
 <td>People related to a team</td>
 </tr>
 </tbody></table>
-<a id="md:memory-bank" class="tsd-anchor"></a><h3><a href="#md:memory-bank">Memory Bank</a></h3><p>This project uses a Memory Bank for comprehensive documentation and context retention. The Memory Bank is located in the
-<a href="./.memory-bank">.memory-bank</a> directory and contains the following files:</p>
+<p><strong>Note</strong>: All endpoints are prefixed with the API version (e.g., <code>/v3/api/...</code>).</p>
+<a id="md:core-model-categories" class="tsd-anchor"></a><h3><a href="#md:core-model-categories">Core Model Categories</a></h3><p><strong>Organization &amp; Management</strong></p>
 <ul>
-<li><code>memory-bank-rules.md</code>: Rules to follow and to consider in all contexts</li>
-<li><code>projectbrief.md</code>: Overview of the project, core requirements, and goals</li>
-<li><code>productContext.md</code>: Why the project exists, problems it solves, and how it works</li>
-<li><code>systemPatterns.md</code>: System architecture, key technical decisions, and design patterns</li>
-<li><code>techContext.md</code>: Technologies used, development setup, and technical constraints</li>
-<li><code>activeContext.md</code>: Current work focus, recent changes, and next steps</li>
-<li><code>progress.md</code>: What works, what&#39;s left to build, and known issues</li>
+<li><code>RainNode</code>: Rain zone with radar(s) coverage</li>
+<li><code>RadarNode</code>: Radar station metadata and configuration</li>
+<li><code>GaugeNode</code>: Physical rain gauge station</li>
+<li><code>TeamNode</code>: Team/organization entity</li>
+<li><code>PeopleNode</code>: User/person entity with roles</li>
+<li><code>EventNode</code>: Notification/event payload</li>
 </ul>
-<p>Note: These files are used by AI assistants whose memory resets between sessions. They MUST be reviewed at the start of
-every task and kept up-to-date.</p>
-<a id="md:key-components" class="tsd-anchor"></a><h3><a href="#md:key-components">Key Components</a></h3><ul>
-<li><code>RainNode</code>: Rain zone</li>
-<li><code>RadarNode</code>: Radar station</li>
-<li><code>RainComputationMap</code>: Rain computation data</li>
-<li><code>SpeedMatrix</code>: Quality matrix</li>
+<p><strong>Measurements</strong></p>
+<ul>
+<li><code>RadarMeasure</code>: Single radar measurement with polar data</li>
+<li><code>GaugeMeasure</code>: Single gauge measurement</li>
+<li><code>RainMeasure</code>: Aggregated rain measurement</li>
+<li><code>RainComputation</code>: Rain computation result</li>
+<li><code>RainComputationCumulative</code>: Cumulative rain computation over time</li>
 </ul>
-<a id="md:🧪-testing" class="tsd-anchor"></a><h2><a href="#md:🧪-testing">🧪 Testing</a></h2><pre><code class="language-bash"><span class="hl-3"># Run all tests</span><br/><span class="hl-0">npm</span><span class="hl-1"> </span><span class="hl-2">test</span><br/><br/><span class="hl-3"># Run tests with coverage</span><br/><span class="hl-0">npm</span><span class="hl-1"> </span><span class="hl-2">run</span><span class="hl-1"> </span><span class="hl-2">test:coverage</span>
+<p><strong>Coordinate Systems</strong></p>
+<ul>
+<li><code>CartesianMeasureValue</code>: Cartesian (x, y) rain map data</li>
+<li><code>PolarMeasureValue</code>: Polar (azimuth, range) radar data</li>
+<li><code>PolarMeasureValueMap</code>: Collection of polar measurements</li>
+<li><code>LatLng</code>: Geographic coordinates (latitude/longitude)</li>
+<li><code>EarthMap</code>: Singleton for earth coordinate mapping</li>
+<li><code>CartesianTools</code>: Utilities for geographic calculations</li>
+</ul>
+<p><strong>Data Visualization</strong></p>
+<ul>
+<li><code>RadarNodeMap</code>: Radar coverage/map visualization</li>
+<li><code>GaugeNodeMap</code>: Gauge data over time window</li>
+<li><code>RainComputationMap</code>: Rain computation as cartesian map</li>
+</ul>
+<p><strong>Quality &amp; Analysis</strong></p>
+<ul>
+<li><code>RainComputationQuality</code>: Quality metrics comparing radar vs gauge</li>
+<li><code>SpeedMatrix</code>: Quality assessment matrix</li>
+<li><code>RainSpeed</code> / <code>RainSpeedMap</code>: Rain speed tracking and storage</li>
+</ul>
+<a id="md:🌍-coordinate-systems-explained" class="tsd-anchor"></a><h4><a href="#md:🌍-coordinate-systems-explained">🌍 Coordinate Systems Explained</a></h4><p>The library supports two coordinate systems for different use cases:</p>
+<p><strong>Polar Coordinates (azimuth, range)</strong></p>
+<ul>
+<li>Native radar measurement format</li>
+<li>Azimuth: angle from north (0-360°)</li>
+<li>Range: distance from radar (in meters)</li>
+<li>Used for raw radar data processing</li>
+</ul>
+<p><strong>Cartesian Coordinates (x, y)</strong></p>
+<ul>
+<li>Grid-based representation</li>
+<li>Used for rain maps and visualizations</li>
+<li>Easier for geographic calculations and mapping</li>
+<li>Transformation utilities provided via <code>CartesianTools</code></li>
+</ul>
+<a id="md:🛠️-feel-free-to-contribute" class="tsd-anchor"></a><h2><a href="#md:🛠️-feel-free-to-contribute">🛠️ Feel free to contribute</a></h2><pre><code class="language-bash"><span class="hl-3"># Install dependencies</span><br/><span class="hl-0">npm</span><span class="hl-1"> </span><span class="hl-2">i</span><br/><br/><span class="hl-3"># ... Do your changes ...</span><br/><br/><span class="hl-3"># Linting and formatting</span><br/><span class="hl-0">npm</span><span class="hl-1"> </span><span class="hl-2">run</span><span class="hl-1"> </span><span class="hl-2">bp:style:fix</span><br/><br/><span class="hl-3"># Run all tests</span><br/><span class="hl-0">npm</span><span class="hl-1"> </span><span class="hl-2">test</span><br/><br/><span class="hl-3"># (optional) Compile TypeScript</span><br/><span class="hl-0">npm</span><span class="hl-1"> </span><span class="hl-2">run</span><span class="hl-1"> </span><span class="hl-2">build</span><br/><br/><span class="hl-3"># PR it :)</span>
 </code><button>Copy</button></pre>
+<a id="md:📅-changelog" class="tsd-anchor"></a><h2><a href="#md:📅-changelog">📅 Changelog</a></h2><p>See <a href="./CHANGELOG.md">CHANGELOG.md</a> for version history and changes.</p>
 <a id="md:📝-license" class="tsd-anchor"></a><h2><a href="#md:📝-license">📝 License</a></h2><p>This project is licensed under the MIT License - see the <a href="LICENSE">LICENSE</a> file for details.</p>
-<a id="md:📅-changelog" class="tsd-anchor"></a><h2><a href="#md:📅-changelog">📅 Changelog</a></h2><p>See <a href="./CHANGELOG.md">Changelog</a> for version history and changes.</p>
-</div></div><div class="col-sidebar"><div class="page-menu"><div class="tsd-navigation settings"><details class="tsd-index-accordion"><summary class="tsd-accordion-summary"><h3><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><use href="assets/icons.svg#icon-chevronDown"></use></svg>Settings</h3></summary><div class="tsd-accordion-details"><div class="tsd-filter-visibility"><h4 class="uppercase">Member Visibility</h4><form><ul id="tsd-filter-options"><li class="tsd-filter-item"><label class="tsd-filter-input"><input type="checkbox" id="tsd-filter-inherited" name="inherited" checked/><svg width="32" height="32" viewBox="0 0 32 32" aria-hidden="true"><rect class="tsd-checkbox-background" width="30" height="30" x="1" y="1" rx="6" fill="none"></rect><path class="tsd-checkbox-checkmark" d="M8.35422 16.8214L13.2143 21.75L24.6458 10.25" stroke="none" stroke-width="3.5" stroke-linejoin="round" fill="none"></path></svg><span>Inherited</span></label></li></ul></form></div><div class="tsd-theme-toggle"><h4 class="uppercase">Theme</h4><select id="tsd-theme"><option value="os">OS</option><option value="light">Light</option><option value="dark">Dark</option></select></div></div></details></div><details open class="tsd-index-accordion tsd-page-navigation"><summary class="tsd-accordion-summary"><h3><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><use href="assets/icons.svg#icon-chevronDown"></use></svg>On This Page</h3></summary><div class="tsd-accordion-details"><a href="#md:🌧️-raain-model"><span>🌧️ RAAIN <wbr/>Model</span></a><ul><li><a href="#md:🌟-features"><span>🌟 <wbr/>Features</span></a></li><li><a href="#md:🚀-installation"><span>🚀 <wbr/>Installation</span></a></li><li><a href="#md:📖-quick-start"><span>📖 <wbr/>Quick <wbr/>Start</span></a></li><li><a href="#md:📚-documentation"><span>📚 <wbr/>Documentation</span></a></li><li><ul><li><a href="#md:api-↔-model-mapping"><span>API ↔ <wbr/>Model <wbr/>Mapping</span></a></li><li><a href="#md:memory-bank"><span>Memory <wbr/>Bank</span></a></li><li><a href="#md:key-components"><span>Key <wbr/>Components</span></a></li></ul></li><li><a href="#md:🧪-testing"><span>🧪 <wbr/>Testing</span></a></li><li><a href="#md:📝-license"><span>📝 <wbr/>License</span></a></li><li><a href="#md:📅-changelog"><span>📅 <wbr/>Changelog</span></a></li></ul></div></details></div><div class="site-menu"><nav class="tsd-navigation"><a href="modules.html" class="current"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="assets/icons.svg#icon-1"></use></svg><span>RadarToRain Model Documentation</span></a><ul class="tsd-small-nested-navigation" id="tsd-nav-container" data-base="."><li>Loading...</li></ul></nav></div></div></div><footer></footer><div class="overlay"></div></body></html>
+</div></div><div class="col-sidebar"><div class="page-menu"><div class="tsd-navigation settings"><details class="tsd-index-accordion"><summary class="tsd-accordion-summary"><h3><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><use href="assets/icons.svg#icon-chevronDown"></use></svg>Settings</h3></summary><div class="tsd-accordion-details"><div class="tsd-filter-visibility"><h4 class="uppercase">Member Visibility</h4><form><ul id="tsd-filter-options"><li class="tsd-filter-item"><label class="tsd-filter-input"><input type="checkbox" id="tsd-filter-inherited" name="inherited" checked/><svg width="32" height="32" viewBox="0 0 32 32" aria-hidden="true"><rect class="tsd-checkbox-background" width="30" height="30" x="1" y="1" rx="6" fill="none"></rect><path class="tsd-checkbox-checkmark" d="M8.35422 16.8214L13.2143 21.75L24.6458 10.25" stroke="none" stroke-width="3.5" stroke-linejoin="round" fill="none"></path></svg><span>Inherited</span></label></li></ul></form></div><div class="tsd-theme-toggle"><h4 class="uppercase">Theme</h4><select id="tsd-theme"><option value="os">OS</option><option value="light">Light</option><option value="dark">Dark</option></select></div></div></details></div><details open class="tsd-index-accordion tsd-page-navigation"><summary class="tsd-accordion-summary"><h3><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><use href="assets/icons.svg#icon-chevronDown"></use></svg>On This Page</h3></summary><div class="tsd-accordion-details"><a href="#md:🌧️-raain-model"><span>🌧️ RAAIN <wbr/>Model</span></a><ul><li><a href="#md:overview"><span>Overview</span></a></li><li><a href="#md:🌟-features"><span>🌟 <wbr/>Features</span></a></li><li><a href="#md:🚀-installation"><span>🚀 <wbr/>Installation</span></a></li><li><a href="#md:📖-quick-start"><span>📖 <wbr/>Quick <wbr/>Start</span></a></li><li><a href="#md:📚-documentation"><span>📚 <wbr/>Documentation</span></a></li><li><ul><li><a href="#md:api-↔-model-mapping"><span>API ↔ <wbr/>Model <wbr/>Mapping</span></a></li><li><a href="#md:core-model-categories"><span>Core <wbr/>Model <wbr/>Categories</span></a></li><li><ul><li><a href="#md:🌍-coordinate-systems-explained"><span>🌍 <wbr/>Coordinate <wbr/>Systems <wbr/>Explained</span></a></li></ul></li></ul></li><li><a href="#md:🛠️-feel-free-to-contribute"><span>🛠️ <wbr/>Feel free to contribute</span></a></li><li><a href="#md:📅-changelog"><span>📅 <wbr/>Changelog</span></a></li><li><a href="#md:📝-license"><span>📝 <wbr/>License</span></a></li></ul></div></details></div><div class="site-menu"><nav class="tsd-navigation"><a href="modules.html" class="current"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="assets/icons.svg#icon-1"></use></svg><span>RadarToRain Model Documentation</span></a><ul class="tsd-small-nested-navigation" id="tsd-nav-container" data-base="."><li>Loading...</li></ul></nav></div></div></div><footer></footer><div class="overlay"></div></body></html>
