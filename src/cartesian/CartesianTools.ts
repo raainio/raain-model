@@ -116,6 +116,10 @@ export class CartesianTools {
         return (azimuthInDegrees * Math.PI) / 180;
     }
 
+    public static RadToDeg(azimuthInDegrees: number) {
+        return (azimuthInDegrees * 180) / Math.PI;
+    }
+
     public static GetAzimuthRad(angleInDegrees: number): number {
         return CartesianTools.DegToRad(-angleInDegrees + 90);
     }
