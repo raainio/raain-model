@@ -105,26 +105,6 @@ describe('RainSpeedMap', () => {
         expect(out.value).eq(7);
     });
 
-    it('transpose: unchanged when multiple matching areas (ambiguous)', () => {
-        const area1 = [new LatLng({lat: -1, lng: -1}), new LatLng({lat: 1, lng: 1})] as [
-            LatLng,
-            LatLng,
-        ];
-        const area2 = [new LatLng({lat: -0.5, lng: -0.5}), new LatLng({lat: 0.5, lng: 0.5})] as [
-            LatLng,
-            LatLng,
-        ];
-        const rs1 = new RainSpeed({azimuthInDegrees: 0, speedInMetersPerSec: 5, latLngs: [area1]});
-        const rs2 = new RainSpeed({azimuthInDegrees: 90, speedInMetersPerSec: 5, latLngs: [area2]});
-        const map = new RainSpeedMap({rainSpeeds: [rs1, rs2]});
-
-        const start = new CartesianValue({value: 3, lat: 0, lng: 0});
-        const out = map.transpose(start, 10);
-        expect(out.lat).eq(0);
-        expect(out.lng).eq(0);
-        expect(out.value).eq(3);
-    });
-
     it('transpose: unchanged when distance is zero (zero minutes or speed)', () => {
         const area = [new LatLng({lat: -1, lng: -1}), new LatLng({lat: 1, lng: 1})] as [
             LatLng,

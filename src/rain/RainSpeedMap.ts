@@ -46,89 +46,33 @@ export class RainSpeedMap {
         // retrieve the first RainSpeed whose area contains the point
         for (const rs of this.rainSpeeds ?? []) {
             const rects = rs?.latLngs ?? [];
-            for (const rect of rects) {
-                const [p1, p2] = rect || ([] as unknown as [LatLng, LatLng]);
-                if (!p1 || !p2) {
-                    continue;
-                }
-                const minLat = Math.min(p1.lat, p2.lat);
-                const maxLat = Math.max(p1.lat, p2.lat);
-                const minLng = Math.min(p1.lng, p2.lng);
-                const maxLng = Math.max(p1.lng, p2.lng);
-                if (lat >= minLat && lat <= maxLat && lng >= minLng && lng <= maxLng) {
-                    return rs;
-                }
+            if (CartesianTools.IsPointInAnyRect(lat, lng, rects)) {
+                return rs;
             }
         }
         return undefined;
     }
 
     transpose(cartesianValue: CartesianValue, diffInMinutes: number) {
-        const value = cartesianValue.value;
-
         const lat = cartesianValue.lat;
         const lng = cartesianValue.lng;
+        const cartesianTools = new CartesianTools();
 
         // find matching RainSpeed areas that contain the point
         const matches = this.rainSpeeds.filter((rs) =>
-            (rs?.latLngs ?? []).some(([p1, p2]) => {
-                if (!p1 || !p2) {
-                    return false;
-                }
-                const minLat = Math.min(p1.lat, p2.lat);
-                const maxLat = Math.max(p1.lat, p2.lat);
-                const minLng = Math.min(p1.lng, p2.lng);
-                const maxLng = Math.max(p1.lng, p2.lng);
-                return lat >= minLat && lat <= maxLat && lng >= minLng && lng <= maxLng;
-            })
+            CartesianTools.IsPointInAnyRect(lat, lng, rs?.latLngs ?? [])
         );
 
-        if (matches.length === 1) {
+        if (matches.length >= 1) {
             const rs = matches[0];
-            const speed = rs.speedInMetersPerSec ?? 0;
-            const azimuthDeg = rs.azimuthInDegrees ?? 0;
-            const timeSec = (typeof diffInMinutes === 'number' ? diffInMinutes : 0) * 60;
-            const distance = speed * timeSec; // meters
-
-            if (distance > 0) {
-                const R = 6371000; // Earth radius in meters
-                const bearing = (azimuthDeg * Math.PI) / 180; // to radians
-                const lat1 = (lat * Math.PI) / 180;
-                const lon1 = (lng * Math.PI) / 180;
-                const angDist = distance / R; // angular distance in radians
-
-                const sinLat1 = Math.sin(lat1);
-                const cosLat1 = Math.cos(lat1);
-                const sinAng = Math.sin(angDist);
-                const cosAng = Math.cos(angDist);
-
-                const sinLat2 = sinLat1 * cosAng + cosLat1 * sinAng * Math.cos(bearing);
-                const lat2 = Math.asin(Math.min(1, Math.max(-1, sinLat2)));
-                const y = Math.sin(bearing) * sinAng * cosLat1;
-                const x = cosAng - sinLat1 * Math.sin(lat2);
-                const lon2 = lon1 + Math.atan2(y, x);
-
-                // normalize using CartesianTools
-                const cartesianTools = new CartesianTools();
-                const newLng = CartesianTools.NormalizeLongitude((lon2 * 180) / Math.PI);
-                const newLat = CartesianTools.ClampLatitude((lat2 * 180) / Math.PI);
-                const newLatLng = cartesianTools.getLatLngFromEarthMap(
-                    new LatLng({lat: newLat, lng: newLng})
-                );
-
-                return new CartesianValue({
-                    value,
-                    lat: newLatLng.lat,
-                    lng: newLatLng.lng,
-                });
-            }
+            return rs.transpose(cartesianValue, diffInMinutes);
         }
 
-        // default: return unchanged
+        const newLatLng = cartesianTools.getLatLngFromEarthMap(cartesianValue);
         return new CartesianValue({
-            value,
-            lat,
-            lng,
+            value: cartesianValue.value,
+            lat: newLatLng.lat,
+            lng: newLatLng.lng,
         });
     }
 }

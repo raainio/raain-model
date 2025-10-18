@@ -4,7 +4,7 @@ import {ICartesianMeasureValue} from '../cartesian';
 import {GaugeNode} from './GaugeNode';
 
 /**
- *  api/gauges/:id/measures/:id
+ *  api/gauges/:id/measures?begin=...&end=...
  */
 export class GaugeMeasure extends Measure {
     public static TYPE = 'gauge-measure';

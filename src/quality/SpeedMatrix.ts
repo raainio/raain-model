@@ -3,8 +3,7 @@ import {PositionValue} from './position/PositionValue';
 import {QualityTools} from './tools/QualityTools';
 import {Position} from './position/Position';
 import {QualityPoint} from './QualityPoint';
-import {CartesianValue} from '../cartesian/CartesianValue';
-import {CartesianTools} from '../cartesian/CartesianTools';
+import {CartesianTools, CartesianValue} from '../cartesian';
 
 export class SpeedMatrix {
     public static DEFAULT_MATRIX_RANGE = 16;
@@ -79,19 +78,11 @@ export class SpeedMatrix {
         },
         logger = console
     ) {
-        const labelWithSign = (val: number) => {
-            if (val < 0) {
-                return '' + val;
-            } else if (val === 0) {
-                return ' ' + 0;
-            }
-            return '+' + val;
-        };
         const labelX = (x: number) => {
-            return 'x' + labelWithSign(x - flattenPositionRange.xMax);
+            return 'x' + CartesianTools.LabelWithSign(x - flattenPositionRange.xMax);
         };
         const labelY = (y: number) => {
-            return 'y' + labelWithSign(y - flattenPositionRange.yMax);
+            return 'y' + CartesianTools.LabelWithSign(y - flattenPositionRange.yMax);
         };
 
         const matrixToRender = {};

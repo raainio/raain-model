@@ -6,15 +6,25 @@
 [![ESLint](https://img.shields.io/badge/ESLint-9.28.0-purple.svg)](https://eslint.org/)
 [![Build Status](https://github.com/raainio/raain-model/actions/workflows/ci.yml/badge.svg)](https://github.com/raainio/raain-model/actions)
 
-> A TypeScript library for radar-based rain measurement and analysis, used in [radartorain.com](https://radartorain.com)
-> services.
+> Shared TypeScript data models and utilities for radar-based rainfall analysis, used across
+> all [radartorain.com](https://radartorain.com) services.
+
+## Overview
+
+**raain-model** is the foundational model library for the Raain ecosystem, providing type-safe data structures,
+coordinate transformations, and measurement utilities for converting weather radar data into actionable rainfall
+measurements.
 
 ## 🌟 Features
 
-- **Cartesian & Polar Coordinates**: Support for both coordinate systems
-- **Advanced Merging**: Sophisticated merging strategies for rain data
-- **Quality Assessment**: Built-in quality metrics for measurements
-- **TypeScript Support**: Full type safety and modern TypeScript features
+- **Dual Coordinate Systems**: Full support for both Cartesian (x, y) and Polar (azimuth, range) coordinate systems
+- **Radar & Gauge Integration**: Models for radar stations, rain gauges, and their measurements
+- **Quality Assessment**: Built-in quality metrics and comparison tools for radar vs gauge validation
+- **Rain Computations**: Aggregated rain calculations with map representations and cumulative tracking
+- **Speed & History Tracking**: Rain speed monitoring and historical data management
+- **Organization Models**: Team management, user roles, and notification events
+- **Type Safety**: Full TypeScript support with comprehensive type definitions
+- **Coordinate Transformations**: CartesianTools and EarthMap utilities for geographic calculations
 
 ## 🚀 Installation
 
@@ -27,7 +37,7 @@ yarn add raain-model
 ## 📖 Quick Start
 
 ```typescript
-import {RainNode, RadarNode} from 'raain-model';
+import {RainNode, RadarNode, GaugeNode, RainComputationMap} from 'raain-model';
 
 // Create a radar node
 const radarNode = new RadarNode({
@@ -38,14 +48,23 @@ const radarNode = new RadarNode({
     team: null
 });
 
-// Create a rain node
-const rainNode = new RainNode({
-    id: 'rain1',
-    name: 'Paris Rain',
-    team: null,
-    radars: [radarNode]
+// Create a rain gauge node
+const gaugeNode = new GaugeNode({
+    id: 'gauge1',
+    latitude: 48.8566,
+    longitude: 2.3522,
+    name: 'Paris Gauge',
+    team: null
 });
 
+// Create a rain node with radar coverage
+const rainNode = new RainNode({
+    id: 'rain1',
+    name: 'Paris Rain Zone',
+    team: null,
+    radars: [radarNode],
+    gauges: [gaugeNode]
+});
 ```
 
 ## 📚 Documentation
@@ -55,63 +74,120 @@ and [API swagger](https://api.sandbox.radartorain.com/v3/docs).
 
 ### API ↔ Model Mapping
 
+> **⚠️ IMPORTANT**: Keep this section up to date when adding new API endpoints or model classes. This mapping is
+> critical for API consumers to understand which models to expect from each endpoint.
+> **Validation Rules:**
+> - Every endpoint listed here MUST exist in Raain Api Routes
+> - Every model class MUST have the endpoint documented in its source file header (e.g., `RainNode.ts`)
+> - Before adding an endpoint, verify it exists in both locations
+
 The following table lists which REST API endpoints return or accept which model classes in this library:
 
-| API endpoint (pattern)                                             | Exposes model class      | Notes                                     |
-|--------------------------------------------------------------------|--------------------------|-------------------------------------------|
-| `api/radars/:id`                                                   | `RadarNode`              | Radar station metadata                    |
-| `api/radars/:id/measures/:id`                                      | `RadarMeasure`           | Single radar measure                      |
-| `api/radars/:id?format=map&...`                                    | `RadarNodeMap`           | Map/coverage for a radar                  |
-| `api/gauges/:id`                                                   | `GaugeNode`              | Rain gauge metadata                       |
-| `api/gauges/:id/measures/:id`                                      | `GaugeMeasure`           | Single gauge measure                      |
-| `api/gauges/:id?format=map&begin=...`                              | `GaugeNodeMap`           | Gauge data as map over time window        |
-| `api/rains/:id`                                                    | `RainNode`               | Rain aggregation entity                   |
-| `api/rains/:id/computations/:computationId`                        | `RainComputation`        | One computation result (list of measures) |
-| `api/rains/:id/computations?format=id&begin=...`                   | `RainComputation[]`      | List of computations (IDs)                |
-| `api/rains/:id/computations/:computationId?format=map`             | `RainComputationMap`     | Computation as cartesian map              |
-| `api/rains/:id/computations?format=map&begin=...`                  | `RainComputationMap[]`   | List of maps over period                  |
-| `api/rains/:id/computations?format=compare&begin=...&gauges=[...]` | `RainComputationQuality` | Quality/compare metrics                   |
-| `api/notifications/:id`                                            | `EventNode`              | Notification/event payload                |
-| `api/teams?name=customerTeam`                                      | `TeamNode`               | Team lookup by name                       |
-| `api/teams/:id`                                                    | `PeopleNode`             | People related to a team                  |
+| API endpoint (pattern)                                        | Exposes model class         | Notes                                    |
+|---------------------------------------------------------------|-----------------------------|------------------------------------------|
+| `api/radars/:id`                                              | `RadarNode`                 | Radar station metadata                   |
+| `api/radars/:id/measures/:measureId`                          | `RadarMeasure`              | Single radar measure with polar data     |
+| `api/radars/:id/measures?begin=...&end=...`                   | `RadarMeasure[]`            | List of radar measures for date range    |
+| `api/gauges/:id`                                              | `GaugeNode`                 | Rain gauge metadata                      |
+| `api/gauges/:id/measures?begin=...&end=...`                   | `GaugeMeasure[]`            | List of gauge measures for date range    |
+| `api/gauges/:id?format=map&begin=...`                         | `GaugeNodeMap`              | Gauge data as map over time window       |
+| `api/rains/:id`                                               | `RainNode`                  | Rain zone entity                         |
+| `api/rains/:id/computations/:computationId`                   | `RainComputation`           | One computation result                   |
+| `api/rains/:id/computations?format=id&begin=...`              | `RainComputation[]`         | List of computations (IDs)               |
+| `api/rains/:id/computations/:computationId?format=map`        | `RainComputationMap`        | Computation as cartesian map             |
+| `api/rains/:id/computations?format=map&begin=...`             | `RainComputationMap[]`      | List of maps over period                 |
+| `api/rains/:id/computations/:computationId/speeds`            | `RainSpeedMap`              | Rain speed map for a computation         |
+| `api/rains/:id/computations/:computationId/compares?date=...` | `RainComputationQuality[]`  | Quality/compare metrics (radar vs gauge) |
+| `api/rains/:id/cumulative/:cumulativeId`                      | `RainComputationCumulative` | Cumulative computation                   |
+| `api/notifications`                                           | `EventNode[]`               | List of user notifications               |
+| `api/teams/:id`                                               | `TeamNode`                  | Team/organization entity                 |
+| `api/teams?name=...`                                          | `TeamNode`                  | Team lookup by name                      |
+| `api/teams/:id/people`                                        | `PeopleNode[]`              | People related to a team                 |
 
-### Memory Bank
+**Note**: All endpoints are prefixed with the API version (e.g., `/v3/api/...`).
 
-This project uses a Memory Bank for comprehensive documentation and context retention. The Memory Bank is located in the
-[.memory-bank](./.memory-bank) directory and contains the following files:
+### Core Model Categories
 
-- `memory-bank-rules.md`: Rules to follow and to consider in all contexts
-- `projectbrief.md`: Overview of the project, core requirements, and goals
-- `productContext.md`: Why the project exists, problems it solves, and how it works
-- `systemPatterns.md`: System architecture, key technical decisions, and design patterns
-- `techContext.md`: Technologies used, development setup, and technical constraints
-- `activeContext.md`: Current work focus, recent changes, and next steps
-- `progress.md`: What works, what's left to build, and known issues
+**Organization & Management**
 
-Note: These files are used by AI assistants whose memory resets between sessions. They MUST be reviewed at the start of
-every task and kept up-to-date.
+- `RainNode`: Rain zone with radar(s) coverage
+- `RadarNode`: Radar station metadata and configuration
+- `GaugeNode`: Physical rain gauge station
+- `TeamNode`: Team/organization entity
+- `PeopleNode`: User/person entity with roles
+- `EventNode`: Notification/event payload
 
-### Key Components
+**Measurements**
 
-- `RainNode`: Rain zone
-- `RadarNode`: Radar station
-- `RainComputationMap`: Rain computation data
-- `SpeedMatrix`: Quality matrix
+- `RadarMeasure`: Single radar measurement with polar data
+- `GaugeMeasure`: Single gauge measurement
+- `RainMeasure`: Aggregated rain measurement
+- `RainComputation`: Rain computation result
+- `RainComputationCumulative`: Cumulative rain computation over time
 
-## 🧪 Testing
+**Coordinate Systems**
+
+- `CartesianMeasureValue`: Cartesian (x, y) rain map data
+- `PolarMeasureValue`: Polar (azimuth, range) radar data
+- `PolarMeasureValueMap`: Collection of polar measurements
+- `LatLng`: Geographic coordinates (latitude/longitude)
+- `EarthMap`: Singleton for earth coordinate mapping
+- `CartesianTools`: Utilities for geographic calculations
+
+**Data Visualization**
+
+- `RadarNodeMap`: Radar coverage/map visualization
+- `GaugeNodeMap`: Gauge data over time window
+- `RainComputationMap`: Rain computation as cartesian map
+
+**Quality & Analysis**
+
+- `RainComputationQuality`: Quality metrics comparing radar vs gauge
+- `SpeedMatrix`: Quality assessment matrix
+- `RainSpeed` / `RainSpeedMap`: Rain speed tracking and storage
+
+#### 🌍 Coordinate Systems Explained
+
+The library supports two coordinate systems for different use cases:
+
+**Polar Coordinates (azimuth, range)**
+
+- Native radar measurement format
+- Azimuth: angle from north (0-360°)
+- Range: distance from radar (in meters)
+- Used for raw radar data processing
+
+**Cartesian Coordinates (x, y)**
+
+- Grid-based representation
+- Used for rain maps and visualizations
+- Easier for geographic calculations and mapping
+- Transformation utilities provided via `CartesianTools`
+
+## 🛠️ Feel free to contribute
 
 ```bash
+# Install dependencies
+npm i
+
+# ... Do your changes ...
+
+# Linting and formatting
+npm run bp:style:fix
+
 # Run all tests
 npm test
 
-# Run tests with coverage
-npm run test:coverage
+# (optional) Compile TypeScript
+npm run build
+
+# PR it :)
 ```
+
+## 📅 Changelog
+
+See [CHANGELOG.md](./CHANGELOG.md) for version history and changes.
 
 ## 📝 License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## 📅 Changelog
-
-See [Changelog](./CHANGELOG.md) for version history and changes.

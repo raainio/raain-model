@@ -197,6 +197,27 @@ export class CartesianTools {
         return R * c; // Distance in km
     }
 
+    /**
+     * Calculate the bearing (azimuth) from one LatLng point to another.
+     * The bearing is the angle in degrees measured clockwise from north.
+     * @param from - The starting LatLng point
+     * @param to - The destination LatLng point
+     * @returns The bearing in degrees (0-360), where 0° is north, 90° is east, 180° is south, 270° is west
+     */
+    public static GetBearing(from: LatLng, to: LatLng): number {
+        const lat1 = CartesianTools.DegToRad(from.lat);
+        const lat2 = CartesianTools.DegToRad(to.lat);
+        const dLon = CartesianTools.DegToRad(to.lng - from.lng);
+
+        const y = Math.sin(dLon) * Math.cos(lat2);
+        const x =
+            Math.cos(lat1) * Math.sin(lat2) - Math.sin(lat1) * Math.cos(lat2) * Math.cos(dLon);
+        const bearing = Math.atan2(y, x);
+
+        // Convert from radians to degrees and normalize to 0-360
+        return ((bearing * 180) / Math.PI + 360) % 360;
+    }
+
     public static VincentyDistance(latLng1: LatLng, latLng2: LatLng) {
         const a = 6378137.0; // WGS84 ellipsoid semi-major axis
         const f = 1 / 298.257223563; // WGS84 ellipsoid flattening
@@ -321,7 +342,7 @@ export class CartesianTools {
         return [new LatLng({lat: latMin, lng: lngMin}), new LatLng({lat: latMax, lng: lngMax})];
     }
 
-    protected static LabelWithSign(val: number) {
+    public static LabelWithSign(val: number): string {
         const value = val;
         if (value < 0) {
             return '' + value;
@@ -329,6 +350,41 @@ export class CartesianTools {
             return ' ' + 0;
         }
         return '+' + value;
+    }
+
+    /**
+     * Check if a point (lat, lng) is contained within a rectangle defined by two corner points.
+     * @param lat - The latitude of the point to check
+     * @param lng - The longitude of the point to check
+     * @param rect - A tuple of two LatLng points defining the rectangle
+     * @returns true if the point is within the rectangle, false otherwise
+     */
+    public static IsPointInRect(lat: number, lng: number, rect: [LatLng, LatLng]): boolean {
+        const [p1, p2] = rect || ([] as unknown as [LatLng, LatLng]);
+        if (!p1 || !p2) {
+            return false;
+        }
+        const minLat = Math.min(p1.lat, p2.lat);
+        const maxLat = Math.max(p1.lat, p2.lat);
+        const minLng = Math.min(p1.lng, p2.lng);
+        const maxLng = Math.max(p1.lng, p2.lng);
+        return lat >= minLat && lat <= maxLat && lng >= minLng && lng <= maxLng;
+    }
+
+    /**
+     * Check if a point is contained within any of the rectangles in the provided array.
+     * @param lat - The latitude of the point to check
+     * @param lng - The longitude of the point to check
+     * @param rects - An array of rectangle tuples
+     * @returns true if the point is within at least one rectangle, false otherwise
+     */
+    public static IsPointInAnyRect(lat: number, lng: number, rects: [LatLng, LatLng][]): boolean {
+        for (const rect of rects ?? []) {
+            if (CartesianTools.IsPointInRect(lat, lng, rect)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public getScaleLatLng(latLng: LatLng, latDirection = 1): LatLng {
@@ -374,7 +430,7 @@ export class CartesianTools {
         const earthMap = EarthMap.initialize(this);
 
         const posLat = Math.round((90 + fromLatLng.lat) / earthMap.latitudeScale);
-        const lat = earthMap.latitudes[posLat];
+        const lat = CartesianTools.LimitWithPrecision(earthMap.latitudes[posLat]);
         const latitudeLongitudeScale = earthMap.latitudeLongitudeScales[posLat];
 
         const lngPos = Math.round(fromLatLng.lng / latitudeLongitudeScale);

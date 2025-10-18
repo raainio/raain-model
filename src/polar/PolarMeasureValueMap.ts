@@ -35,7 +35,7 @@ export class PolarMeasureValueMap {
             newIndex = arrayLength + index;
         }
         if (newIndex < 0) {
-            console.warn('### index ? ', newIndex);
+            console.warn('### raain-model > index ? ', newIndex);
         }
         return Math.round(newIndex);
     }
@@ -299,7 +299,9 @@ export class PolarMeasureValueMap {
                     rounded: true,
                 });
                 if (!polarValue) {
-                    console.warn(`polarValue mismatch on az:${azimuthInDegrees}, set 0 as default`);
+                    console.warn(
+                        `### raain-model > polarValue mismatch on az:${azimuthInDegrees}, set 0 as default`
+                    );
                 }
                 polarEdges.push(polarValue?.value ?? 0);
             }

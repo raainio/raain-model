@@ -2,6 +2,7 @@ import {ICartesianMeasureValue} from './ICartesianMeasureValue';
 import {CartesianValue} from './CartesianValue';
 import {LatLng} from './LatLng';
 import {calculateMinMax} from '../utils';
+import {CartesianTools} from './CartesianTools';
 
 export class CartesianMeasureValue implements ICartesianMeasureValue {
     protected cartesianValues: CartesianValue[];
@@ -60,21 +61,26 @@ export class CartesianMeasureValue implements ICartesianMeasureValue {
         let merged: CartesianValue[] = cartesianValues;
 
         if (options?.merge) {
-            // Merge duplicates (same lat,lng) by averaging their values
+            const cartesianTools = new CartesianTools();
+
+            // Merge duplicates (same EarthMap lat,lng) by averaging their values
             const map = new Map<string, {sum: number; count: number; lat: number; lng: number}>();
             for (const v of cartesianValues || []) {
                 if (v === null) {
                     continue;
                 }
-                const key = `${v.lat}:${v.lng}`;
+
+                const latLng = cartesianTools.getLatLngFromEarthMap(v);
+                const key = `${latLng.lat}:${latLng.lng}`;
                 const current = map.get(key);
                 if (current) {
                     current.sum += v.value;
                     current.count += 1;
                 } else {
-                    map.set(key, {sum: v.value, count: 1, lat: v.lat, lng: v.lng});
+                    map.set(key, {sum: v.value, count: 1, lat: latLng.lat, lng: latLng.lng});
                 }
             }
+
             merged = [];
             for (const {sum, count, lat, lng} of map.values()) {
                 merged.push(new CartesianValue({lat, lng, value: sum / count}));

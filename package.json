@@ -1,6 +1,6 @@
 {
   "name": "raain-model",
-  "version": "3.0.32",
+  "version": "3.0.33",
   "author": "contact@radartorain.com",
   "homepage": "https://github.com/raainio/raain-model",
   "description": "radartorain.com api model",
@@ -16,8 +16,7 @@
     "bp:_clean": "rm -rf package-lock.json node_modules .gen .logs .nyc_output .logs .output.txt .coverage .angular dist disti www && npm i",
     "bp:bump": "OLD_VERSION=\"v$(node -e \"console.log(require('./package.json').version)\")\" && VERSION=\"$(npm version patch --no-git-tag-version)\" && echo \"export const bpInfo = {version: '$VERSION'};\" > ./src/bpInfo.ts && git tag $OLD_VERSION && git checkout -b $VERSION && git push origin refs/heads/$VERSION:$VERSION --tags && git push --set-upstream origin $VERSION",
     "bp:update-changelog-dates": "node ./scripts/bp/update-changelog-date.cjs",
-    "bp:style:lint-format-ts": "eslint 'src/**/*.ts' 'specs/**/*.ts' --fix --no-error-on-unmatched-pattern",
-    "bp:style:lint-format-js": "eslint 'src/**/*.js' 'specs/**/*.js' --fix --no-error-on-unmatched-pattern",
+    "bp:style:fix": "eslint 'src/**/*.ts' 'specs/**/*.ts' --fix --no-error-on-unmatched-pattern && eslint 'src/**/*.js' 'specs/**/*.js' --fix --no-error-on-unmatched-pattern && prettier --write \"src/**/*.ts\" --no-error-on-unmatched-pattern && prettier --write \"src/**/*.js\" --no-error-on-unmatched-pattern",
     "bp:use-local-deps": "node ./scripts/bp/switch-dependencies.cjs local && npm run bp:_clean",
     "bp:use-remote-deps": "node ./scripts/bp/switch-dependencies.cjs remote && npm run bp:_clean",
     "bp:branch:push": "BRANCH=$(git rev-parse --abbrev-ref HEAD) && git add . && (git diff-index --quiet HEAD && echo 'No changes to commit' || (git commit -m \"$BRANCH pushed\" && git push))",

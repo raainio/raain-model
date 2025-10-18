@@ -1,4 +1,4 @@
-import {CartesianTools, LatLng} from '../cartesian';
+import {CartesianTools, CartesianValue, LatLng} from '../cartesian';
 
 /**
  *  api/rains/:rainId/computations/:rainHistoryId/speeds => RainSpeedMap.map => RainSpeed[]
@@ -38,6 +38,69 @@ export class RainSpeed {
             date: this.date,
             latLngs: this.latLngs,
         };
+    }
+
+    /**
+     * Transpose a CartesianValue based on this RainSpeed's speed and azimuth over a time period
+     * @param cartesianValue - the cartesian value to transpose
+     * @param diffInMinutes - time difference in minutes
+     * @returns new CartesianValue with transposed coordinates
+     */
+    public transpose(cartesianValue: CartesianValue, diffInMinutes: number): CartesianValue {
+        const value = cartesianValue.value;
+        const lat = cartesianValue.lat;
+        const lng = cartesianValue.lng;
+
+        const cartesianTools = new CartesianTools();
+        const speed = this.speedInMetersPerSec ?? 0;
+        let azimuthDeg = this.azimuthInDegrees ?? 0;
+        const timeSec = (typeof diffInMinutes === 'number' ? diffInMinutes : 0) * 60;
+        let distance = speed * timeSec; // meters
+
+        // Handle negative time by reversing the bearing
+        if (distance < 0) {
+            distance = Math.abs(distance);
+            azimuthDeg = (azimuthDeg + 180) % 360;
+        }
+
+        if (distance > 0) {
+            const R = 6371000; // Earth radius in meters
+            const bearing = (azimuthDeg * Math.PI) / 180; // to radians
+            const lat1 = (lat * Math.PI) / 180;
+            const lon1 = (lng * Math.PI) / 180;
+            const angDist = distance / R; // angular distance in radians
+
+            const sinLat1 = Math.sin(lat1);
+            const cosLat1 = Math.cos(lat1);
+            const sinAng = Math.sin(angDist);
+            const cosAng = Math.cos(angDist);
+
+            const sinLat2 = sinLat1 * cosAng + cosLat1 * sinAng * Math.cos(bearing);
+            const lat2 = Math.asin(Math.min(1, Math.max(-1, sinLat2)));
+            const y = Math.sin(bearing) * sinAng * cosLat1;
+            const x = cosAng - sinLat1 * Math.sin(lat2);
+            const lon2 = lon1 + Math.atan2(y, x);
+
+            // normalize using CartesianTools
+            const newLng = CartesianTools.NormalizeLongitude((lon2 * 180) / Math.PI);
+            const newLat = CartesianTools.ClampLatitude((lat2 * 180) / Math.PI);
+            const newLatLng = cartesianTools.getLatLngFromEarthMap(
+                new LatLng({lat: newLat, lng: newLng})
+            );
+
+            return new CartesianValue({
+                value,
+                lat: newLatLng.lat,
+                lng: newLatLng.lng,
+            });
+        }
+
+        const newLatLng = cartesianTools.getLatLngFromEarthMap(cartesianValue);
+        return new CartesianValue({
+            value: cartesianValue.value,
+            lat: newLatLng.lat,
+            lng: newLatLng.lng,
+        });
     }
 
     private setArea(latLngs: [LatLng, LatLng][] | LatLng) {
