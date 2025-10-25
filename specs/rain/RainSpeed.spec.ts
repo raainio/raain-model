@@ -84,11 +84,17 @@ describe('RainSpeed', () => {
             });
 
             const cv = new CartesianValue({lat: 45.0, lng: 10.0, value: 5.5});
-            const result = rs.transpose(cv, 10);
+            const result1 = rs.transpose(cv, 10);
 
-            expect(result.lat).eq(45.0);
-            expect(result.lng).eq(9.996);
-            expect(result.value).eq(5.5);
+            expect(result1.lat).eq(45.0);
+            expect(result1.lng).eq(10);
+            expect(result1.value).eq(5.5);
+
+            const result2 = rs.transpose(cv, 10, {inEarthMap: true});
+
+            expect(result2.lat).eq(45.0);
+            expect(result2.lng).eq(9.996);
+            expect(result2.value).eq(5.5);
         });
 
         it('should return unchanged CartesianValue when diffInMinutes is 0', () => {
@@ -101,8 +107,14 @@ describe('RainSpeed', () => {
             const result = rs.transpose(cv, 0);
 
             expect(result.lat).eq(45.0);
-            expect(result.lng).eq(9.996);
+            expect(result.lng).eq(10);
             expect(result.value).eq(5.5);
+
+            const result2 = rs.transpose(cv, 0, {inEarthMap: true});
+
+            expect(result2.lat).eq(45.0);
+            expect(result2.lng).eq(9.996);
+            expect(result2.value).eq(5.5);
         });
 
         it('should transpose position eastward (azimuth 90°)', () => {
@@ -181,7 +193,7 @@ describe('RainSpeed', () => {
             });
 
             const cv = new CartesianValue({lat: 48.8566, lng: 2.3522, value: 12.5}); // Paris
-            const result = rs.transpose(cv, 5); // 5 minutes later
+            const result = rs.transpose(cv, 5, {inEarthMap: true}); // 5 minutes later
 
             // Value preserved
             expect(result.value).eq(12.5);
@@ -202,11 +214,12 @@ describe('RainSpeed', () => {
             });
 
             const cv = new CartesianValue({lat: 45.0, lng: 10.0, value: 6.7});
-            const result = rs.transpose(cv, -1); // -1 minute (should move west)
+            const result = rs.transpose(cv, -1, {inEarthMap: true}); // -1 minute (should move west)
 
             // Value preserved
             expect(result.value).eq(6.7);
             // Should move westward (opposite of eastward)
+            expect(result.lat).to.be.eq(45);
             expect(result.lng).to.be.lessThan(10.0);
         });
     });

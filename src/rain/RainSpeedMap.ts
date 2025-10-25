@@ -53,7 +53,11 @@ export class RainSpeedMap {
         return undefined;
     }
 
-    transpose(cartesianValue: CartesianValue, diffInMinutes: number) {
+    transpose(
+        cartesianValue: CartesianValue,
+        diffInMinutes: number,
+        options?: {inEarthMap: boolean}
+    ) {
         const lat = cartesianValue.lat;
         const lng = cartesianValue.lng;
         const cartesianTools = new CartesianTools();
@@ -65,7 +69,11 @@ export class RainSpeedMap {
 
         if (matches.length >= 1) {
             const rs = matches[0];
-            return rs.transpose(cartesianValue, diffInMinutes);
+            return rs.transpose(cartesianValue, diffInMinutes, options);
+        }
+
+        if (!options?.inEarthMap) {
+            return cartesianValue;
         }
 
         const newLatLng = cartesianTools.getLatLngFromEarthMap(cartesianValue);

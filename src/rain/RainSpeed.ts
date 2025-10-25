@@ -42,14 +42,15 @@ export class RainSpeed {
 
     /**
      * Transpose a CartesianValue based on this RainSpeed's speed and azimuth over a time period
-     * @param cartesianValue - the cartesian value to transpose
-     * @param diffInMinutes - time difference in minutes
-     * @returns new CartesianValue with transposed coordinates
      */
-    public transpose(cartesianValue: CartesianValue, diffInMinutes: number): CartesianValue {
+    public transpose(
+        cartesianValue: CartesianValue,
+        diffInMinutes: number,
+        options?: {inEarthMap: boolean}
+    ): CartesianValue {
         const value = cartesianValue.value;
-        const lat = cartesianValue.lat;
-        const lng = cartesianValue.lng;
+        let lat = cartesianValue.lat;
+        let lng = cartesianValue.lng;
 
         const cartesianTools = new CartesianTools();
         const speed = this.speedInMetersPerSec ?? 0;
@@ -82,20 +83,21 @@ export class RainSpeed {
             const lon2 = lon1 + Math.atan2(y, x);
 
             // normalize using CartesianTools
-            const newLng = CartesianTools.NormalizeLongitude((lon2 * 180) / Math.PI);
-            const newLat = CartesianTools.ClampLatitude((lat2 * 180) / Math.PI);
-            const newLatLng = cartesianTools.getLatLngFromEarthMap(
-                new LatLng({lat: newLat, lng: newLng})
-            );
-
-            return new CartesianValue({
-                value,
-                lat: newLatLng.lat,
-                lng: newLatLng.lng,
-            });
+            lng = CartesianTools.NormalizeLongitude((lon2 * 180) / Math.PI);
+            lat = CartesianTools.ClampLatitude((lat2 * 180) / Math.PI);
         }
 
-        const newLatLng = cartesianTools.getLatLngFromEarthMap(cartesianValue);
+        const transposedCartesianValue = new CartesianValue({
+            value,
+            lat,
+            lng,
+        });
+
+        if (!options?.inEarthMap) {
+            return transposedCartesianValue;
+        }
+
+        const newLatLng = cartesianTools.getLatLngFromEarthMap(transposedCartesianValue);
         return new CartesianValue({
             value: cartesianValue.value,
             lat: newLatLng.lat,
