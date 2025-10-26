@@ -56,20 +56,49 @@ export class RainSpeedMap {
     transpose(
         cartesianValue: CartesianValue,
         diffInMinutes: number,
-        options?: {inEarthMap: boolean}
+        options?: {inEarthMap?: boolean; strictContaining?: boolean}
     ) {
         const lat = cartesianValue.lat;
         const lng = cartesianValue.lng;
         const cartesianTools = new CartesianTools();
+        let rainSpeed: RainSpeed;
 
-        // find matching RainSpeed areas that contain the point
-        const matches = this.rainSpeeds.filter((rs) =>
-            CartesianTools.IsPointInAnyRect(lat, lng, rs?.latLngs ?? [])
-        );
+        if (options?.strictContaining) {
+            // find matching RainSpeed areas that contain the point
+            const matches = this.rainSpeeds.filter((rs) =>
+                CartesianTools.IsPointInAnyRect(lat, lng, rs?.latLngs ?? [])
+            );
+            if (matches.length >= 1) {
+                rainSpeed = matches[0];
+            }
+        } else {
+            // Find the closest RainSpeed by calculating distance from point to each RainSpeed's center
+            rainSpeed = this.rainSpeeds.reduce(
+                (closest, current) => {
+                    if (!closest) {
+                        return current;
+                    }
 
-        if (matches.length >= 1) {
-            const rs = matches[0];
-            return rs.transpose(cartesianValue, diffInMinutes, options);
+                    const currentCenter = current.getCenter();
+                    const closestCenter = closest.getCenter();
+
+                    const currentDistance = CartesianTools.GetDistanceFromLatLngInKm(
+                        new LatLng({lat, lng}),
+                        currentCenter
+                    );
+                    const closestDistance = CartesianTools.GetDistanceFromLatLngInKm(
+                        new LatLng({lat, lng}),
+                        closestCenter
+                    );
+
+                    return currentDistance < closestDistance ? current : closest;
+                },
+                undefined as RainSpeed | undefined
+            );
+        }
+
+        if (rainSpeed) {
+            return rainSpeed.transpose(cartesianValue, diffInMinutes, options);
         }
 
         if (!options?.inEarthMap) {

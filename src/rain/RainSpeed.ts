@@ -46,7 +46,7 @@ export class RainSpeed {
     public transpose(
         cartesianValue: CartesianValue,
         diffInMinutes: number,
-        options?: {inEarthMap: boolean}
+        options?: {inEarthMap?: boolean}
     ): CartesianValue {
         const value = cartesianValue.value;
         let lat = cartesianValue.lat;
