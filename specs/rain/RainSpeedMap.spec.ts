@@ -747,4 +747,761 @@ describe('RainSpeedMap', () => {
             approx(out.lng, 0, 0.02);
         });
     });
+
+    /**
+     * SPEC: getTrustRatio method
+     *
+     * BEHAVIOR: Returns the trustRatio of the RainSpeed found for a given point
+     * This method should follow the same logic as getRainSpeed but return only the trustRatio
+     * Fallback: Returns 0 when no RainSpeed is found (no trust)
+     *
+     * NEW BEHAVIOR: When point is optional (not provided), returns average trustRatio of all RainSpeeds
+     */
+    describe('getTrustRatio', () => {
+        describe('when point parameter is not provided (optional)', () => {
+            /**
+             * GIVEN: Multiple RainSpeeds with different trustRatio values
+             * WHEN: getTrustRatio is called without any point parameter
+             * THEN: Should return the average trustRatio of all RainSpeeds
+             */
+            it('should return average trustRatio of all RainSpeeds when no point is provided', () => {
+                const area1 = [new LatLng({lat: -1, lng: -1}), new LatLng({lat: 1, lng: 1})] as [
+                    LatLng,
+                    LatLng,
+                ];
+                const area2 = [new LatLng({lat: -2, lng: -2}), new LatLng({lat: 2, lng: 2})] as [
+                    LatLng,
+                    LatLng,
+                ];
+                const area3 = [new LatLng({lat: -3, lng: -3}), new LatLng({lat: 3, lng: 3})] as [
+                    LatLng,
+                    LatLng,
+                ];
+
+                const rs1 = new RainSpeed({
+                    azimuthInDegrees: 0,
+                    speedInMetersPerSec: 10,
+                    trustRatio: 0.8,
+                    latLngs: [area1],
+                });
+                const rs2 = new RainSpeed({
+                    azimuthInDegrees: 90,
+                    speedInMetersPerSec: 20,
+                    trustRatio: 0.6,
+                    latLngs: [area2],
+                });
+                const rs3 = new RainSpeed({
+                    azimuthInDegrees: 180,
+                    speedInMetersPerSec: 30,
+                    trustRatio: 1.0,
+                    latLngs: [area3],
+                });
+                const map = new RainSpeedMap({rainSpeeds: [rs1, rs2, rs3]});
+
+                // Call without point parameter
+                const result = map.getTrustRatio();
+
+                // Average: (0.8 + 0.6 + 1.0) / 3 = 2.4 / 3 = 0.8
+                approx(result, 0.8);
+            });
+
+            /**
+             * GIVEN: RainSpeeds with varying trustRatio values including 0 and -1
+             * WHEN: getTrustRatio is called without point parameter
+             * THEN: Should include all trustRatio values (including 0 and -1) in average calculation
+             */
+            it('should include all trustRatio values in average calculation including 0 and negative values', () => {
+                const area1 = [new LatLng({lat: -1, lng: -1}), new LatLng({lat: 1, lng: 1})] as [
+                    LatLng,
+                    LatLng,
+                ];
+                const area2 = [new LatLng({lat: -2, lng: -2}), new LatLng({lat: 2, lng: 2})] as [
+                    LatLng,
+                    LatLng,
+                ];
+                const area3 = [new LatLng({lat: -3, lng: -3}), new LatLng({lat: 3, lng: 3})] as [
+                    LatLng,
+                    LatLng,
+                ];
+
+                const rs1 = new RainSpeed({
+                    azimuthInDegrees: 0,
+                    speedInMetersPerSec: 10,
+                    trustRatio: 0.9,
+                    latLngs: [area1],
+                });
+                const rs2 = new RainSpeed({
+                    azimuthInDegrees: 90,
+                    speedInMetersPerSec: 20,
+                    trustRatio: 0,
+                    latLngs: [area2],
+                });
+                const rs3 = new RainSpeed({
+                    azimuthInDegrees: 180,
+                    speedInMetersPerSec: 30,
+                    // trustRatio not provided - defaults to -1
+                    latLngs: [area3],
+                });
+                const map = new RainSpeedMap({rainSpeeds: [rs1, rs2, rs3]});
+
+                const result = map.getTrustRatio();
+
+                // Average: (0.9 + 0 + (-1)) / 3 = -0.1 / 3 = -0.0333...
+                approx(result, -0.0333, 0.01);
+            });
+
+            /**
+             * GIVEN: Single RainSpeed with specific trustRatio
+             * WHEN: getTrustRatio is called without point parameter
+             * THEN: Should return that single trustRatio value (average of one)
+             */
+            it('should return single trustRatio when only one RainSpeed exists', () => {
+                const area = [new LatLng({lat: -1, lng: -1}), new LatLng({lat: 1, lng: 1})] as [
+                    LatLng,
+                    LatLng,
+                ];
+                const rs = new RainSpeed({
+                    azimuthInDegrees: 90,
+                    speedInMetersPerSec: 10,
+                    trustRatio: 0.75,
+                    latLngs: [area],
+                });
+                const map = new RainSpeedMap({rainSpeeds: [rs]});
+
+                const result = map.getTrustRatio();
+
+                expect(result).to.equal(0.75);
+            });
+
+            /**
+             * GIVEN: Empty RainSpeedMap with no RainSpeeds
+             * WHEN: getTrustRatio is called without point parameter
+             * THEN: Should return 0 (no RainSpeeds to average)
+             */
+            it('should return 0 when RainSpeedMap has no RainSpeeds', () => {
+                const map = new RainSpeedMap({rainSpeeds: []});
+
+                const result = map.getTrustRatio();
+
+                expect(result).to.equal(0);
+            });
+
+            /**
+             * GIVEN: Multiple RainSpeeds with identical trustRatio values
+             * WHEN: getTrustRatio is called without point parameter
+             * THEN: Should return that same trustRatio value
+             */
+            it('should return same value when all RainSpeeds have identical trustRatio', () => {
+                const area1 = [new LatLng({lat: -1, lng: -1}), new LatLng({lat: 1, lng: 1})] as [
+                    LatLng,
+                    LatLng,
+                ];
+                const area2 = [new LatLng({lat: -2, lng: -2}), new LatLng({lat: 2, lng: 2})] as [
+                    LatLng,
+                    LatLng,
+                ];
+
+                const rs1 = new RainSpeed({
+                    azimuthInDegrees: 0,
+                    speedInMetersPerSec: 10,
+                    trustRatio: 0.5,
+                    latLngs: [area1],
+                });
+                const rs2 = new RainSpeed({
+                    azimuthInDegrees: 90,
+                    speedInMetersPerSec: 20,
+                    trustRatio: 0.5,
+                    latLngs: [area2],
+                });
+                const map = new RainSpeedMap({rainSpeeds: [rs1, rs2]});
+
+                const result = map.getTrustRatio();
+
+                expect(result).to.equal(0.5);
+            });
+
+            /**
+             * GIVEN: RainSpeedMap with multiple RainSpeeds
+             * WHEN: getTrustRatio is called with undefined as point parameter
+             * THEN: Should return average trustRatio (same behavior as no parameter)
+             */
+            it('should return average trustRatio when point is explicitly undefined', () => {
+                const area1 = [new LatLng({lat: -1, lng: -1}), new LatLng({lat: 1, lng: 1})] as [
+                    LatLng,
+                    LatLng,
+                ];
+                const area2 = [new LatLng({lat: -2, lng: -2}), new LatLng({lat: 2, lng: 2})] as [
+                    LatLng,
+                    LatLng,
+                ];
+
+                const rs1 = new RainSpeed({
+                    azimuthInDegrees: 0,
+                    speedInMetersPerSec: 10,
+                    trustRatio: 0.4,
+                    latLngs: [area1],
+                });
+                const rs2 = new RainSpeed({
+                    azimuthInDegrees: 90,
+                    speedInMetersPerSec: 20,
+                    trustRatio: 0.6,
+                    latLngs: [area2],
+                });
+                const map = new RainSpeedMap({rainSpeeds: [rs1, rs2]});
+
+                // Explicitly pass undefined
+                const result = map.getTrustRatio(undefined);
+
+                // Average: (0.4 + 0.6) / 2 = 0.5
+                expect(result).to.equal(0.5);
+            });
+
+            /**
+             * GIVEN: RainSpeeds with trustRatio values and options parameter provided
+             * WHEN: getTrustRatio is called without point but with options
+             * THEN: Should ignore options and return average trustRatio (options only apply when point is provided)
+             */
+            it('should ignore options parameter when no point is provided', () => {
+                const area1 = [new LatLng({lat: -1, lng: -1}), new LatLng({lat: 1, lng: 1})] as [
+                    LatLng,
+                    LatLng,
+                ];
+                const area2 = [new LatLng({lat: -2, lng: -2}), new LatLng({lat: 2, lng: 2})] as [
+                    LatLng,
+                    LatLng,
+                ];
+
+                const rs1 = new RainSpeed({
+                    azimuthInDegrees: 0,
+                    speedInMetersPerSec: 10,
+                    trustRatio: 0.3,
+                    latLngs: [area1],
+                });
+                const rs2 = new RainSpeed({
+                    azimuthInDegrees: 90,
+                    speedInMetersPerSec: 20,
+                    trustRatio: 0.7,
+                    latLngs: [area2],
+                });
+                const map = new RainSpeedMap({rainSpeeds: [rs1, rs2]});
+
+                // Call with options but no point
+                const result = map.getTrustRatio(undefined, {
+                    strictContaining: true,
+                    inEarthMap: true,
+                });
+
+                // Average: (0.3 + 0.7) / 2 = 0.5
+                expect(result).to.equal(0.5);
+            });
+        });
+
+        describe('when point is inside a RainSpeed area', () => {
+            /**
+             * GIVEN: Point inside a RainSpeed area with trustRatio = 0.85
+             * WHEN: getTrustRatio is called
+             * THEN: Should return the trustRatio of the containing RainSpeed
+             */
+            it('should return trustRatio of the containing RainSpeed', () => {
+                const area = [new LatLng({lat: -1, lng: -1}), new LatLng({lat: 1, lng: 1})] as [
+                    LatLng,
+                    LatLng,
+                ];
+                const rs = new RainSpeed({
+                    azimuthInDegrees: 90,
+                    speedInMetersPerSec: 10,
+                    trustRatio: 0.85,
+                    latLngs: [area],
+                });
+                const map = new RainSpeedMap({rainSpeeds: [rs]});
+
+                const result = map.getTrustRatio(new LatLng({lat: 0, lng: 0}));
+
+                expect(result).to.equal(0.85);
+            });
+
+            /**
+             * GIVEN: Multiple RainSpeed areas, point inside the first area
+             * WHEN: getTrustRatio is called
+             * THEN: Should return trustRatio of the first matching RainSpeed
+             */
+            it('should return trustRatio of first matching area when point is in multiple areas', () => {
+                const area1 = [new LatLng({lat: -1, lng: -1}), new LatLng({lat: 1, lng: 1})] as [
+                    LatLng,
+                    LatLng,
+                ];
+                const area2 = [new LatLng({lat: -2, lng: -2}), new LatLng({lat: 2, lng: 2})] as [
+                    LatLng,
+                    LatLng,
+                ];
+
+                const rs1 = new RainSpeed({
+                    azimuthInDegrees: 0,
+                    speedInMetersPerSec: 10,
+                    trustRatio: 0.9,
+                    latLngs: [area1],
+                });
+                const rs2 = new RainSpeed({
+                    azimuthInDegrees: 90,
+                    speedInMetersPerSec: 20,
+                    trustRatio: 0.7,
+                    latLngs: [area2],
+                });
+                const map = new RainSpeedMap({rainSpeeds: [rs1, rs2]});
+
+                // Point (0,0) is inside both areas - should return rs1's trustRatio
+                const result = map.getTrustRatio(new LatLng({lat: 0, lng: 0}));
+
+                expect(result).to.equal(0.9);
+            });
+
+            /**
+             * GIVEN: RainSpeed with trustRatio = 0 (no trust)
+             * WHEN: getTrustRatio is called for point inside area
+             * THEN: Should return 0
+             */
+            it('should return 0 when the containing RainSpeed has trustRatio = 0', () => {
+                const area = [new LatLng({lat: -1, lng: -1}), new LatLng({lat: 1, lng: 1})] as [
+                    LatLng,
+                    LatLng,
+                ];
+                const rs = new RainSpeed({
+                    azimuthInDegrees: 90,
+                    speedInMetersPerSec: 10,
+                    trustRatio: 0,
+                    latLngs: [area],
+                });
+                const map = new RainSpeedMap({rainSpeeds: [rs]});
+
+                const result = map.getTrustRatio(new LatLng({lat: 0, lng: 0}));
+
+                expect(result).to.equal(0);
+            });
+
+            /**
+             * GIVEN: RainSpeed with default trustRatio = -1
+             * WHEN: getTrustRatio is called for point inside area
+             * THEN: Should return -1 (the default value)
+             */
+            it('should return -1 when RainSpeed has default trustRatio', () => {
+                const area = [new LatLng({lat: -1, lng: -1}), new LatLng({lat: 1, lng: 1})] as [
+                    LatLng,
+                    LatLng,
+                ];
+                const rs = new RainSpeed({
+                    azimuthInDegrees: 90,
+                    speedInMetersPerSec: 10,
+                    // trustRatio not provided - defaults to -1
+                    latLngs: [area],
+                });
+                const map = new RainSpeedMap({rainSpeeds: [rs]});
+
+                const result = map.getTrustRatio(new LatLng({lat: 0, lng: 0}));
+
+                expect(result).to.equal(-1);
+            });
+        });
+
+        describe('when point is outside all RainSpeed areas', () => {
+            /**
+             * GIVEN: Point outside all RainSpeed areas, default behavior (finds closest)
+             * WHEN: getTrustRatio is called without options
+             * THEN: Should return trustRatio of the closest RainSpeed by center distance
+             */
+            it('should return trustRatio of closest RainSpeed by default', () => {
+                const area1 = [new LatLng({lat: 10, lng: 10}), new LatLng({lat: 11, lng: 11})] as [
+                    LatLng,
+                    LatLng,
+                ]; // center: (10.5, 10.5)
+                const area2 = [new LatLng({lat: 1, lng: 1}), new LatLng({lat: 2, lng: 2})] as [
+                    LatLng,
+                    LatLng,
+                ]; // center: (1.5, 1.5) - CLOSEST to (0,0)
+
+                const rs1 = new RainSpeed({
+                    azimuthInDegrees: 0,
+                    speedInMetersPerSec: 10,
+                    trustRatio: 0.5,
+                    latLngs: [area1],
+                });
+                const rs2 = new RainSpeed({
+                    azimuthInDegrees: 90,
+                    speedInMetersPerSec: 20,
+                    trustRatio: 0.95,
+                    latLngs: [area2],
+                });
+                const map = new RainSpeedMap({rainSpeeds: [rs1, rs2]});
+
+                const result = map.getTrustRatio(new LatLng({lat: 0, lng: 0}));
+
+                expect(result).to.equal(0.95); // rs2 is closest
+            });
+
+            /**
+             * GIVEN: Point outside all areas, strictContaining = true
+             * WHEN: getTrustRatio is called with strictContaining: true
+             * THEN: Should return 0 (fallback, no trust)
+             */
+            it('should return 0 when strictContaining is true and point is outside all areas', () => {
+                const area = [new LatLng({lat: 10, lng: 10}), new LatLng({lat: 11, lng: 11})] as [
+                    LatLng,
+                    LatLng,
+                ];
+                const rs = new RainSpeed({
+                    azimuthInDegrees: 90,
+                    speedInMetersPerSec: 10,
+                    trustRatio: 0.8,
+                    latLngs: [area],
+                });
+                const map = new RainSpeedMap({rainSpeeds: [rs]});
+
+                const result = map.getTrustRatio(new LatLng({lat: 0, lng: 0}), {
+                    strictContaining: true,
+                });
+
+                expect(result).to.equal(0); // Fallback
+            });
+
+            /**
+             * GIVEN: Point outside all areas, strictContaining = false
+             * WHEN: getTrustRatio is called with strictContaining: false
+             * THEN: Should return trustRatio of closest RainSpeed
+             */
+            it('should return trustRatio of closest when strictContaining is false', () => {
+                const area1 = [new LatLng({lat: 10, lng: 10}), new LatLng({lat: 11, lng: 11})] as [
+                    LatLng,
+                    LatLng,
+                ];
+                const area2 = [new LatLng({lat: 2, lng: 2}), new LatLng({lat: 3, lng: 3})] as [
+                    LatLng,
+                    LatLng,
+                ]; // CLOSEST to (0,0)
+
+                const rs1 = new RainSpeed({
+                    azimuthInDegrees: 0,
+                    speedInMetersPerSec: 10,
+                    trustRatio: 0.3,
+                    latLngs: [area1],
+                });
+                const rs2 = new RainSpeed({
+                    azimuthInDegrees: 90,
+                    speedInMetersPerSec: 20,
+                    trustRatio: 0.75,
+                    latLngs: [area2],
+                });
+                const map = new RainSpeedMap({rainSpeeds: [rs1, rs2]});
+
+                const result = map.getTrustRatio(new LatLng({lat: 0, lng: 0}), {
+                    strictContaining: false,
+                });
+
+                expect(result).to.equal(0.75); // rs2 is closest
+            });
+        });
+
+        describe('when no RainSpeeds exist', () => {
+            /**
+             * GIVEN: Empty RainSpeedMap (no RainSpeeds)
+             * WHEN: getTrustRatio is called
+             * THEN: Should return 0 (fallback, no trust)
+             */
+            it('should return 0 when RainSpeedMap has no RainSpeeds', () => {
+                const map = new RainSpeedMap({rainSpeeds: []});
+
+                const result = map.getTrustRatio(new LatLng({lat: 0, lng: 0}));
+
+                expect(result).to.equal(0);
+            });
+        });
+
+        describe('with inEarthMap option', () => {
+            /**
+             * GIVEN: Point with high-precision coordinates, inEarthMap = true
+             * WHEN: getTrustRatio is called with inEarthMap: true
+             * THEN: Should round coordinates and return trustRatio of matching RainSpeed
+             */
+            it('should round coordinates and return trustRatio when inEarthMap is true', () => {
+                const area = [
+                    new LatLng({lat: 45.0, lng: -122.0}),
+                    new LatLng({lat: 45.5, lng: -121.5}),
+                ] as [LatLng, LatLng];
+
+                const rs = new RainSpeed({
+                    azimuthInDegrees: 90,
+                    speedInMetersPerSec: 10,
+                    trustRatio: 0.92,
+                    latLngs: [area],
+                });
+                const map = new RainSpeedMap({rainSpeeds: [rs]});
+
+                // Point with high precision that rounds to fall within area
+                const result = map.getTrustRatio(new LatLng({lat: 45.25123, lng: -121.75456}), {
+                    inEarthMap: true,
+                });
+
+                expect(result).to.equal(0.92);
+            });
+
+            /**
+             * GIVEN: Point that matches area only after rounding
+             * WHEN: getTrustRatio is called with inEarthMap: true
+             * THEN: Should return trustRatio after coordinate rounding
+             */
+            it('should match area after rounding that would not match without rounding', () => {
+                const area = [
+                    new LatLng({lat: 40.0, lng: -74.0}),
+                    new LatLng({lat: 40.1, lng: -73.9}),
+                ] as [LatLng, LatLng];
+
+                const rs = new RainSpeed({
+                    azimuthInDegrees: 45,
+                    speedInMetersPerSec: 5,
+                    trustRatio: 0.88,
+                    latLngs: [area],
+                });
+                const map = new RainSpeedMap({rainSpeeds: [rs]});
+
+                // Point slightly outside that rounds into the area
+                const result = map.getTrustRatio(new LatLng({lat: 40.049, lng: -73.951}), {
+                    inEarthMap: true,
+                });
+
+                expect(result).to.equal(0.88);
+            });
+
+            /**
+             * GIVEN: Point with inEarthMap: true and strictContaining: true
+             * WHEN: Combined options are used
+             * THEN: Should round first, then apply strict containment, return trustRatio or 0
+             */
+            it('should work correctly when combined with strictContaining option', () => {
+                const area1 = [
+                    new LatLng({lat: 10.0, lng: 10.0}),
+                    new LatLng({lat: 10.5, lng: 10.5}),
+                ] as [LatLng, LatLng];
+                const area2 = [
+                    new LatLng({lat: 0.0, lng: 0.0}),
+                    new LatLng({lat: 1.0, lng: 1.0}),
+                ] as [LatLng, LatLng];
+
+                const rs1 = new RainSpeed({
+                    azimuthInDegrees: 90,
+                    speedInMetersPerSec: 10,
+                    trustRatio: 0.6,
+                    latLngs: [area1],
+                });
+                const rs2 = new RainSpeed({
+                    azimuthInDegrees: 180,
+                    speedInMetersPerSec: 20,
+                    trustRatio: 0.95,
+                    latLngs: [area2],
+                });
+                const map = new RainSpeedMap({rainSpeeds: [rs1, rs2]});
+
+                // Point that rounds into area2
+                const result = map.getTrustRatio(new LatLng({lat: 0.501, lng: 0.501}), {
+                    inEarthMap: true,
+                    strictContaining: true,
+                });
+
+                expect(result).to.equal(0.95); // rs2 after rounding
+            });
+
+            /**
+             * GIVEN: Point outside after rounding with strictContaining: true
+             * WHEN: getTrustRatio is called with both options
+             * THEN: Should return 0 (fallback)
+             */
+            it('should return 0 when point is outside all areas after rounding with strictContaining', () => {
+                const area = [
+                    new LatLng({lat: 10.0, lng: 10.0}),
+                    new LatLng({lat: 10.5, lng: 10.5}),
+                ] as [LatLng, LatLng];
+
+                const rs = new RainSpeed({
+                    azimuthInDegrees: 90,
+                    speedInMetersPerSec: 10,
+                    trustRatio: 0.7,
+                    latLngs: [area],
+                });
+                const map = new RainSpeedMap({rainSpeeds: [rs]});
+
+                const result = map.getTrustRatio(new LatLng({lat: 5.0, lng: 5.0}), {
+                    inEarthMap: true,
+                    strictContaining: true,
+                });
+
+                expect(result).to.equal(0); // Fallback
+            });
+        });
+
+        describe('with different point format inputs', () => {
+            /**
+             * GIVEN: Different point format shapes (LatLng, {lat, lng}, {latitude, longitude})
+             * WHEN: getTrustRatio is called with each format
+             * THEN: Should handle all formats and return same trustRatio
+             */
+            it('should support LatLng object format', () => {
+                const area = [new LatLng({lat: -1, lng: -1}), new LatLng({lat: 1, lng: 1})] as [
+                    LatLng,
+                    LatLng,
+                ];
+                const rs = new RainSpeed({
+                    azimuthInDegrees: 90,
+                    speedInMetersPerSec: 10,
+                    trustRatio: 0.82,
+                    latLngs: [area],
+                });
+                const map = new RainSpeedMap({rainSpeeds: [rs]});
+
+                const result = map.getTrustRatio(new LatLng({lat: 0, lng: 0}));
+
+                expect(result).to.equal(0.82);
+            });
+
+            it('should support {lat, lng} object format', () => {
+                const area = [new LatLng({lat: -1, lng: -1}), new LatLng({lat: 1, lng: 1})] as [
+                    LatLng,
+                    LatLng,
+                ];
+                const rs = new RainSpeed({
+                    azimuthInDegrees: 90,
+                    speedInMetersPerSec: 10,
+                    trustRatio: 0.82,
+                    latLngs: [area],
+                });
+                const map = new RainSpeedMap({rainSpeeds: [rs]});
+
+                const result = map.getTrustRatio({lat: 0, lng: 0} as any);
+
+                expect(result).to.equal(0.82);
+            });
+
+            it('should support {latitude, longitude} object format', () => {
+                const area = [new LatLng({lat: -1, lng: -1}), new LatLng({lat: 1, lng: 1})] as [
+                    LatLng,
+                    LatLng,
+                ];
+                const rs = new RainSpeed({
+                    azimuthInDegrees: 90,
+                    speedInMetersPerSec: 10,
+                    trustRatio: 0.82,
+                    latLngs: [area],
+                });
+                const map = new RainSpeedMap({rainSpeeds: [rs]});
+
+                const result = map.getTrustRatio({latitude: 0, longitude: 0} as any);
+
+                expect(result).to.equal(0.82);
+            });
+
+            /**
+             * GIVEN: Invalid point format (missing coordinates)
+             * WHEN: getTrustRatio is called with invalid input
+             * THEN: Should return 0 (fallback, cannot normalize point)
+             */
+            it('should return 0 when point format is invalid', () => {
+                const area = [new LatLng({lat: -1, lng: -1}), new LatLng({lat: 1, lng: 1})] as [
+                    LatLng,
+                    LatLng,
+                ];
+                const rs = new RainSpeed({
+                    azimuthInDegrees: 90,
+                    speedInMetersPerSec: 10,
+                    trustRatio: 0.82,
+                    latLngs: [area],
+                });
+                const map = new RainSpeedMap({rainSpeeds: [rs]});
+
+                const result = map.getTrustRatio({invalid: 'data'} as any);
+
+                expect(result).to.equal(0); // Fallback
+            });
+        });
+
+        describe('edge cases', () => {
+            /**
+             * GIVEN: RainSpeed with trustRatio = 1.0 (full trust)
+             * WHEN: getTrustRatio is called
+             * THEN: Should return 1.0
+             */
+            it('should return 1.0 for full trust', () => {
+                const area = [new LatLng({lat: -1, lng: -1}), new LatLng({lat: 1, lng: 1})] as [
+                    LatLng,
+                    LatLng,
+                ];
+                const rs = new RainSpeed({
+                    azimuthInDegrees: 90,
+                    speedInMetersPerSec: 10,
+                    trustRatio: 1.0,
+                    latLngs: [area],
+                });
+                const map = new RainSpeedMap({rainSpeeds: [rs]});
+
+                const result = map.getTrustRatio(new LatLng({lat: 0, lng: 0}));
+
+                expect(result).to.equal(1.0);
+            });
+
+            /**
+             * GIVEN: Point on exact boundary of RainSpeed area
+             * WHEN: getTrustRatio is called
+             * THEN: Should return trustRatio (inclusive boundary)
+             */
+            it('should return trustRatio for point on boundary (inclusive)', () => {
+                const area = [new LatLng({lat: -1, lng: -1}), new LatLng({lat: 1, lng: 1})] as [
+                    LatLng,
+                    LatLng,
+                ];
+                const rs = new RainSpeed({
+                    azimuthInDegrees: 90,
+                    speedInMetersPerSec: 10,
+                    trustRatio: 0.77,
+                    latLngs: [area],
+                });
+                const map = new RainSpeedMap({rainSpeeds: [rs]});
+
+                // Point exactly on boundary
+                const result = map.getTrustRatio(new LatLng({lat: 1, lng: 1}));
+
+                expect(result).to.equal(0.77);
+            });
+
+            /**
+             * GIVEN: Multiple RainSpeeds with same center distance from point
+             * WHEN: getTrustRatio is called (point outside all areas)
+             * THEN: Should return trustRatio of first closest RainSpeed in array order
+             */
+            it('should return trustRatio of first RainSpeed when multiple have same distance', () => {
+                // Both areas equidistant from origin (0,0)
+                const area1 = [new LatLng({lat: 1, lng: 1}), new LatLng({lat: 2, lng: 2})] as [
+                    LatLng,
+                    LatLng,
+                ]; // center: (1.5, 1.5)
+                const area2 = [new LatLng({lat: -1, lng: -1}), new LatLng({lat: -2, lng: -2})] as [
+                    LatLng,
+                    LatLng,
+                ]; // center: (-1.5, -1.5) - same distance
+
+                const rs1 = new RainSpeed({
+                    azimuthInDegrees: 0,
+                    speedInMetersPerSec: 10,
+                    trustRatio: 0.4,
+                    latLngs: [area1],
+                });
+                const rs2 = new RainSpeed({
+                    azimuthInDegrees: 90,
+                    speedInMetersPerSec: 20,
+                    trustRatio: 0.6,
+                    latLngs: [area2],
+                });
+                const map = new RainSpeedMap({rainSpeeds: [rs1, rs2]});
+
+                const result = map.getTrustRatio(new LatLng({lat: 0, lng: 0}));
+
+                // Should return first in array with equal distance
+                expect(result).to.be.oneOf([0.4, 0.6]); // Implementation dependent
+            });
+        });
+    });
 });

@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- RainSpeedMap.getTrustRatio: returns the trustRatio of the RainSpeed found for a given point, with support for
+  `inEarthMap` and `strictContaining` options.
+  When no point is provided, returns the average trustRatio of all RainSpeeds in the map.
+  As fallback returns 0 when no RainSpeeds exist.
+
+## [3.0.36] - 2025-10-27
+
 ### Changed
 
 - RainSpeedMap.getRainSpeed and .transpose: using Haversine distance when `strictContaining`, and Earth map when
