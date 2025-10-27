@@ -16,7 +16,8 @@ export class RainSpeedMap {
     }
 
     getRainSpeed(
-        point: LatLng | {latitude: number; longitude: number} | {lat: number; lng: number}
+        point: LatLng | {latitude: number; longitude: number} | {lat: number; lng: number},
+        options?: {inEarthMap?: boolean; strictContaining?: boolean}
     ): RainSpeed | undefined {
         // normalize input to numbers
         let lat: number | undefined;
@@ -43,13 +44,57 @@ export class RainSpeedMap {
             return undefined;
         }
 
+        // Apply earth map rounding if requested
+        const cartesianTools = new CartesianTools();
+        if (options?.inEarthMap) {
+            const roundedLatLng = cartesianTools.getLatLngFromEarthMap(new LatLng({lat, lng}));
+            lat = roundedLatLng.lat;
+            lng = roundedLatLng.lng;
+        }
+
         // retrieve the first RainSpeed whose area contains the point
         for (const rs of this.rainSpeeds ?? []) {
             const rects = rs?.latLngs ?? [];
-            if (CartesianTools.IsPointInAnyRect(lat, lng, rects)) {
+            let roundedRects = rects;
+            if (options?.inEarthMap) {
+                roundedRects = roundedRects.map((r) => {
+                    const r0 = cartesianTools.getLatLngFromEarthMap(r[0]);
+                    const r1 = cartesianTools.getLatLngFromEarthMap(r[1]);
+                    return [r0, r1];
+                });
+            }
+
+            if (CartesianTools.IsPointInAnyRect(lat, lng, roundedRects)) {
                 return rs;
             }
         }
+
+        // If no containing area found and strictContaining is not true, find closest by center distance
+        if (options?.strictContaining !== true) {
+            return this.rainSpeeds.reduce(
+                (closest, current) => {
+                    if (!closest) {
+                        return current;
+                    }
+
+                    const currentCenter = current.getCenter();
+                    const closestCenter = closest.getCenter();
+
+                    const currentDistance = CartesianTools.GetDistanceFromLatLngInKm(
+                        new LatLng({lat, lng}),
+                        currentCenter
+                    );
+                    const closestDistance = CartesianTools.GetDistanceFromLatLngInKm(
+                        new LatLng({lat, lng}),
+                        closestCenter
+                    );
+
+                    return currentDistance < closestDistance ? current : closest;
+                },
+                undefined as RainSpeed | undefined
+            );
+        }
+
         return undefined;
     }
 

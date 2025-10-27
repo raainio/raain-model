@@ -65,13 +65,24 @@ function getGitTagDate(tag) {
 }
 
 // Update the changelog with dates from git tags
+// Collect all version matches first
+const versionMatches = [];
 let match;
+while ((match = versionRegex.exec(changelog)) !== null) {
+    versionMatches.push({
+        version: match[1],
+        currentDate: match[2],
+        fullMatch: match[0]
+    });
+}
+
+// Only process the last 10 versions
+const versionsToProcess = versionMatches.slice(0, 10);
+console.log(`Processing ${versionsToProcess.length} most recent versions (out of ${versionMatches.length} total)`);
+
 let updated = false;
 
-while ((match = versionRegex.exec(changelog)) !== null) {
-    const version = match[1];
-    const currentDate = match[2];
-
+for (const {version, currentDate} of versionsToProcess) {
     // Get the date from git tag
     const gitTagDate = getGitTagDate(version);
 

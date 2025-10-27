@@ -9,9 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- RainSpeedMap.transpose: Implemented closest RainSpeed algorithm using Haversine distance when `strictContaining` is
-  false
-- RainSpeedMap: Added comprehensive tests for `strictContaining` option behavior
+- RainSpeedMap.getRainSpeed and .transpose: using Haversine distance when `strictContaining`, and Earth map when
+  `inEarthMap`
 
 ## [3.0.34] - 2025-10-25
 
