@@ -66,21 +66,71 @@ export class CartesianTools {
     public static IsAroundLatLng(
         latLngCenter: LatLng,
         latLngAround: LatLng,
-        stepRange: number,
-        cartesianStep = CartesianTools.DEFAULT_SCALE
+        options: {
+            stepRange?: number;
+            scaleLatLng?: LatLng;
+            inEarthMap?: boolean;
+        } = {
+            stepRange: 0,
+            scaleLatLng: new LatLng({
+                lat: CartesianTools.DEFAULT_SCALE,
+                lng: CartesianTools.DEFAULT_SCALE,
+            }),
+            inEarthMap: false,
+        }
     ): boolean {
+        const stepRange = options?.stepRange ?? 0;
+        let cartesianStep: LatLng =
+            typeof options.scaleLatLng === 'undefined'
+                ? new LatLng({
+                      lat: CartesianTools.DEFAULT_SCALE,
+                      lng: CartesianTools.DEFAULT_SCALE,
+                  })
+                : options.scaleLatLng;
+
+        let latLng1 = latLngCenter;
+        let latLng2 = latLngAround;
+        if (options?.inEarthMap) {
+            const cartesianTools = new CartesianTools();
+            latLng1 = cartesianTools.getLatLngFromEarthMap(latLng1);
+            latLng2 = cartesianTools.getLatLngFromEarthMap(latLng2);
+            cartesianStep = cartesianTools.getScaleLatLng(latLng1);
+        }
+
         let isAround = false;
-        const min = -stepRange * cartesianStep,
-            max = stepRange * cartesianStep;
-        for (let lat = min; !isAround && lat <= max; lat += cartesianStep) {
-            for (let lng = min; !isAround && lng <= max; lng += cartesianStep) {
+        const minLat = -stepRange * cartesianStep.lat,
+            maxLat = stepRange * cartesianStep.lat,
+            minLng = -stepRange * cartesianStep.lng,
+            maxLng = stepRange * cartesianStep.lng;
+
+        // For longitude wrapping: Check if the shortest distance crosses the date line
+        // Calculate the wrapped longitude difference
+        let lngDiff = latLng2.lng - latLng1.lng;
+        if (lngDiff > 180) {
+            lngDiff -= 360;
+        } else if (lngDiff < -180) {
+            lngDiff += 360;
+        }
+
+        // If the shortest path crosses the date line, adjust latLng2 to be on the same side
+        let adjustedLatLng2Lng = latLng2.lng;
+        if (Math.abs(lngDiff) !== Math.abs(latLng2.lng - latLng1.lng)) {
+            // Wrapped distance is shorter, adjust to make linear checking work
+            adjustedLatLng2Lng = latLng1.lng + lngDiff;
+        }
+
+        for (let lat = minLat; !isAround && lat <= maxLat; lat += cartesianStep.lat) {
+            for (let lng = minLng; !isAround && lng <= maxLng; lng += cartesianStep.lng) {
                 isAround =
-                    CartesianTools.RoundLatLng(latLngCenter.lat, cartesianStep, true) ===
-                    CartesianTools.RoundLatLng(latLngAround.lat + lat, cartesianStep, true);
+                    CartesianTools.RoundLatLng(latLng1.lat, cartesianStep.lat, true) ===
+                    CartesianTools.RoundLatLng(latLng2.lat + lat, cartesianStep.lat, true);
                 if (isAround) {
+                    // Normalize both longitudes to handle date line crossing
+                    const normalizedLng1 = CartesianTools.NormalizeLongitude(latLng1.lng);
+                    const normalizedLng2 = CartesianTools.NormalizeLongitude(adjustedLatLng2Lng + lng);
                     isAround =
-                        CartesianTools.RoundLatLng(latLngCenter.lng, cartesianStep, true) ===
-                        CartesianTools.RoundLatLng(latLngAround.lng + lng, cartesianStep, true);
+                        CartesianTools.RoundLatLng(normalizedLng1, cartesianStep.lng, true) ===
+                        CartesianTools.RoundLatLng(normalizedLng2, cartesianStep.lng, true);
                 }
             }
         }

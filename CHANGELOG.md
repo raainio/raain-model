@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [3.0.37] - 2025-10-27
+
 ### Added
 
 - RainSpeedMap.getTrustRatio: returns the trustRatio of the RainSpeed found for a given point, with support for
