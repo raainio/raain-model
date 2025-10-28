@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- CartesianMeasureValue.setCartesianValues with mergeStrategy; breaking change => 3.1.x
+
 ## [3.0.37] - 2025-10-27
 
 ### Added

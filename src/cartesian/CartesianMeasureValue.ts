@@ -3,6 +3,7 @@ import {CartesianValue} from './CartesianValue';
 import {LatLng} from './LatLng';
 import {calculateMinMax} from '../utils';
 import {CartesianTools} from './CartesianTools';
+import {MergeStrategy} from '../rain';
 
 export class CartesianMeasureValue implements ICartesianMeasureValue {
     protected cartesianValues: CartesianValue[];
@@ -57,14 +58,20 @@ export class CartesianMeasureValue implements ICartesianMeasureValue {
         return this.cartesianValues;
     }
 
-    setCartesianValues(cartesianValues: CartesianValue[], options?: {merge: boolean}): void {
+    setCartesianValues(
+        cartesianValues: CartesianValue[],
+        options?: {mergeStrategy: MergeStrategy}
+    ): void {
         let merged: CartesianValue[] = cartesianValues;
 
-        if (options?.merge) {
+        if (options?.mergeStrategy && options?.mergeStrategy !== MergeStrategy.NONE) {
             const cartesianTools = new CartesianTools();
 
-            // Merge duplicates (same EarthMap lat,lng) by averaging their values
-            const map = new Map<string, {sum: number; count: number; lat: number; lng: number}>();
+            // Merge duplicates (same EarthMap lat,lng)
+            const map = new Map<
+                string,
+                {sum: number; max: number; count: number; lat: number; lng: number}
+            >();
             for (const v of cartesianValues || []) {
                 if (v === null) {
                     continue;
@@ -76,14 +83,32 @@ export class CartesianMeasureValue implements ICartesianMeasureValue {
                 if (current) {
                     current.sum += v.value;
                     current.count += 1;
+                    current.max = Math.max(current.max, v.value);
                 } else {
-                    map.set(key, {sum: v.value, count: 1, lat: latLng.lat, lng: latLng.lng});
+                    map.set(key, {
+                        sum: v.value,
+                        max: v.value,
+                        count: 1,
+                        lat: latLng.lat,
+                        lng: latLng.lng,
+                    });
                 }
             }
 
             merged = [];
-            for (const {sum, count, lat, lng} of map.values()) {
-                merged.push(new CartesianValue({lat, lng, value: sum / count}));
+
+            if (options.mergeStrategy === MergeStrategy.AVERAGE) {
+                for (const {sum, count, lat, lng} of map.values()) {
+                    merged.push(new CartesianValue({lat, lng, value: sum / count}));
+                }
+            } else if (options.mergeStrategy === MergeStrategy.SUM) {
+                for (const {sum, lat, lng} of map.values()) {
+                    merged.push(new CartesianValue({lat, lng, value: sum}));
+                }
+            } else if (options.mergeStrategy === MergeStrategy.MAX) {
+                for (const {max, lat, lng} of map.values()) {
+                    merged.push(new CartesianValue({lat, lng, value: max}));
+                }
             }
         }
 

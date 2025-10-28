@@ -127,7 +127,9 @@ export class CartesianTools {
                 if (isAround) {
                     // Normalize both longitudes to handle date line crossing
                     const normalizedLng1 = CartesianTools.NormalizeLongitude(latLng1.lng);
-                    const normalizedLng2 = CartesianTools.NormalizeLongitude(adjustedLatLng2Lng + lng);
+                    const normalizedLng2 = CartesianTools.NormalizeLongitude(
+                        adjustedLatLng2Lng + lng
+                    );
                     isAround =
                         CartesianTools.RoundLatLng(normalizedLng1, cartesianStep.lng, true) ===
                         CartesianTools.RoundLatLng(normalizedLng2, cartesianStep.lng, true);
