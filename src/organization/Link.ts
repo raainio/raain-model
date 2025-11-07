@@ -1,3 +1,5 @@
+import {RaainNodeType} from './RaainNodeType';
+
 /**
  * Hateoas Links :
  * [ {
@@ -28,7 +30,7 @@ export class Link {
         return urls[urls.length - 1];
     }
 
-    public getLinkType(): string {
+    public getLinkType(): string | RaainNodeType {
         // const urls = this.href.split('/');
         // can be enforced : verify rel in -2 urls ?...
         // return urls[1].substring(0, urls[1].length - 1);

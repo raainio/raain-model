@@ -1,5 +1,6 @@
 import {PeopleNode} from './PeopleNode';
 import {RaainNode} from './RaainNode';
+import {RaainNodeType} from './RaainNodeType';
 
 /**
  * Represents a team in the RAAIN system.
@@ -20,7 +21,7 @@ import {RaainNode} from './RaainNode';
  * ```
  */
 export class TeamNode extends RaainNode {
-    public static readonly TYPE = 'team';
+    public static readonly TYPE = RaainNodeType.TeamNode;
 
     public name: string;
     public description: string;
@@ -53,12 +54,7 @@ export class TeamNode extends RaainNode {
         };
     }
 
-    /**
-     * Returns the link type for team nodes.
-     *
-     * @returns The string 'team'
-     */
-    protected getLinkType(): string {
+    protected getLinkType(): RaainNodeType {
         return TeamNode.TYPE;
     }
 }

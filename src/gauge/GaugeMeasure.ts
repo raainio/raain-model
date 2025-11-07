@@ -2,12 +2,13 @@ import {Link, Measure} from '../organization';
 import {IPolarMeasureValue} from '../polar';
 import {ICartesianMeasureValue} from '../cartesian';
 import {GaugeNode} from './GaugeNode';
+import {RaainNodeType} from '../organization/RaainNodeType';
 
 /**
  *  api/gauges/:id/measures?begin=...&end=...
  */
 export class GaugeMeasure extends Measure {
-    public static TYPE = 'gauge-measure';
+    public static TYPE = RaainNodeType.GaugeMeasure;
 
     public gauge: string;
 
@@ -62,7 +63,7 @@ export class GaugeMeasure extends Measure {
         });
     }
 
-    protected getLinkType(): string {
+    protected getLinkType(): RaainNodeType {
         return GaugeMeasure.TYPE;
     }
 }

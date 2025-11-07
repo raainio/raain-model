@@ -3,6 +3,14 @@ import {CartesianValue} from './CartesianValue';
 import {EarthMap} from './EarthMap';
 import {RainNode} from '../rain';
 
+export enum CartesianPixelPosition {
+    SW = 0,
+    NW = 1,
+    NE = 2,
+    SE = 3,
+    C = 4,
+}
+
 export class CartesianTools {
     // scale of Pixel regarding LatLng : Approx. 1 => 100km, 0.01 => 1km, 0.005 => 500m
     public static DEFAULT_SCALE = 0.01;
@@ -482,15 +490,57 @@ export class CartesianTools {
         return new LatLng({lat: this.scale, lng: latitudeLongitudeScale});
     }
 
-    public getLatLngFromEarthMap(fromLatLng: LatLng): LatLng {
+    public getLatLngFromEarthMap(
+        fromLatLng: LatLng,
+        options?: {position?: CartesianPixelPosition}
+    ): LatLng {
         const earthMap = EarthMap.initialize(this);
 
         const posLat = Math.round((90 + fromLatLng.lat) / earthMap.latitudeScale);
-        const lat = CartesianTools.LimitWithPrecision(earthMap.latitudes[posLat]);
+        const latSW = CartesianTools.LimitWithPrecision(earthMap.latitudes[posLat]);
         const latitudeLongitudeScale = earthMap.latitudeLongitudeScales[posLat];
 
         const lngPos = Math.round(fromLatLng.lng / latitudeLongitudeScale);
-        const lng = CartesianTools.LimitWithPrecision(lngPos * latitudeLongitudeScale);
+        const lngSW = CartesianTools.LimitWithPrecision(lngPos * latitudeLongitudeScale);
+
+        // Default position is south-west corner
+        const position = options?.position || CartesianPixelPosition.SW;
+
+        // Calculate lat/lng based on position
+        let lat = latSW;
+        let lng = lngSW;
+
+        switch (position) {
+            case CartesianPixelPosition.SW:
+                // Default: already set to SW corner
+                break;
+
+            case CartesianPixelPosition.SE:
+                // Same latitude as SW, longitude + lngScale
+                lng = CartesianTools.LimitWithPrecision(lngSW + latitudeLongitudeScale);
+                break;
+
+            case CartesianPixelPosition.NW:
+                // Latitude + latScale, same longitude as SW
+                lat = CartesianTools.LimitWithPrecision(latSW + this.scale);
+                break;
+
+            case CartesianPixelPosition.NE:
+                // Both latitude and longitude increased
+                lat = CartesianTools.LimitWithPrecision(latSW + this.scale);
+                lng = CartesianTools.LimitWithPrecision(lngSW + latitudeLongitudeScale);
+                break;
+
+            case CartesianPixelPosition.C:
+                // Center: SW corner + half of lat/lng scales
+                lat = CartesianTools.LimitWithPrecision(latSW + this.scale / 2);
+                lng = CartesianTools.LimitWithPrecision(lngSW + latitudeLongitudeScale / 2);
+                break;
+
+            default:
+                // Invalid position: fall back to default (south-west)
+                break;
+        }
 
         return new LatLng({lat, lng});
     }
@@ -640,14 +690,5 @@ export class CartesianTools {
         }
 
         return pixelCount;
-    }
-
-    protected buildLatLngEarthMap(): EarthMap {
-        // Reset the singleton instance
-        EarthMap.reset();
-
-        // Initialize the singleton with this CartesianTools instance
-        // The initialize method will build the latitude and longitude scales
-        return EarthMap.initialize(this);
     }
 }

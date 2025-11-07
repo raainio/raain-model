@@ -4,6 +4,7 @@ import {CartesianTools, LatLng, RainCartesianMeasureValue} from '../cartesian';
 import {RainComputationAbstract} from './RainComputationAbstract';
 import {RainMeasure} from './RainMeasure';
 import {MergeStrategy} from './MergeStrategy';
+import {RaainNodeType} from '../organization/RaainNodeType';
 
 /**
  *  api/rains/:id/computations/:computationId
@@ -11,7 +12,7 @@ import {MergeStrategy} from './MergeStrategy';
  *  api/rains/:id/computations?format=id&begin=...
  */
 export class RainComputation extends RainComputationAbstract {
-    public static TYPE = 'rain-computation';
+    public static TYPE = RaainNodeType.RainComputation;
 
     constructor(json: {
         id: string;
@@ -97,7 +98,7 @@ export class RainComputation extends RainComputationAbstract {
         );
     }
 
-    protected getLinkType(): string {
+    protected getLinkType(): RaainNodeType {
         return RainComputation.TYPE;
     }
 }

@@ -2,12 +2,13 @@ import {Link, Measure} from '../organization';
 import {IPolarMeasureValue} from '../polar';
 import {ICartesianMeasureValue} from '../cartesian';
 import {RadarNode} from './RadarNode';
+import {RaainNodeType} from '../organization/RaainNodeType';
 
 /**
  *  api/radars/:id/measures/:id
  */
 export class RadarMeasure extends Measure {
-    public static TYPE = 'radar-measure';
+    public static TYPE = RaainNodeType.RadarMeasure;
 
     constructor(json: {
         id: string;
@@ -65,7 +66,7 @@ export class RadarMeasure extends Measure {
         });
     }
 
-    protected getLinkType(): string {
+    protected getLinkType(): RaainNodeType {
         return RadarMeasure.TYPE;
     }
 }

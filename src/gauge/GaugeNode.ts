@@ -1,4 +1,5 @@
 import {Link, RaainNode, TeamNode} from '../organization';
+import {RaainNodeType} from '../organization/RaainNodeType';
 
 /**
  * Represents a rain gauge station in the RAAIN system.
@@ -21,7 +22,7 @@ import {Link, RaainNode, TeamNode} from '../organization';
  */
 export class GaugeNode extends RaainNode {
     /** Type identifier for gauge nodes */
-    public static TYPE = 'gauge';
+    public static TYPE = RaainNodeType.GaugeNode;
 
     /** Name of the gauge station */
     public name: string;
@@ -124,12 +125,7 @@ export class GaugeNode extends RaainNode {
         };
     }
 
-    /**
-     * Returns the link type for gauge nodes.
-     *
-     * @returns The string 'gauge'
-     */
-    protected getLinkType(): string {
+    protected getLinkType(): RaainNodeType {
         return GaugeNode.TYPE;
     }
 }

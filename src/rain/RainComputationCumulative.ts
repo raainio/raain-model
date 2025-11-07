@@ -1,6 +1,7 @@
 import {Link, RaainNode} from '../organization';
 import {RainCartesianMeasureValue} from '../cartesian';
 import {RainComputationAbstract} from './RainComputationAbstract';
+import {RaainNodeType} from '../organization/RaainNodeType';
 
 /**
  *  api/rains/:id/cumulative/:cumulativeId
@@ -8,7 +9,7 @@ import {RainComputationAbstract} from './RainComputationAbstract';
  *  api/rains/:id?format=timeframeCumulative&provider=...&begin=...
  */
 export class RainComputationCumulative extends RainComputationAbstract {
-    public static TYPE = 'rain-computation-cumulative';
+    public static TYPE = RaainNodeType.RainComputationCumulative;
 
     public provider: string;
     public timeStepInMinutes: number;
@@ -62,7 +63,7 @@ export class RainComputationCumulative extends RainComputationAbstract {
         };
     }
 
-    protected getLinkType(): string {
+    protected getLinkType(): RaainNodeType {
         return RainComputationCumulative.TYPE;
     }
 }

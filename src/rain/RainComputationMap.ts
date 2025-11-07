@@ -4,6 +4,7 @@ import {RainMeasure} from './RainMeasure';
 import {CartesianTools, LatLng} from '../cartesian';
 import {MergeStrategy} from './MergeStrategy';
 import {RadarMeasure} from '../radar';
+import {RaainNodeType} from '../organization/RaainNodeType';
 
 /**
  * Represents a map-based rain computation result.
@@ -25,7 +26,7 @@ import {RadarMeasure} from '../radar';
  * - api/rains/:id/computations?format=map&begin=...
  */
 export class RainComputationMap extends RainComputationAbstract {
-    public static readonly TYPE = 'rain-computation-map';
+    public static readonly TYPE = RaainNodeType.RainComputationMap;
 
     /**
      * The map data stored as a stringified JSON array of RainMeasure objects.
@@ -149,7 +150,7 @@ export class RainComputationMap extends RainComputationAbstract {
         return [];
     }
 
-    protected getLinkType(): string {
+    protected getLinkType(): RaainNodeType {
         return RainComputationMap.TYPE;
     }
 }

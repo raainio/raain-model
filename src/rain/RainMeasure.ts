@@ -1,12 +1,13 @@
 import {Measure} from '../organization';
 import {IPolarMeasureValue} from '../polar';
 import {ICartesianMeasureValue} from '../cartesian';
+import {RaainNodeType} from '../organization/RaainNodeType';
 
 /**
  *  api/rains/:id/computations/:id?format=map => RainComputationMap getMapData() => RainMeasure[]
  */
 export class RainMeasure extends Measure {
-    public static TYPE = 'rain-measure';
+    public static TYPE = RaainNodeType.RainMeasure;
 
     constructor(json: {
         id: string;
@@ -18,7 +19,7 @@ export class RainMeasure extends Measure {
         super(json);
     }
 
-    protected getLinkType(): string {
+    protected getLinkType(): RaainNodeType {
         return RainMeasure.TYPE;
     }
 }

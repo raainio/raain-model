@@ -10,6 +10,7 @@ import {
 } from '../cartesian';
 import {RainMeasure} from './RainMeasure';
 import {MergeLatLng, MergeStrategy} from './MergeStrategy';
+import {RaainNodeType} from '../organization/RaainNodeType';
 
 /**
  *  not used directly
@@ -280,7 +281,7 @@ export class RainComputationAbstract extends RaainNode {
         }
     }
 
-    protected getLinkType(): string {
+    protected getLinkType(): RaainNodeType {
         throw Error('abstract');
     }
 

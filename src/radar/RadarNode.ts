@@ -1,10 +1,11 @@
 import {Link, RaainNode, TeamNode} from '../organization';
+import {RaainNodeType} from '../organization/RaainNodeType';
 
 /**
  *  api/radars/:id
  */
 export class RadarNode extends RaainNode {
-    public static TYPE = 'radar';
+    public static TYPE = RaainNodeType.RadarNode;
 
     public name: string;
     public description: string;
@@ -75,7 +76,7 @@ export class RadarNode extends RaainNode {
         return RaainNode.parseJsonLikeOrNull(this.configurationAsJSON);
     }
 
-    protected getLinkType(): string {
+    protected getLinkType(): RaainNodeType {
         return RadarNode.TYPE;
     }
 }

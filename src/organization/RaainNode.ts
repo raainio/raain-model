@@ -1,5 +1,6 @@
 import {Link} from './Link';
 import {IVersion} from './IVersion';
+import {RaainNodeType} from './RaainNodeType';
 
 /**
  * Base class for all RAAIN nodes in the system.
@@ -94,7 +95,7 @@ export class RaainNode implements IVersion {
                 if (l instanceof Link || Link.isCloneable(l)) {
                     return Link.clone(l);
                 } else if (l && typeof l.getLinkType === 'function' && l.id) {
-                    const linkType = l.getLinkType();
+                    const linkType: RaainNodeType = l.getLinkType();
                     let href = '../' + linkType + 's';
                     const l2 = l;
                     if (l2.date?.toISOString) {
@@ -150,7 +151,7 @@ export class RaainNode implements IVersion {
         return json;
     }
 
-    public getLinks(linkType?: string): Link[] {
+    public getLinks(linkType?: RaainNodeType): Link[] {
         if (!this._links) {
             return [];
         }
@@ -160,7 +161,7 @@ export class RaainNode implements IVersion {
         return this._links.filter((l) => l.getLinkType() === linkType);
     }
 
-    public getLink(linkType: string, index?: number): Link {
+    public getLink(linkType: RaainNodeType, index?: number): Link {
         index = !index ? 0 : index;
         const linksFound = this.getLinks(linkType);
         if (linksFound.length <= index) {
@@ -184,7 +185,7 @@ export class RaainNode implements IVersion {
      * @param linkType - Optional type of links to count
      * @returns The number of links
      */
-    public getLinksCount(linkType?: string): number {
+    public getLinksCount(linkType?: RaainNodeType): number {
         if (!this._links) {
             return 0;
         }

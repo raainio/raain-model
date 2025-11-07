@@ -1,4 +1,4 @@
-import {Link, RaainNode, TeamNode} from '../organization';
+import {Link, RaainNode, RaainNodeType, TeamNode} from '../organization';
 import {RadarNode} from '../radar';
 import {RainComputation} from './RainComputation';
 import {GaugeNode} from '../gauge';
@@ -8,7 +8,7 @@ import {CartesianTools, LatLng} from '../cartesian';
  * api/rains/:id
  */
 export class RainNode extends RaainNode {
-    public static TYPE = 'rain';
+    public static TYPE = RaainNodeType.RainNode;
 
     public name: string;
     public description: string;
@@ -198,7 +198,7 @@ export class RainNode extends RaainNode {
         return limitPoints;
     }
 
-    protected getLinkType(): string {
+    protected getLinkType(): RaainNodeType {
         return RainNode.TYPE;
     }
 

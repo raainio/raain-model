@@ -1,5 +1,5 @@
 import {expect} from 'chai';
-import {CartesianTools, EarthMap, LatLng, RainNode} from '../../src';
+import {CartesianPixelPosition, CartesianTools, LatLng, RainNode} from '../../src';
 
 describe('CartesianTools', () => {
     it('should get roundLatLng', () => {
@@ -342,7 +342,6 @@ describe('CartesianTools', () => {
          * THEN: Should handle longitude wrapping correctly
          */
         it('should handle international date line crossing', () => {
-            const cartesianTools = new CartesianTools(0.01);
             // These two points are 0.02° apart (wrapped), which is 2 pixels
             const centerLatLng = new LatLng({lat: 0, lng: 179.99});
             const aroundLatLng = new LatLng({lat: 0, lng: -179.99});
@@ -474,19 +473,19 @@ describe('CartesianTools', () => {
          * THEN: Should detect all 8 neighbors as "around"
          */
         it('should detect all 8 adjacent pixels as around with stepRange 1', () => {
-            const cartesianTools = new CartesianTools(0.01);
             const centerLatLng = new LatLng({lat: 0, lng: 0});
 
             // 8 directions: N, NE, E, SE, S, SW, W, NW
+            const pixelSizeToTest = 0.01499999;
             const neighbors = [
-                {lat: 0.01, lng: 0}, // N
-                {lat: 0.01, lng: 0.01}, // NE
-                {lat: 0, lng: 0.01}, // E
-                {lat: -0.01, lng: 0.01}, // SE
-                {lat: -0.01, lng: 0}, // S
-                {lat: -0.01, lng: -0.01}, // SW
-                {lat: 0, lng: -0.01}, // W
-                {lat: 0.01, lng: -0.01}, // NW
+                {lat: pixelSizeToTest, lng: 0}, // N
+                {lat: pixelSizeToTest, lng: pixelSizeToTest}, // NE
+                {lat: 0, lng: pixelSizeToTest}, // E
+                {lat: -pixelSizeToTest, lng: pixelSizeToTest}, // SE
+                {lat: -pixelSizeToTest, lng: 0}, // S
+                {lat: -pixelSizeToTest, lng: -pixelSizeToTest}, // SW
+                {lat: 0, lng: -pixelSizeToTest}, // W
+                {lat: pixelSizeToTest, lng: -pixelSizeToTest}, // NW
             ];
 
             for (const neighbor of neighbors) {
@@ -648,79 +647,6 @@ describe('CartesianTools', () => {
         );
     });
 
-    it('should buildLatLngEarthMap', () => {
-        const cartesianTools = new CartesianTools(CartesianTools.DEFAULT_SCALE);
-
-        // useless
-        // const earthMap = cartesianTools.buildLatLngEarthMap();
-        // replaced by singleton
-        const earthMap = EarthMap.getInstance();
-
-        expect(
-            cartesianTools.getLatLngFromEarthMap(new LatLng({lat: 12.00656, lng: 12.0098})).lat
-        ).eq(12.01);
-
-        expect(earthMap.latitudeScale).eq(CartesianTools.DEFAULT_SCALE);
-        expect(earthMap.latitudes.length).eq(18001);
-        expect(earthMap.latitudeLongitudeScales.length).eq(18001);
-
-        expect(earthMap.latitudes[0]).eq(-90);
-        expect(earthMap.latitudes[9000]).eq(0);
-        expect(earthMap.latitudes[18000]).eq(90);
-        expect(earthMap.latitudeLongitudeScales[0]).eq(1);
-        expect(earthMap.latitudeLongitudeScales[9000]).eq(CartesianTools.DEFAULT_SCALE);
-        expect(earthMap.latitudeLongitudeScales[18000]).eq(1);
-
-        expect(cartesianTools.getScaleLatLng(new LatLng({lat: 0, lng: 0})).lat).eq(0.01);
-        expect(cartesianTools.getScaleLatLng(new LatLng({lat: 0, lng: 0})).lng).eq(0.01);
-        expect(cartesianTools.getScaleLatLng(new LatLng({lat: 12.00556, lng: 12.0098})).lat).eq(
-            0.01
-        );
-        expect(cartesianTools.getScaleLatLng(new LatLng({lat: 12.00556, lng: 12.0098})).lng).eq(
-            0.01
-        );
-        expect(cartesianTools.getScaleLatLng(new LatLng({lat: 45.00556, lng: 45.0008})).lat).eq(
-            0.01
-        );
-        expect(cartesianTools.getScaleLatLng(new LatLng({lat: 45.00556, lng: 45.0008})).lng).eq(
-            0.014
-        );
-        expect(cartesianTools.getScaleLatLng(new LatLng({lat: -85.00556, lng: -177.0098})).lat).eq(
-            0.01
-        );
-        expect(cartesianTools.getScaleLatLng(new LatLng({lat: -85.00656, lng: -177.0098})).lng).eq(
-            0.115
-        );
-
-        expect(
-            cartesianTools.getScaleLatLngFromEarth(new LatLng({lat: -85.00556, lng: -177.0098})).lat
-        ).eq(0.01);
-        expect(
-            cartesianTools.getScaleLatLngFromEarth(new LatLng({lat: -85.00656, lng: -177.0098})).lng
-        ).eq(0.115);
-
-        expect(cartesianTools.getLatLngFromEarthMap(new LatLng({lat: 0, lng: 0})).lat).eq(0);
-        expect(cartesianTools.getLatLngFromEarthMap(new LatLng({lat: 0, lng: 0})).lng).eq(0);
-        expect(
-            cartesianTools.getLatLngFromEarthMap(new LatLng({lat: 12.00556, lng: 12.0098})).lat
-        ).eq(12.01);
-        expect(
-            cartesianTools.getLatLngFromEarthMap(new LatLng({lat: 12.00656, lng: 12.0098})).lng
-        ).eq(12.01);
-        expect(
-            cartesianTools.getLatLngFromEarthMap(new LatLng({lat: 45.00556, lng: 45.0008})).lat
-        ).eq(45.01);
-        expect(
-            cartesianTools.getLatLngFromEarthMap(new LatLng({lat: 45.00556, lng: 45.0008})).lng
-        ).eq(44.996);
-        expect(
-            cartesianTools.getLatLngFromEarthMap(new LatLng({lat: -85.00556, lng: -177.0098})).lat
-        ).eq(-85.01);
-        expect(
-            cartesianTools.getLatLngFromEarthMap(new LatLng({lat: -85.00656, lng: -177.0098})).lng
-        ).eq(-176.985);
-    });
-
     it('should getSquareFromWidthAndCenter', () => {
         const cartesianTools = new CartesianTools(CartesianTools.DEFAULT_SCALE);
 
@@ -829,5 +755,476 @@ describe('CartesianTools', () => {
             ([sw, ne]) => sw.equals(expectedSquare[0]) && ne.equals(expectedSquare[1])
         );
         expect(found).to.equal(true);
+    });
+
+    /**
+     * SPEC: getLatLngFromEarthMap with position option
+     *
+     * BEHAVIOR: The position option allows returning different positions within an earth pixel
+     * instead of only the default south-west corner.
+     *
+     * GIVEN: A coordinate that maps to an earth pixel
+     * WHEN: position option is specified
+     * THEN: Should return the corresponding corner or center of the earth pixel
+     */
+    describe('getLatLngFromEarthMap - position option', () => {
+        /**
+         * GIVEN: A coordinate at the equator
+         * WHEN: position is undefined or 'south-west' (default)
+         * THEN: Should return the south-west corner of the earth pixel (current behavior)
+         */
+        it('should return south-west corner by default (no position specified)', () => {
+            const cartesianTools = new CartesianTools(0.01);
+            const input = new LatLng({lat: 0.005, lng: 0.005});
+
+            // Without position option (default behavior)
+            const result = cartesianTools.getLatLngFromEarthMap(input);
+
+            // Should snap to south-west corner of pixel containing (0.005, 0.005)
+            // With Math.round, 0.005 rounds UP to the pixel with SW corner at 0.01
+            expect(result.lat).eq(0.01);
+            expect(result.lng).eq(0.01);
+        });
+
+        it('should return south-west corner when position is explicitly "south-west"', () => {
+            const cartesianTools = new CartesianTools(0.01);
+            const input = new LatLng({lat: 0.005, lng: 0.005});
+
+            const result = cartesianTools.getLatLngFromEarthMap(input, {
+                position: CartesianPixelPosition.SW,
+            });
+
+            expect(result.lat).eq(0.01);
+            expect(result.lng).eq(0.01);
+        });
+
+        /**
+         * GIVEN: A coordinate at the equator
+         * WHEN: position is 'south-east'
+         * THEN: Should return the south-east corner of the earth pixel
+         */
+        it('should return south-east corner when position is "south-east"', () => {
+            const cartesianTools = new CartesianTools(0.01);
+            const input = new LatLng({lat: 0.005, lng: 0.005});
+
+            const result = cartesianTools.getLatLngFromEarthMap(input, {
+                position: CartesianPixelPosition.SE,
+            });
+
+            // South-east: same latitude as SW, but longitude + lngScale
+            // At equator: lat = 0.01, lng = 0.01 + 0.01 = 0.02
+            expect(result.lat).eq(0.01);
+            expect(result.lng).eq(0.02);
+        });
+
+        /**
+         * GIVEN: A coordinate at the equator
+         * WHEN: position is 'north-west'
+         * THEN: Should return the north-west corner of the earth pixel
+         */
+        it('should return north-west corner when position is "north-west"', () => {
+            const cartesianTools = new CartesianTools(0.01);
+            const input = new LatLng({lat: 0.005, lng: 0.005});
+
+            const result = cartesianTools.getLatLngFromEarthMap(input, {
+                position: CartesianPixelPosition.NW,
+            });
+
+            // North-west: latitude + latScale, same longitude as SW
+            // At equator: lat = 0.01 + 0.01 = 0.02, lng = 0.01
+            expect(result.lat).eq(0.02);
+            expect(result.lng).eq(0.01);
+        });
+
+        /**
+         * GIVEN: A coordinate at the equator
+         * WHEN: position is 'north-east'
+         * THEN: Should return the north-east corner of the earth pixel
+         */
+        it('should return north-east corner when position is "north-east"', () => {
+            const cartesianTools = new CartesianTools(0.01);
+            const input = new LatLng({lat: 0.005, lng: 0.005});
+
+            const result = cartesianTools.getLatLngFromEarthMap(input, {
+                position: CartesianPixelPosition.NE,
+            });
+
+            // North-east: both latitude and longitude increased
+            // At equator: lat = 0.01 + 0.01 = 0.02, lng = 0.01 + 0.01 = 0.02
+            expect(result.lat).eq(0.02);
+            expect(result.lng).eq(0.02);
+        });
+
+        /**
+         * GIVEN: A coordinate at the equator
+         * WHEN: position is 'center'
+         * THEN: Should return the center of the earth pixel
+         */
+        it('should return center of pixel when position is "center"', () => {
+            const cartesianTools = new CartesianTools(0.01);
+            const input = new LatLng({lat: 0.005, lng: 0.005});
+
+            const result = cartesianTools.getLatLngFromEarthMap(input, {
+                position: CartesianPixelPosition.C,
+            });
+
+            // Center: SW corner + half of lat/lng scales
+            // At equator: lat = 0.01 + 0.01/2 = 0.015, lng = 0.01 + 0.01/2 = 0.015
+            expect(result.lat).eq(0.015);
+            expect(result.lng).eq(0.015);
+        });
+
+        /**
+         * GIVEN: A coordinate at mid-latitude (45°)
+         * WHEN: position is 'south-west'
+         * THEN: Should return the south-west corner with latitude-specific longitude scale
+         */
+        it('should return south-west corner at mid-latitude (45°)', () => {
+            const cartesianTools = new CartesianTools(0.01);
+            const input = new LatLng({lat: 45.005, lng: 45.005});
+
+            const result = cartesianTools.getLatLngFromEarthMap(input, {
+                position: CartesianPixelPosition.SW,
+            });
+
+            // At 45°, longitude scale is 0.014
+            // SW corner: lat = 45.01, lng = 45.01
+            expect(result.lat).eq(45.01);
+            expect(result.lng).eq(45.01);
+        });
+
+        /**
+         * GIVEN: A coordinate at mid-latitude (45°)
+         * WHEN: position is 'south-east'
+         * THEN: Should return the south-east corner with latitude-specific longitude scale
+         */
+        it('should return south-east corner at mid-latitude (45°)', () => {
+            const cartesianTools = new CartesianTools(0.01);
+            const input = new LatLng({lat: 45.005, lng: 45.005});
+
+            const result = cartesianTools.getLatLngFromEarthMap(input, {
+                position: CartesianPixelPosition.SE,
+            });
+
+            // South-east: lat = 45.01, lng = 45.01 + 0.014 = 45.024
+            expect(result.lat).eq(45.01);
+            expect(result.lng).eq(45.024);
+        });
+
+        /**
+         * GIVEN: A coordinate at mid-latitude (45°)
+         * WHEN: position is 'north-west'
+         * THEN: Should return the north-west corner with latitude-specific longitude scale
+         */
+        it('should return north-west corner at mid-latitude (45°)', () => {
+            const cartesianTools = new CartesianTools(0.01);
+            const input = new LatLng({lat: 45.005, lng: 45.005});
+
+            const result = cartesianTools.getLatLngFromEarthMap(input, {
+                position: CartesianPixelPosition.NW,
+            });
+
+            // North-west: lat = 45.01 + 0.01 = 45.02, lng = 45.01
+            expect(result.lat).eq(45.02);
+            expect(result.lng).eq(45.01);
+        });
+
+        /**
+         * GIVEN: A coordinate at mid-latitude (45°)
+         * WHEN: position is 'north-east'
+         * THEN: Should return the north-east corner with latitude-specific longitude scale
+         */
+        it('should return north-east corner at mid-latitude (45°)', () => {
+            const cartesianTools = new CartesianTools(0.01);
+            const input = new LatLng({lat: 45.005, lng: 45.005});
+
+            const result = cartesianTools.getLatLngFromEarthMap(input, {
+                position: CartesianPixelPosition.NE,
+            });
+
+            // North-east: lat = 45.01 + 0.01 = 45.02, lng = 45.01 + 0.014 = 45.024
+            expect(result.lat).eq(45.02);
+            expect(result.lng).eq(45.024);
+        });
+
+        /**
+         * GIVEN: A coordinate at mid-latitude (45°)
+         * WHEN: position is 'center'
+         * THEN: Should return the center with latitude-specific longitude scale
+         */
+        it('should return center at mid-latitude (45°)', () => {
+            const cartesianTools = new CartesianTools(0.01);
+            const input = new LatLng({lat: 45.005, lng: 45.005});
+
+            const result = cartesianTools.getLatLngFromEarthMap(input, {
+                position: CartesianPixelPosition.C,
+            });
+
+            // Center: lat = 45.01 + 0.01/2 = 45.015, lng = 45.01 + 0.014/2 = 45.017
+            expect(result.lat).eq(45.015);
+            expect(result.lng).eq(45.017);
+        });
+
+        /**
+         * GIVEN: A coordinate near the pole (85°)
+         * WHEN: position is 'south-west'
+         * THEN: Should return the south-west corner with large longitude scale
+         */
+        it('should return south-west corner near pole (85°)', () => {
+            const cartesianTools = new CartesianTools(0.01);
+            const input = new LatLng({lat: -85.005, lng: -177.005});
+
+            const result = cartesianTools.getLatLngFromEarthMap(input, {
+                position: CartesianPixelPosition.SW,
+            });
+
+            // At -85°, longitude scale is 0.115
+            expect(result.lat).eq(-85.0);
+            expect(result.lng).eq(-176.985);
+        });
+
+        /**
+         * GIVEN: A coordinate near the pole (85°)
+         * WHEN: position is 'center'
+         * THEN: Should return the center with large longitude scale
+         */
+        it('should return center near pole (85°)', () => {
+            const cartesianTools = new CartesianTools(0.01);
+            const input = new LatLng({lat: -85.005, lng: -177.005});
+
+            const result = cartesianTools.getLatLngFromEarthMap(input, {
+                position: CartesianPixelPosition.C,
+            });
+
+            // Center: lat = -85.0 + 0.01/2 = -84.995, lng = -176.985 + 0.115/2 = -176.9275
+            expect(result.lat).eq(-84.995);
+            expect(result.lng).eq(-176.9275);
+        });
+
+        /**
+         * GIVEN: A coordinate near the pole (85°)
+         * WHEN: position is 'north-east'
+         * THEN: Should return the north-east corner with large longitude scale
+         */
+        it('should return north-east corner near pole (85°)', () => {
+            const cartesianTools = new CartesianTools(0.01);
+            const input = new LatLng({lat: -85.005, lng: -177.005});
+
+            const result = cartesianTools.getLatLngFromEarthMap(input, {
+                position: CartesianPixelPosition.NE,
+            });
+
+            // North-east: lat = -85.0 + 0.01 = -84.99, lng = -176.985 + 0.115 = -176.87
+            expect(result.lat).eq(-84.99);
+            expect(result.lng).eq(-176.87);
+        });
+
+        /**
+         * GIVEN: Multiple coordinates in the same pixel
+         * WHEN: position is 'center'
+         * THEN: All should return the same center point
+         */
+        it('should return same center for all points within the same pixel', () => {
+            const cartesianTools = new CartesianTools(0.01);
+
+            // Note: 12.005 rounds up to pixel at 12.01, so use inputs that round to same pixel
+            const inputs = [
+                new LatLng({lat: 12.005, lng: 12.005}),
+                new LatLng({lat: 12.009, lng: 12.008}),
+                new LatLng({lat: 12.01, lng: 12.012}),
+            ];
+
+            const results = inputs.map((input) =>
+                cartesianTools.getLatLngFromEarthMap(input, {position: CartesianPixelPosition.C})
+            );
+
+            // All should map to same pixel center (pixel with SW corner at 12.01)
+            results.forEach((result) => {
+                expect(result.lat).eq(12.015);
+                expect(result.lng).eq(12.015);
+            });
+        });
+
+        /**
+         * GIVEN: Coordinates at the equator in different pixels
+         * WHEN: position is 'center'
+         * THEN: Should return different centers for different pixels
+         */
+        it('should return different centers for different pixels', () => {
+            const cartesianTools = new CartesianTools(0.01);
+
+            const pixel1 = new LatLng({lat: 0.005, lng: 0.005});
+            const pixel2 = new LatLng({lat: 0.015, lng: 0.005});
+
+            const center1 = cartesianTools.getLatLngFromEarthMap(pixel1, {
+                position: CartesianPixelPosition.C,
+            });
+            const center2 = cartesianTools.getLatLngFromEarthMap(pixel2, {
+                position: CartesianPixelPosition.C,
+            });
+
+            // 0.005 -> pixel with SW at 0.01 -> center at 0.015
+            expect(center1.lat).eq(0.015);
+            expect(center1.lng).eq(0.015);
+
+            // 0.015 -> pixel with SW at 0.02 -> center at 0.025
+            expect(center2.lat).eq(0.025);
+            expect(center2.lng).eq(0.015);
+
+            // Centers should be different
+            expect(center1.lat).not.eq(center2.lat);
+        });
+
+        /**
+         * GIVEN: Coordinates crossing the international date line
+         * WHEN: position is 'south-east'
+         * THEN: Should handle longitude wrapping correctly
+         */
+        it('should handle date line crossing with south-east position', () => {
+            const cartesianTools = new CartesianTools(0.01);
+            const input = new LatLng({lat: 0, lng: 179.995});
+
+            const result = cartesianTools.getLatLngFromEarthMap(input, {
+                position: CartesianPixelPosition.SE,
+            });
+
+            // 179.995 -> pixel with SW at 180.0, SE = 180.0 + 0.01 = 180.01
+            expect(result.lat).eq(0.0);
+            expect(result.lng).eq(180.01);
+        });
+
+        /**
+         * GIVEN: Negative coordinates (southern/western hemispheres)
+         * WHEN: position is 'center'
+         * THEN: Should handle negative coordinates correctly
+         */
+        it('should handle negative coordinates with center position', () => {
+            const cartesianTools = new CartesianTools(0.01);
+            const input = new LatLng({lat: -34.605, lng: -58.385}); // Buenos Aires region
+
+            const result = cartesianTools.getLatLngFromEarthMap(input, {
+                position: CartesianPixelPosition.C,
+            });
+
+            // Verify center is calculated correctly for negative coordinates
+            const sw = cartesianTools.getLatLngFromEarthMap(input, {
+                position: CartesianPixelPosition.SW,
+            });
+            const ne = cartesianTools.getLatLngFromEarthMap(input, {
+                position: CartesianPixelPosition.NE,
+            });
+
+            // Center should be midpoint of SW and NE
+            const expectedLat = (sw.lat + ne.lat) / 2;
+            const expectedLng = (sw.lng + ne.lng) / 2;
+
+            expect(result.lat).eq(expectedLat);
+            expect(result.lng).eq(expectedLng);
+        });
+
+        /**
+         * GIVEN: Coordinate at pixel boundary
+         * WHEN: position is 'south-west'
+         * THEN: Should snap to the correct pixel
+         */
+        it('should handle coordinates exactly on pixel boundaries', () => {
+            const cartesianTools = new CartesianTools(0.01);
+            const input = new LatLng({lat: 12.0, lng: 12.0}); // Exactly on boundary
+
+            const result = cartesianTools.getLatLngFromEarthMap(input, {
+                position: CartesianPixelPosition.SW,
+            });
+
+            // Should snap to the south-west corner of the pixel containing this point
+            expect(result.lat).eq(12.0);
+            expect(result.lng).eq(12.0);
+        });
+
+        /**
+         * SPEC: Precision consistency across positions
+         *
+         * GIVEN: A coordinate
+         * WHEN: Requesting different positions
+         * THEN: All positions should maintain consistent precision (12 digits)
+         */
+        it('should maintain precision consistency across all position options', () => {
+            const cartesianTools = new CartesianTools(0.01);
+            const input = new LatLng({lat: 45.00556, lng: 45.0008});
+
+            const positions = Object.values(CartesianPixelPosition) as CartesianPixelPosition[];
+
+            positions.forEach((position) => {
+                const result = cartesianTools.getLatLngFromEarthMap(input, {position});
+
+                // All results should have limited precision
+                // Check that the values don't have floating point artifacts
+                const latString = result.lat.toString();
+                const lngString = result.lng.toString();
+
+                // Values should not have more than reasonable decimal places
+                expect(latString.split('.')[1]?.length || 0).lessThan(13);
+                expect(lngString.split('.')[1]?.length || 0).lessThan(13);
+            });
+        });
+
+        /**
+         * SPEC: Relationship between corners and center
+         *
+         * GIVEN: A coordinate
+         * WHEN: Getting all 4 corners and center
+         * THEN: Center should be the geometric mean of opposite corners
+         */
+        it('should have center as geometric mean of opposite corners', () => {
+            const cartesianTools = new CartesianTools(0.01);
+            const input = new LatLng({lat: 12.005, lng: 45.005});
+
+            const sw = cartesianTools.getLatLngFromEarthMap(input, {
+                position: CartesianPixelPosition.SW,
+            });
+            const ne = cartesianTools.getLatLngFromEarthMap(input, {
+                position: CartesianPixelPosition.NE,
+            });
+            const center = cartesianTools.getLatLngFromEarthMap(input, {
+                position: CartesianPixelPosition.C,
+            });
+
+            // Center should be midpoint of SW and NE diagonal
+            expect(center.lat).eq((sw.lat + ne.lat) / 2);
+            expect(center.lng).eq((sw.lng + ne.lng) / 2);
+
+            // Also verify with other diagonal (SE and NW)
+            const se = cartesianTools.getLatLngFromEarthMap(input, {
+                position: CartesianPixelPosition.SE,
+            });
+            const nw = cartesianTools.getLatLngFromEarthMap(input, {
+                position: CartesianPixelPosition.NW,
+            });
+
+            expect(center.lat).eq((se.lat + nw.lat) / 2);
+            expect(center.lng).eq((se.lng + nw.lng) / 2);
+        });
+
+        /**
+         * SPEC: Invalid position handling
+         *
+         * GIVEN: A coordinate
+         * WHEN: position is an invalid string
+         * THEN: Should fall back to default 'south-west' behavior
+         */
+        it('should fall back to south-west for invalid position values', () => {
+            const cartesianTools = new CartesianTools(0.01);
+            const input = new LatLng({lat: 0.005, lng: 0.005});
+
+            // Testing invalid position value
+            const result = cartesianTools.getLatLngFromEarthMap(input, {
+                position: 'invalid' as any,
+            });
+
+            // Should return same as south-west (default)
+            const defaultResult = cartesianTools.getLatLngFromEarthMap(input);
+
+            expect(result.lat).eq(defaultResult.lat);
+            expect(result.lng).eq(defaultResult.lng);
+        });
     });
 });

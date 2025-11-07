@@ -2,12 +2,13 @@ import {RainComputationAbstract} from './RainComputationAbstract';
 import {Link, RaainNode} from '../organization';
 import {SpeedMatrixContainer} from '../quality';
 import {RainComputation} from './RainComputation';
+import {RaainNodeType} from '../organization/RaainNodeType';
 
 /**
  *  api/rains/:id/computations?format=compare&begin=...&gauges=[...]
  */
 export class RainComputationQuality extends RainComputationAbstract {
-    public static readonly TYPE = 'rain-computation-quality';
+    public static readonly TYPE = RaainNodeType.RainComputationQuality;
     public qualitySpeedMatrixContainer: SpeedMatrixContainer;
     public error: string;
 
@@ -192,7 +193,7 @@ export class RainComputationQuality extends RainComputationAbstract {
         return stillComputed;
     }
 
-    protected getLinkType(): string {
+    protected getLinkType(): RaainNodeType {
         return RainComputationQuality.TYPE;
     }
 }
