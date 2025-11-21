@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- PolarMeasureValueMap filtering with bad values
+
+## [3.1.2] - 2025-11-07
+
 ### Added
 
 - RaainNodeType for links

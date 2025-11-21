@@ -102,13 +102,14 @@ export class PolarMeasureValueMap {
         return circle;
     }
 
-    getPolarValue(json: {azimuthIndex: number; edgeIndex: number}): PolarValue {
+    getPolarValue(json: {azimuthIndex: number; edgeIndex: number}): PolarValue | null {
         let edgeValue = 0;
         let distanceInMetersFound = 0;
         const {azimuthIndex, azimuthInDegrees} = this.updatedAzimuth(json.azimuthIndex);
         if (azimuthIndex >= 0) {
             if (azimuthIndex >= this.builtMeasureValuePolarContainers.length) {
                 // throw new Error('Impossible to getPolarValue azimuth from ' + JSON.stringify(json));
+                console.warn('### raain-model > getPolarValue Impossible from azimuth ', json);
                 return null;
             }
 
@@ -122,6 +123,7 @@ export class PolarMeasureValueMap {
             if (edgeIndex >= 0) {
                 if (edgeIndex >= measureValuePolarContainer.polarEdges.length) {
                     // throw new Error('Impossible to getPolarValue edge from ' + JSON.stringify(json));
+                    console.warn('### raain-model > getPolarValue Impossible from edge ', json);
                     return null;
                 }
 
@@ -238,7 +240,7 @@ export class PolarMeasureValueMap {
             const polarEdges = [];
             for (let edgeIndex = edgeMin; edgeIndex <= edgeMax; edgeIndex++) {
                 const polarValue = this.getPolarValue({azimuthIndex, edgeIndex});
-                polarEdges.push(polarValue.value);
+                polarEdges.push(polarValue?.value ?? 0);
             }
             newMeasureValuePolarContainers.push(
                 new MeasureValuePolarContainer({
