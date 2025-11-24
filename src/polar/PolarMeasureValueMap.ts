@@ -109,7 +109,7 @@ export class PolarMeasureValueMap {
         if (azimuthIndex >= 0) {
             if (azimuthIndex >= this.builtMeasureValuePolarContainers.length) {
                 // throw new Error('Impossible to getPolarValue azimuth from ' + JSON.stringify(json));
-                console.warn('### raain-model > getPolarValue Impossible from azimuth ', json);
+                // TODO debug mode with console ? console.warn('### raain-model > getPolarValue Impossible from azimuth ', json);
                 return null;
             }
 
@@ -123,7 +123,7 @@ export class PolarMeasureValueMap {
             if (edgeIndex >= 0) {
                 if (edgeIndex >= measureValuePolarContainer.polarEdges.length) {
                     // throw new Error('Impossible to getPolarValue edge from ' + JSON.stringify(json));
-                    console.warn('### raain-model > getPolarValue Impossible from edge ', json);
+                    // console.warn('### raain-model > getPolarValue Impossible from edge ', json);
                     return null;
                 }
 
@@ -143,7 +143,7 @@ export class PolarMeasureValueMap {
 
     setPolarValue(json: {azimuthIndex: number; edgeIndex: number; value: number}) {
         const {azimuthIndex, azimuthInDegrees} = this.updatedAzimuth(json.azimuthIndex);
-        if (azimuthIndex < 0) {
+        if (azimuthIndex < 0 || azimuthIndex >= this.builtMeasureValuePolarContainers.length) {
             throw new Error(
                 `Impossible to set ${JSON.stringify(json)} in this optimized polar structure`
             );
@@ -154,7 +154,11 @@ export class PolarMeasureValueMap {
             json.edgeIndex,
             measureValuePolarContainer
         );
-        if (edgeIndex < 0) {
+        if (
+            !measureValuePolarContainer?.polarEdges ||
+            edgeIndex < 0 ||
+            edgeIndex >= measureValuePolarContainer.polarEdges.length
+        ) {
             throw new Error(
                 `Impossible to set ${JSON.stringify(json)} in this optimized polar structure`
             );

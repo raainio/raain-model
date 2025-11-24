@@ -505,4 +505,33 @@ describe('Polar', () => {
         const circleOutOfBounds = polarMeasureValueMap.getOneCircle(10);
         expect(circleOutOfBounds).to.deep.equal([0, 0, 0, 0]);
     });
+
+    it('should create and duplicate PolarMeasureValueMap with empty measureValuePolarContainers', () => {
+        const polarMeasureValue = new PolarMeasureValue({
+            measureValuePolarContainers: [],
+            azimuthsCount: 720,
+            polarEdgesCount: 255,
+        });
+
+        expect(polarMeasureValue.getPolars()).to.deep.equal([]);
+        expect(polarMeasureValue.getAzimuthsCount()).eq(720);
+        expect(polarMeasureValue.getPolarEdgesCount()).eq(255);
+
+        const polarMeasureValueMap = new PolarMeasureValueMap(polarMeasureValue);
+        expect(polarMeasureValueMap.countPolar()).eq(0);
+
+        // Test instance duplicate method
+        const duplicated = polarMeasureValueMap.duplicate();
+        expect(duplicated).to.not.eq(polarMeasureValueMap);
+        expect(duplicated.countPolar()).eq(0);
+        expect(duplicated.polarMeasureValue.getAzimuthsCount()).eq(720);
+        expect(duplicated.polarMeasureValue.getPolarEdgesCount()).eq(255);
+
+        // Test static Duplicate method
+        const staticDuplicated = PolarMeasureValueMap.Duplicate(polarMeasureValueMap);
+        expect(staticDuplicated).to.not.eq(polarMeasureValueMap);
+        expect(staticDuplicated.countPolar()).eq(0);
+        expect(staticDuplicated.polarMeasureValue.getAzimuthsCount()).eq(720);
+        expect(staticDuplicated.polarMeasureValue.getPolarEdgesCount()).eq(255);
+    });
 });
