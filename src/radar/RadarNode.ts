@@ -2,17 +2,19 @@ import {Link, RaainNode, TeamNode} from '../organization';
 import {RaainNodeType} from '../organization/RaainNodeType';
 
 /**
- *  api/radars/:id
+ * @external
+ *  - API: /radars
+ *  - API: /radars/:id
  */
 export class RadarNode extends RaainNode {
     public static TYPE = RaainNodeType.RadarNode;
 
     public name: string;
     public description: string;
-    public technicalInfos: string;
     public latitude: number;
     public longitude: number;
     public team: TeamNode;
+    public technicalInfos: string;
     public open: boolean;
 
     // internal
@@ -36,12 +38,14 @@ export class RadarNode extends RaainNode {
         this.longitude = json.longitude;
         this.name = json.name;
         this.description = json.description;
-        this.technicalInfos = json.technicalInfos;
         this.team = json.team as TeamNode;
         if (typeof json.team === 'string') {
             this.team = new TeamNode({id: json.team});
         }
+
+        this.technicalInfos = json.technicalInfos;
         this.open = !!json?.open;
+
         this.setConfiguration(json.configurationAsJSON);
     }
 

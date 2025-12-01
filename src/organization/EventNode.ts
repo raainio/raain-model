@@ -1,5 +1,7 @@
 /**
- * api/notifications/:id
+ * @external
+ *  - API: /notifications
+ *  - API: /notifications/:id
  */
 export class EventNode {
     public id: string;

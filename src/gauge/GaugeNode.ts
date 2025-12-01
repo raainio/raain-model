@@ -19,6 +19,10 @@ import {RaainNodeType} from '../organization/RaainNodeType';
  *   description: 'Main rain gauge station'
  * });
  * ```
+ *
+ * @external
+ *  - API: /gauges
+ *  - API: /gauges/:id
  */
 export class GaugeNode extends RaainNode {
     /** Type identifier for gauge nodes */

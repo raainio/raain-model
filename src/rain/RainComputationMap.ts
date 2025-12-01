@@ -20,10 +20,9 @@ import {RaainNodeType} from '../organization/RaainNodeType';
  * });
  * ```
  *
- * @remarks
- * This class is used in the following API endpoints:
- * - api/rains/:id/computations/:computationId?format=map
- * - api/rains/:id/computations?format=map&begin=...
+ * @external
+ *  - API: /rains/:id/computations/:computationId
+ *  - API: /rains/:id/cumulatives/:cumulativeId
  */
 export class RainComputationMap extends RainComputationAbstract {
     public static readonly TYPE = RaainNodeType.RainComputationMap;

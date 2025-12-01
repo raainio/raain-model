@@ -1,6 +1,3 @@
-/**
- *  api/teams/:id => contacts
- */
 export class PeopleNode {
     public id: string;
     public roles: string[];

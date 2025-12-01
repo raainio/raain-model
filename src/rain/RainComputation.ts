@@ -7,9 +7,8 @@ import {MergeStrategy} from './MergeStrategy';
 import {RaainNodeType} from '../organization/RaainNodeType';
 
 /**
- *  api/rains/:id/computations/:computationId
- *  or as an array on
- *  api/rains/:id/computations?format=id&begin=...
+ * @external
+ *  - API: /rains/:id/computations/:computationId
  */
 export class RainComputation extends RainComputationAbstract {
     public static TYPE = RaainNodeType.RainComputation;

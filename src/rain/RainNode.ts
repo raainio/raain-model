@@ -5,7 +5,9 @@ import {GaugeNode} from '../gauge';
 import {CartesianTools, LatLng} from '../cartesian';
 
 /**
- * api/rains/:id
+ * @external
+ *  - API: /rains
+ *  - API: /rains/:id
  */
 export class RainNode extends RaainNode {
     public static TYPE = RaainNodeType.RainNode;
@@ -15,7 +17,7 @@ export class RainNode extends RaainNode {
     public team: TeamNode;
     public status: number;
     public quality: number;
-    public latLngRectsAsJSON: string;
+    public latLngRectsAsJSON: string; // ex: [LatLng, LatLng][] => '[[{"lat":49.07,"lng":2.205},{"lat":53.07,"lng":8.602}]]'
 
     // internal
     private configurationAsJSON: string;

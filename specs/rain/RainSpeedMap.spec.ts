@@ -560,6 +560,385 @@ describe('RainSpeedMap', () => {
                 expect(result).to.be.undefined;
             });
         });
+
+        describe('when trusted option is provided', () => {
+            /**
+             * SPEC: trusted option finds most trusted RainSpeed
+             *
+             * BEHAVIOR: When point is outside all areas and trusted: true,
+             * instead of finding the closest by distance, find the RainSpeed with highest trustRatio
+             */
+
+            /**
+             * GIVEN: Multiple RainSpeeds with different trustRatio values, point outside all areas
+             * WHEN: getRainSpeed is called with trusted: true
+             * THEN: Should return the RainSpeed with the highest trustRatio (not the closest)
+             */
+            it('should return most trusted RainSpeed when point is outside all areas', () => {
+                const area1 = [new LatLng({lat: 1, lng: 1}), new LatLng({lat: 2, lng: 2})] as [
+                    LatLng,
+                    LatLng,
+                ]; // CLOSEST to (0,0)
+                const area2 = [new LatLng({lat: 10, lng: 10}), new LatLng({lat: 11, lng: 11})] as [
+                    LatLng,
+                    LatLng,
+                ]; // Farther
+                const area3 = [new LatLng({lat: 20, lng: 20}), new LatLng({lat: 21, lng: 21})] as [
+                    LatLng,
+                    LatLng,
+                ]; // Farthest
+
+                const rs1 = new RainSpeed({
+                    azimuthInDegrees: 0,
+                    speedInMetersPerSec: 10,
+                    trustRatio: 0.3, // Low trust, but closest
+                    latLngs: [area1],
+                });
+                const rs2 = new RainSpeed({
+                    azimuthInDegrees: 90,
+                    speedInMetersPerSec: 20,
+                    trustRatio: 0.95, // HIGHEST trust
+                    latLngs: [area2],
+                });
+                const rs3 = new RainSpeed({
+                    azimuthInDegrees: 180,
+                    speedInMetersPerSec: 30,
+                    trustRatio: 0.5,
+                    latLngs: [area3],
+                });
+                const map = new RainSpeedMap({rainSpeeds: [rs1, rs2, rs3]});
+
+                // Point at origin - outside all areas
+                const result = map.getRainSpeed(new LatLng({lat: 0, lng: 0}), {trusted: true});
+
+                expect(result).to.exist;
+                expect(result?.trustRatio).to.equal(0.95); // rs2 - most trusted
+                expect(result?.speedInMetersPerSec).to.equal(20);
+            });
+
+            /**
+             * GIVEN: Point inside one area but trusted: true is specified
+             * WHEN: getRainSpeed is called with trusted: true
+             * THEN: Should return the containing area (not search by trust when point is inside)
+             */
+            it('should return containing area when point is inside, ignoring trusted option', () => {
+                const area1 = [new LatLng({lat: -5, lng: -5}), new LatLng({lat: 5, lng: 5})] as [
+                    LatLng,
+                    LatLng,
+                ]; // Contains (0,0)
+                const area2 = [new LatLng({lat: 10, lng: 10}), new LatLng({lat: 11, lng: 11})] as [
+                    LatLng,
+                    LatLng,
+                ];
+
+                const rs1 = new RainSpeed({
+                    azimuthInDegrees: 90,
+                    speedInMetersPerSec: 15,
+                    trustRatio: 0.4, // Low trust, but contains point
+                    latLngs: [area1],
+                });
+                const rs2 = new RainSpeed({
+                    azimuthInDegrees: 180,
+                    speedInMetersPerSec: 25,
+                    trustRatio: 0.99, // Higher trust, but doesn't contain point
+                    latLngs: [area2],
+                });
+                const map = new RainSpeedMap({rainSpeeds: [rs1, rs2]});
+
+                const result = map.getRainSpeed(new LatLng({lat: 0, lng: 0}), {trusted: true});
+
+                expect(result).to.exist;
+                expect(result?.trustRatio).to.equal(0.4); // rs1 - contains point
+                expect(result?.speedInMetersPerSec).to.equal(15);
+            });
+
+            /**
+             * GIVEN: RainSpeeds with varying trustRatio including negative and zero values
+             * WHEN: getRainSpeed is called with trusted: true
+             * THEN: Should return the RainSpeed with highest trustRatio (even if negative)
+             */
+            it('should handle negative and zero trustRatio values correctly', () => {
+                const area1 = [new LatLng({lat: 10, lng: 10}), new LatLng({lat: 11, lng: 11})] as [
+                    LatLng,
+                    LatLng,
+                ];
+                const area2 = [new LatLng({lat: 20, lng: 20}), new LatLng({lat: 21, lng: 21})] as [
+                    LatLng,
+                    LatLng,
+                ];
+                const area3 = [new LatLng({lat: 30, lng: 30}), new LatLng({lat: 31, lng: 31})] as [
+                    LatLng,
+                    LatLng,
+                ];
+
+                const rs1 = new RainSpeed({
+                    azimuthInDegrees: 0,
+                    speedInMetersPerSec: 10,
+                    trustRatio: -1, // Default value (not set)
+                    latLngs: [area1],
+                });
+                const rs2 = new RainSpeed({
+                    azimuthInDegrees: 90,
+                    speedInMetersPerSec: 20,
+                    trustRatio: 0, // Zero trust
+                    latLngs: [area2],
+                });
+                const rs3 = new RainSpeed({
+                    azimuthInDegrees: 180,
+                    speedInMetersPerSec: 30,
+                    trustRatio: 0.1, // HIGHEST (even though low)
+                    latLngs: [area3],
+                });
+                const map = new RainSpeedMap({rainSpeeds: [rs1, rs2, rs3]});
+
+                const result = map.getRainSpeed(new LatLng({lat: 0, lng: 0}), {trusted: true});
+
+                expect(result).to.exist;
+                expect(result?.trustRatio).to.equal(0.1); // rs3 - highest trust
+                expect(result?.speedInMetersPerSec).to.equal(30);
+            });
+
+            /**
+             * GIVEN: Single RainSpeed with any trustRatio value
+             * WHEN: getRainSpeed is called with trusted: true, point outside
+             * THEN: Should return that single RainSpeed (only option)
+             */
+            it('should return the only RainSpeed when only one exists', () => {
+                const area = [new LatLng({lat: 10, lng: 10}), new LatLng({lat: 11, lng: 11})] as [
+                    LatLng,
+                    LatLng,
+                ];
+                const rs = new RainSpeed({
+                    azimuthInDegrees: 90,
+                    speedInMetersPerSec: 10,
+                    trustRatio: 0.42,
+                    latLngs: [area],
+                });
+                const map = new RainSpeedMap({rainSpeeds: [rs]});
+
+                const result = map.getRainSpeed(new LatLng({lat: 0, lng: 0}), {trusted: true});
+
+                expect(result).to.exist;
+                expect(result?.trustRatio).to.equal(0.42);
+            });
+
+            /**
+             * GIVEN: Multiple RainSpeeds with identical trustRatio values
+             * WHEN: getRainSpeed is called with trusted: true
+             * THEN: Should return first RainSpeed with that trustRatio (array order)
+             */
+            it('should return first RainSpeed when multiple have same highest trustRatio', () => {
+                const area1 = [new LatLng({lat: 10, lng: 10}), new LatLng({lat: 11, lng: 11})] as [
+                    LatLng,
+                    LatLng,
+                ];
+                const area2 = [new LatLng({lat: 20, lng: 20}), new LatLng({lat: 21, lng: 21})] as [
+                    LatLng,
+                    LatLng,
+                ];
+                const area3 = [new LatLng({lat: 30, lng: 30}), new LatLng({lat: 31, lng: 31})] as [
+                    LatLng,
+                    LatLng,
+                ];
+
+                const rs1 = new RainSpeed({
+                    azimuthInDegrees: 0,
+                    speedInMetersPerSec: 10,
+                    trustRatio: 0.7,
+                    latLngs: [area1],
+                });
+                const rs2 = new RainSpeed({
+                    azimuthInDegrees: 90,
+                    speedInMetersPerSec: 20,
+                    trustRatio: 0.9, // HIGHEST (first)
+                    latLngs: [area2],
+                });
+                const rs3 = new RainSpeed({
+                    azimuthInDegrees: 180,
+                    speedInMetersPerSec: 30,
+                    trustRatio: 0.9, // HIGHEST (second)
+                    latLngs: [area3],
+                });
+                const map = new RainSpeedMap({rainSpeeds: [rs1, rs2, rs3]});
+
+                const result = map.getRainSpeed(new LatLng({lat: 0, lng: 0}), {trusted: true});
+
+                expect(result).to.exist;
+                expect(result?.trustRatio).to.equal(0.9);
+                expect(result?.speedInMetersPerSec).to.equal(20); // rs2 - first with 0.9
+            });
+
+            /**
+             * GIVEN: Empty RainSpeedMap
+             * WHEN: getRainSpeed is called with trusted: true
+             * THEN: Should return undefined
+             */
+            it('should return undefined when no RainSpeeds exist', () => {
+                const map = new RainSpeedMap({rainSpeeds: []});
+
+                const result = map.getRainSpeed(new LatLng({lat: 0, lng: 0}), {trusted: true});
+
+                expect(result).to.be.undefined;
+            });
+
+            /**
+             * GIVEN: trusted: true combined with strictContaining: true
+             * WHEN: getRainSpeed is called, point outside all areas
+             * THEN: Should return undefined (strictContaining takes precedence)
+             */
+            it('should return undefined when combined with strictContaining: true and point outside', () => {
+                const area1 = [new LatLng({lat: 10, lng: 10}), new LatLng({lat: 11, lng: 11})] as [
+                    LatLng,
+                    LatLng,
+                ];
+                const area2 = [new LatLng({lat: 20, lng: 20}), new LatLng({lat: 21, lng: 21})] as [
+                    LatLng,
+                    LatLng,
+                ];
+
+                const rs1 = new RainSpeed({
+                    azimuthInDegrees: 0,
+                    speedInMetersPerSec: 10,
+                    trustRatio: 0.5,
+                    latLngs: [area1],
+                });
+                const rs2 = new RainSpeed({
+                    azimuthInDegrees: 90,
+                    speedInMetersPerSec: 20,
+                    trustRatio: 0.95, // Highest trust
+                    latLngs: [area2],
+                });
+                const map = new RainSpeedMap({rainSpeeds: [rs1, rs2]});
+
+                const result = map.getRainSpeed(new LatLng({lat: 0, lng: 0}), {
+                    trusted: true,
+                    strictContaining: true,
+                });
+
+                // strictContaining prevents fallback, so trusted is never used
+                expect(result).to.be.undefined;
+            });
+
+            /**
+             * GIVEN: trusted: false explicitly set
+             * WHEN: getRainSpeed is called, point outside all areas
+             * THEN: Should find closest by distance (not by trust)
+             */
+            it('should find closest by distance when trusted is explicitly false', () => {
+                const area1 = [new LatLng({lat: 1, lng: 1}), new LatLng({lat: 2, lng: 2})] as [
+                    LatLng,
+                    LatLng,
+                ]; // CLOSEST
+                const area2 = [new LatLng({lat: 10, lng: 10}), new LatLng({lat: 11, lng: 11})] as [
+                    LatLng,
+                    LatLng,
+                ];
+
+                const rs1 = new RainSpeed({
+                    azimuthInDegrees: 0,
+                    speedInMetersPerSec: 10,
+                    trustRatio: 0.3, // Low trust, but closest
+                    latLngs: [area1],
+                });
+                const rs2 = new RainSpeed({
+                    azimuthInDegrees: 90,
+                    speedInMetersPerSec: 20,
+                    trustRatio: 0.95, // High trust, but far
+                    latLngs: [area2],
+                });
+                const map = new RainSpeedMap({rainSpeeds: [rs1, rs2]});
+
+                const result = map.getRainSpeed(new LatLng({lat: 0, lng: 0}), {trusted: false});
+
+                expect(result).to.exist;
+                expect(result?.trustRatio).to.equal(0.3); // rs1 - closest by distance
+                expect(result?.speedInMetersPerSec).to.equal(10);
+            });
+
+            /**
+             * GIVEN: trusted: true with inEarthMap: true
+             * WHEN: getRainSpeed is called, point outside all areas (even after rounding)
+             * THEN: Should find most trusted RainSpeed after coordinate rounding
+             */
+            it('should work with inEarthMap option (rounds coordinates first)', () => {
+                const area1 = [new LatLng({lat: 10, lng: 10}), new LatLng({lat: 11, lng: 11})] as [
+                    LatLng,
+                    LatLng,
+                ];
+                const area2 = [new LatLng({lat: 20, lng: 20}), new LatLng({lat: 21, lng: 21})] as [
+                    LatLng,
+                    LatLng,
+                ];
+
+                const rs1 = new RainSpeed({
+                    azimuthInDegrees: 0,
+                    speedInMetersPerSec: 10,
+                    trustRatio: 0.4,
+                    latLngs: [area1],
+                });
+                const rs2 = new RainSpeed({
+                    azimuthInDegrees: 90,
+                    speedInMetersPerSec: 20,
+                    trustRatio: 0.88, // HIGHEST trust
+                    latLngs: [area2],
+                });
+                const map = new RainSpeedMap({rainSpeeds: [rs1, rs2]});
+
+                const result = map.getRainSpeed(new LatLng({lat: 0.001234, lng: 0.005678}), {
+                    trusted: true,
+                    inEarthMap: true,
+                });
+
+                expect(result).to.exist;
+                expect(result?.trustRatio).to.equal(0.88); // rs2 - most trusted
+            });
+
+            /**
+             * GIVEN: RainSpeeds with full range of trustRatio values (0.0 to 1.0)
+             * WHEN: getRainSpeed is called with trusted: true
+             * THEN: Should return RainSpeed with trustRatio = 1.0 (perfect trust)
+             */
+            it('should return RainSpeed with perfect trust (1.0) when available', () => {
+                const area1 = [new LatLng({lat: 10, lng: 10}), new LatLng({lat: 11, lng: 11})] as [
+                    LatLng,
+                    LatLng,
+                ];
+                const area2 = [new LatLng({lat: 20, lng: 20}), new LatLng({lat: 21, lng: 21})] as [
+                    LatLng,
+                    LatLng,
+                ];
+                const area3 = [new LatLng({lat: 30, lng: 30}), new LatLng({lat: 31, lng: 31})] as [
+                    LatLng,
+                    LatLng,
+                ];
+
+                const rs1 = new RainSpeed({
+                    azimuthInDegrees: 0,
+                    speedInMetersPerSec: 10,
+                    trustRatio: 0.5,
+                    latLngs: [area1],
+                });
+                const rs2 = new RainSpeed({
+                    azimuthInDegrees: 90,
+                    speedInMetersPerSec: 20,
+                    trustRatio: 0.99,
+                    latLngs: [area2],
+                });
+                const rs3 = new RainSpeed({
+                    azimuthInDegrees: 180,
+                    speedInMetersPerSec: 30,
+                    trustRatio: 1.0, // Perfect trust
+                    latLngs: [area3],
+                });
+                const map = new RainSpeedMap({rainSpeeds: [rs1, rs2, rs3]});
+
+                const result = map.getRainSpeed(new LatLng({lat: 0, lng: 0}), {trusted: true});
+
+                expect(result).to.exist;
+                expect(result?.trustRatio).to.equal(1.0); // rs3 - perfect trust
+                expect(result?.speedInMetersPerSec).to.equal(30);
+            });
+        });
     });
 
     describe('transpose with strictContaining option', () => {

@@ -5,7 +5,9 @@ import {RainComputation} from './RainComputation';
 import {RaainNodeType} from '../organization/RaainNodeType';
 
 /**
- *  api/rains/:id/computations?format=compare&begin=...&gauges=[...]
+ * @external
+ *  - API: /rains/:id/computations/:computationId/compares
+ *  - API: /rains/:id/cumulatives/:cumulativeId/compares
  */
 export class RainComputationQuality extends RainComputationAbstract {
     public static readonly TYPE = RaainNodeType.RainComputationQuality;

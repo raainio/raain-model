@@ -4,7 +4,7 @@ import {ICartesianMeasureValue} from '../cartesian';
 import {RaainNodeType} from '../organization/RaainNodeType';
 
 /**
- *  api/rains/:id/computations/:id?format=map => RainComputationMap getMapData() => RainMeasure[]
+ *  RainComputationMap getMapData() => RainMeasure[]
  */
 export class RainMeasure extends Measure {
     public static TYPE = RaainNodeType.RainMeasure;

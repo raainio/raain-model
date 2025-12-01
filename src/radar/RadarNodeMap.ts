@@ -2,9 +2,6 @@ import {RadarMeasure} from './RadarMeasure';
 import {RadarNode} from './RadarNode';
 import {Link, RaainNode, TeamNode} from '../organization';
 
-/**
- *  api/radars/:id?format=map&...
- */
 export class RadarNodeMap extends RadarNode {
     public date: Date;
     private map: string; // RadarMeasure[]; stringified

@@ -4,9 +4,9 @@ import {RainComputationAbstract} from './RainComputationAbstract';
 import {RaainNodeType} from '../organization/RaainNodeType';
 
 /**
- *  api/rains/:id/cumulative/:cumulativeId
- *  or as an array from
- *  api/rains/:id?format=timeframeCumulative&provider=...&begin=...
+ * @external
+ *  - API: /rains/:id/cumulatives/:cumulativeId
+ *  - API: /rains/:id/cumulatives/:cumulativeId/cumulative/:cumulativeHours
  */
 export class RainComputationCumulative extends RainComputationAbstract {
     public static TYPE = RaainNodeType.RainComputationCumulative;

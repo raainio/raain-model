@@ -5,7 +5,8 @@ import {GaugeNode} from './GaugeNode';
 import {RaainNodeType} from '../organization/RaainNodeType';
 
 /**
- *  api/gauges/:id/measures?begin=...&end=...
+ * @external
+ *  - API: /gauges/:id/measures
  */
 export class GaugeMeasure extends Measure {
     public static TYPE = RaainNodeType.GaugeMeasure;

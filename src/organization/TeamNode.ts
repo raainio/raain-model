@@ -7,7 +7,7 @@ import {RaainNodeType} from './RaainNodeType';
  * This class manages team members and their contracts.
  *
  * @remarks
- * Used in the API endpoint: api/teams?name=customerTeam
+ * Used in the API endpoint: api/teams/:id
  *
  * @example
  * ```typescript
@@ -19,6 +19,10 @@ import {RaainNodeType} from './RaainNodeType';
  *   contacts: [peopleNode1, peopleNode2]
  * });
  * ```
+ *
+ * @external
+ *  - API: /teams
+ *  - API: /teams/:id
  */
 export class TeamNode extends RaainNode {
     public static readonly TYPE = RaainNodeType.TeamNode;

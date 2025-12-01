@@ -37,11 +37,11 @@ yarn add raain-model
 ## 📖 Quick Start
 
 ```typescript
-import {RainNode, RadarNode, GaugeNode, RainComputationMap} from 'raain-model';
+import {RainNode, RadarNode, GaugeNode} from 'raain-model';
 
 // Create a radar node
 const radarNode = new RadarNode({
-    id: 'radar1',
+    id: 'parisR',
     latitude: 48.8566,
     longitude: 2.3522,
     name: 'Paris Radar',
@@ -50,21 +50,24 @@ const radarNode = new RadarNode({
 
 // Create a rain gauge node
 const gaugeNode = new GaugeNode({
-    id: 'gauge1',
+    id: 'parisG',
     latitude: 48.8566,
     longitude: 2.3522,
-    name: 'Paris Gauge',
+    name: 'One Paris Gauge',
     team: null
 });
 
-// Create a rain node with radar coverage
+// Create a rain node
 const rainNode = new RainNode({
-    id: 'rain1',
+    id: 'parisZ',
     name: 'Paris Rain Zone',
     team: null,
     radars: [radarNode],
     gauges: [gaugeNode]
 });
+
+// ...
+
 ```
 
 ## 📚 Documentation
@@ -83,28 +86,36 @@ and [API swagger](https://api.sandbox.radartorain.com/v3/docs).
 
 The following table lists which REST API endpoints return or accept which model classes in this library:
 
-| API endpoint (pattern)                                        | Exposes model class         | Notes                                    |
-|---------------------------------------------------------------|-----------------------------|------------------------------------------|
-| `api/radars/:id`                                              | `RadarNode`                 | Radar station metadata                   |
-| `api/radars/:id/measures/:measureId`                          | `RadarMeasure`              | Single radar measure with polar data     |
-| `api/radars/:id/measures?begin=...&end=...`                   | `RadarMeasure[]`            | List of radar measures for date range    |
-| `api/gauges/:id`                                              | `GaugeNode`                 | Rain gauge metadata                      |
-| `api/gauges/:id/measures?begin=...&end=...`                   | `GaugeMeasure[]`            | List of gauge measures for date range    |
-| `api/gauges/:id?format=map&begin=...`                         | `GaugeNodeMap`              | Gauge data as map over time window       |
-| `api/rains/:id`                                               | `RainNode`                  | Rain zone entity                         |
-| `api/rains/:id/computations/:computationId`                   | `RainComputation`           | One computation result                   |
-| `api/rains/:id/computations?format=id&begin=...`              | `RainComputation[]`         | List of computations (IDs)               |
-| `api/rains/:id/computations/:computationId?format=map`        | `RainComputationMap`        | Computation as cartesian map             |
-| `api/rains/:id/computations?format=map&begin=...`             | `RainComputationMap[]`      | List of maps over period                 |
-| `api/rains/:id/computations/:computationId/speeds`            | `RainSpeedMap`              | Rain speed map for a computation         |
-| `api/rains/:id/computations/:computationId/compares?date=...` | `RainComputationQuality[]`  | Quality/compare metrics (radar vs gauge) |
-| `api/rains/:id/cumulative/:cumulativeId`                      | `RainComputationCumulative` | Cumulative computation                   |
-| `api/notifications`                                           | `EventNode[]`               | List of user notifications               |
-| `api/teams/:id`                                               | `TeamNode`                  | Team/organization entity                 |
-| `api/teams?name=...`                                          | `TeamNode`                  | Team lookup by name                      |
-| `api/teams/:id/people`                                        | `PeopleNode[]`              | People related to a team                 |
+<!-- MODEL_MAPPING_TABLE_START -->
 
-**Note**: All endpoints are prefixed with the API version (e.g., `/v3/api/...`).
+| API endpoint (pattern)                                             | Exposes model class         | Notes                                               |
+|--------------------------------------------------------------------|-----------------------------|-----------------------------------------------------|
+| `/radars`                                                          | `RadarNode[]`               | Search for radars                                   |
+| `/radars/:id`                                                      | `RadarNode`                 | Get a radar by ID                                   |
+| `/radars/:id/measures`                                             | `RadarMeasure[]`            | Get radar measures                                  |
+| `/radars/:id/measures/:measureId`                                  | `RadarMeasure`              | Get a radar measure by ID                           |
+| `/gauges`                                                          | `GaugeNode[]`               | Search for gauges                                   |
+| `/gauges/:id`                                                      | `GaugeNode`                 | Get a gauge by ID                                   |
+| `/gauges/:id?format=cartesian-map`                                 | `GaugeNodeMap`              | Get a gauge by ID (format=cartesian-map)            |
+| `/gauges/:id/measures`                                             | `GaugeMeasure[]`            | Get gauge measures                                  |
+| `/rains`                                                           | `RainNode[]`                | Search for rain zones                               |
+| `/rains/:id`                                                       | `RainNode`                  | Get a rain zone by ID                               |
+| `/rains/:id/computations/:computationId`                           | `RainComputation`           |                                                     |
+| `/rains/:id/computations/:computationId?format=cartesian-map`      | `RainComputationMap`        | (format=cartesian-map)                              |
+| `/rains/:id/computations/:computationId/compares`                  | `RainComputationQuality[]`  | (Admin) Get cumulative qualities                    |
+| `/rains/:id/computations/:computationId/speeds`                    | `RainSpeedMap`              |                                                     |
+| `/rains/:id/cumulatives/:cumulativeId`                             | `RainComputationCumulative` | Get a cumulative computation                        |
+| `/rains/:id/cumulatives/:cumulativeId?format=cartesian-map`        | `RainComputationMap`        | Get a cumulative computation (format=cartesian-map) |
+| `/rains/:id/cumulatives/:cumulativeId/compares`                    | `RainComputationQuality[]`  | Get cumulative quality metrics                      |
+| `/rains/:id/cumulatives/:cumulativeId/cumulative/:cumulativeHours` | `RainComputationCumulative` | Get cumulative computation data                     |
+| `/notifications`                                                   | `EventNode[]`               | Get all notifications                               |
+| `/notifications/:id`                                               | `EventNode`                 | Get a notification by ID                            |
+| `/teams`                                                           | `TeamNode[]`                | Search for teams                                    |
+| `/teams/:id`                                                       | `TeamNode`                  | Get a team by ID                                    |
+
+<!-- MODEL_MAPPING_TABLE_END -->
+
+**Note**: All endpoints are prefixed with the API version (e.g., `/v3/...`).
 
 ### Core Model Categories
 

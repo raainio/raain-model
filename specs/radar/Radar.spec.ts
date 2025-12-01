@@ -134,7 +134,11 @@ describe('Radar', () => {
         });
 
         expect(JSON.stringify(radarNode.toJSON())).eq(
-            '{"id":"RadarNode looks OK.","links":[{"rel":"radar-measure","href":"../radar-measures/1970-01-01T00:01:40.000Z/measureId"}],"name":"name","latitude":1,"longitude":1,"team":"tid1"}'
+            '{"id":"RadarNode looks OK.",' +
+                '"links":[{"rel":"radar-measure","href":"../radar-measures/1970-01-01T00:01:40.000Z/measureId"}],' +
+                '"name":"name",' +
+                '"latitude":1,"longitude":1,' +
+                '"team":"tid1"}'
         );
     });
 

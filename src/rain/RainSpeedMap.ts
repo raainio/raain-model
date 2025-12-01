@@ -2,7 +2,8 @@ import {RainSpeed} from './RainSpeed';
 import {CartesianTools, CartesianValue, LatLng} from '../cartesian';
 
 /**
- *  api/rains/:rainId/computations/:rainHistoryId/speeds => RainSpeedMap.map => RainSpeed[]
+ * @external
+ *  - API: /rains/:id/computations/:computationId/speeds
  */
 export class RainSpeedMap {
     public rainSpeeds: RainSpeed[];
@@ -17,7 +18,7 @@ export class RainSpeedMap {
 
     public getRainSpeed(
         point: LatLng | {latitude: number; longitude: number} | {lat: number; lng: number},
-        options?: {inEarthMap?: boolean; strictContaining?: boolean}
+        options?: {inEarthMap?: boolean; strictContaining?: boolean; trusted?: boolean}
     ): RainSpeed | undefined {
         // normalize input to numbers
         const normalized = this.normalizePoint(point);
@@ -49,6 +50,9 @@ export class RainSpeedMap {
 
         // If no containing area found and strictContaining is not true, find the closest by center distance
         if (options?.strictContaining !== true) {
+            if (options?.trusted) {
+                return this.findMoreTrusted();
+            }
             return this.findClosestRainSpeed(lat, lng);
         }
 
@@ -160,6 +164,18 @@ export class RainSpeedMap {
                 );
 
                 return currentDistance < closestDistance ? current : closest;
+            },
+            undefined as RainSpeed | undefined
+        );
+    }
+
+    protected findMoreTrusted(): RainSpeed | undefined {
+        return this.rainSpeeds.reduce(
+            (moreTrusted, current) => {
+                if (!moreTrusted) {
+                    return current;
+                }
+                return current.trustRatio > moreTrusted.trustRatio ? current : moreTrusted;
             },
             undefined as RainSpeed | undefined
         );

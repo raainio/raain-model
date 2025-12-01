@@ -1,7 +1,7 @@
 import {CartesianTools, CartesianValue, LatLng} from '../cartesian';
 
 /**
- *  api/rains/:rainId/computations/:rainHistoryId/speeds => RainSpeedMap.map => RainSpeed[]
+ *  RainSpeedMap.map => RainSpeed[]
  */
 export class RainSpeed {
     public azimuthInDegrees: number;
