@@ -22,7 +22,7 @@ import {RaainNodeType} from './RaainNodeType';
  *
  * @external
  *  - API: /teams
- *  - API: /teams/:id
+ *  - API: /teams/:teamId
  */
 export class TeamNode extends RaainNode {
     public static readonly TYPE = RaainNodeType.TeamNode;

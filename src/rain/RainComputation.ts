@@ -6,10 +6,6 @@ import {RainMeasure} from './RainMeasure';
 import {MergeStrategy} from './MergeStrategy';
 import {RaainNodeType} from '../organization/RaainNodeType';
 
-/**
- * @external
- *  - API: /rains/:id/computations/:computationId
- */
 export class RainComputation extends RainComputationAbstract {
     public static TYPE = RaainNodeType.RainComputation;
 

@@ -1,10 +1,6 @@
 import {RainSpeed} from './RainSpeed';
 import {CartesianTools, CartesianValue, LatLng} from '../cartesian';
 
-/**
- * @external
- *  - API: /rains/:id/computations/:computationId/speeds
- */
 export class RainSpeedMap {
     public rainSpeeds: RainSpeed[];
     public date?: Date;

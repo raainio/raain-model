@@ -21,8 +21,7 @@ import {RaainNodeType} from '../organization/RaainNodeType';
  * ```
  *
  * @external
- *  - API: /rains/:id/computations/:computationId
- *  - API: /rains/:id/cumulatives/:cumulativeId
+ *  - API: /rains/:rainId/cumulatives/:rainComputationCumulativeId
  */
 export class RainComputationMap extends RainComputationAbstract {
     public static readonly TYPE = RaainNodeType.RainComputationMap;

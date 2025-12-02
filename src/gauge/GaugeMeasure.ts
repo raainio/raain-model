@@ -6,7 +6,7 @@ import {RaainNodeType} from '../organization/RaainNodeType';
 
 /**
  * @external
- *  - API: /gauges/:id/measures
+ *  - API: /gauges/:gaugeId/measures
  */
 export class GaugeMeasure extends Measure {
     public static TYPE = RaainNodeType.GaugeMeasure;

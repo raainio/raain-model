@@ -5,8 +5,8 @@ import {RaainNodeType} from '../organization/RaainNodeType';
 
 /**
  * @external
- *  - API: /rains/:id/cumulatives/:cumulativeId
- *  - API: /rains/:id/cumulatives/:cumulativeId/cumulative/:cumulativeHours
+ *  - API: /rains/:rainId/cumulatives/:rainComputationCumulativeId
+ *  - API: /rains/:rainId/cumulatives/:rainComputationCumulativeId/cumulative/:cumulativeHours
  */
 export class RainComputationCumulative extends RainComputationAbstract {
     public static TYPE = RaainNodeType.RainComputationCumulative;

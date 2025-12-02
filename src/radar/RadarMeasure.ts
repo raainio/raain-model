@@ -6,8 +6,8 @@ import {RaainNodeType} from '../organization/RaainNodeType';
 
 /**
  * @external
- *  - API: /radars/:id/measures
- *  - API: /radars/:id/measures/:measureId
+ *  - API: /radars/:radarId/measures
+ *  - API: /radars/:radarId/measures/:radarMeasureId
  */
 export class RadarMeasure extends Measure {
     public static TYPE = RaainNodeType.RadarMeasure;

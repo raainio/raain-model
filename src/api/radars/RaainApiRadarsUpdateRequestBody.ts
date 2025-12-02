@@ -1,5 +1,9 @@
+import {RadarNode} from '../../radar';
+
 // PUT /radars/:radarId request body
-export interface RaainApiRadarsUpdateRequestBody {
-    name: string;
-    configurationAsJSON: string;
-}
+export type RaainApiRadarsUpdateRequestBody = Partial<
+    Omit<
+        ReturnType<RadarNode['toJSON']>,
+        'id' | 'team' | 'configurationAsJSON' | 'links' | 'version'
+    >
+>;

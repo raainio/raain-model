@@ -7,7 +7,7 @@ import {CartesianTools, LatLng} from '../cartesian';
 /**
  * @external
  *  - API: /rains
- *  - API: /rains/:id
+ *  - API: /rains/:rainId
  */
 export class RainNode extends RaainNode {
     public static TYPE = RaainNodeType.RainNode;

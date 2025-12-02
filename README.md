@@ -88,34 +88,73 @@ The following table lists which REST API endpoints return or accept which model 
 
 <!-- MODEL_MAPPING_TABLE_START -->
 
-| API endpoint (pattern)                                             | Exposes model class         | Notes                                               |
-|--------------------------------------------------------------------|-----------------------------|-----------------------------------------------------|
-| `/radars`                                                          | `RadarNode[]`               | Search for radars                                   |
-| `/radars/:id`                                                      | `RadarNode`                 | Get a radar by ID                                   |
-| `/radars/:id/measures`                                             | `RadarMeasure[]`            | Get radar measures                                  |
-| `/radars/:id/measures/:measureId`                                  | `RadarMeasure`              | Get a radar measure by ID                           |
-| `/gauges`                                                          | `GaugeNode[]`               | Search for gauges                                   |
-| `/gauges/:id`                                                      | `GaugeNode`                 | Get a gauge by ID                                   |
-| `/gauges/:id?format=cartesian-map`                                 | `GaugeNodeMap`              | Get a gauge by ID (format=cartesian-map)            |
-| `/gauges/:id/measures`                                             | `GaugeMeasure[]`            | Get gauge measures                                  |
-| `/rains`                                                           | `RainNode[]`                | Search for rain zones                               |
-| `/rains/:id`                                                       | `RainNode`                  | Get a rain zone by ID                               |
-| `/rains/:id/computations/:computationId`                           | `RainComputation`           |                                                     |
-| `/rains/:id/computations/:computationId?format=cartesian-map`      | `RainComputationMap`        | (format=cartesian-map)                              |
-| `/rains/:id/computations/:computationId/compares`                  | `RainComputationQuality[]`  | (Admin) Get cumulative qualities                    |
-| `/rains/:id/computations/:computationId/speeds`                    | `RainSpeedMap`              |                                                     |
-| `/rains/:id/cumulatives/:cumulativeId`                             | `RainComputationCumulative` | Get a cumulative computation                        |
-| `/rains/:id/cumulatives/:cumulativeId?format=cartesian-map`        | `RainComputationMap`        | Get a cumulative computation (format=cartesian-map) |
-| `/rains/:id/cumulatives/:cumulativeId/compares`                    | `RainComputationQuality[]`  | Get cumulative quality metrics                      |
-| `/rains/:id/cumulatives/:cumulativeId/cumulative/:cumulativeHours` | `RainComputationCumulative` | Get cumulative computation data                     |
-| `/notifications`                                                   | `EventNode[]`               | Get all notifications                               |
-| `/notifications/:id`                                               | `EventNode`                 | Get a notification by ID                            |
-| `/teams`                                                           | `TeamNode[]`                | Search for teams                                    |
-| `/teams/:id`                                                       | `TeamNode`                  | Get a team by ID                                    |
+| API endpoint (pattern)                                                                | Exposes model class         | Notes                                               |
+|---------------------------------------------------------------------------------------|-----------------------------|-----------------------------------------------------|
+| `/radars`                                                                             | `RadarNode[]`               | Search for radars                                   |
+| `/radars/:radarId`                                                                    | `RadarNode`                 | Get a radar by ID                                   |
+| `/radars/:radarId/measures`                                                           | `RadarMeasure[]`            | Get radar measures                                  |
+| `/radars/:radarId/measures/:radarMeasureId`                                           | `RadarMeasure`              | Get a radar measure by ID                           |
+| `/gauges`                                                                             | `GaugeNode[]`               | Search for gauges                                   |
+| `/gauges/:gaugeId`                                                                    | `GaugeNode`                 | Get a gauge by ID                                   |
+| `/gauges/:gaugeId?format=cartesian-map`                                               | `GaugeNodeMap`              | Get a gauge by ID (format=cartesian-map)            |
+| `/gauges/:gaugeId/measures`                                                           | `GaugeMeasure[]`            | Get gauge measures                                  |
+| `/rains`                                                                              | `RainNode[]`                | Search for rain zones                               |
+| `/rains/:rainId`                                                                      | `RainNode`                  | Get a rain zone by ID                               |
+| `/rains/:rainId/cumulatives/:rainComputationCumulativeId`                             | `RainComputationCumulative` | Get a cumulative computation                        |
+| `/rains/:rainId/cumulatives/:rainComputationCumulativeId?format=cartesian-map`        | `RainComputationMap`        | Get a cumulative computation (format=cartesian-map) |
+| `/rains/:rainId/cumulatives/:rainComputationCumulativeId/compares`                    | `RainComputationQuality[]`  | Get cumulative quality metrics                      |
+| `/rains/:rainId/cumulatives/:rainComputationCumulativeId/cumulative/:cumulativeHours` | `RainComputationCumulative` | Get cumulative computation data                     |
+| `/notifications`                                                                      | `EventNode[]`               | Get all notifications                               |
+| `/notifications/:notificationId`                                                      | `EventNode`                 | Get a notification by ID                            |
+| `/teams`                                                                              | `TeamNode[]`                | Search for teams                                    |
+| `/teams/:teamId`                                                                      | `TeamNode`                  | Get a team by ID                                    |
 
 <!-- MODEL_MAPPING_TABLE_END -->
 
 **Note**: All endpoints are prefixed with the API version (e.g., `/v3/...`).
+
+### API Contracts (`api/`)
+
+The `api/` directory provides TypeScript interfaces for API request and response contracts, enabling type-safe API integration.
+
+**Contract Types:**
+
+| Suffix          | Purpose                   | Example                                   |
+|-----------------|---------------------------|-------------------------------------------|
+| `*Request`      | Query parameters (GET)    | `RaainApiGaugesFindMeasuresRequest`       |
+| `*RequestBody`  | Request body (POST/PUT)   | `RaainApiGaugesUpsertMeasureRequestBody`  |
+| `*Response`     | Response body             | `RaainApiGaugesFindMeasuresResponse`      |
+
+**Common Types:**
+
+- `PaginationRequest`: Standard pagination params (`page`, `limit`)
+- `PaginatedResponse<T>`: Paginated list response (`data`, `total`, `hasNext`, etc.)
+- `ErrorResponse`: Standard error format (`{ error: string }`)
+
+**Usage Example:**
+
+```typescript
+import {
+    RaainApiGaugesFindMeasuresRequest,
+    RaainApiGaugesFindMeasuresResponse,
+    PaginatedResponse,
+    GaugeNode
+} from 'raain-model';
+
+// Type-safe request parameters
+const params: RaainApiGaugesFindMeasuresRequest = {
+    begin: '2024-01-01T00:00:00Z',
+    end: '2024-01-02T00:00:00Z'
+};
+
+// Type-safe response handling
+const response: RaainApiGaugesFindMeasuresResponse = await fetch(
+    `/v3/gauges/${gaugeId}/measures?begin=${params.begin}&end=${params.end}`
+).then(r => r.json());
+
+// Paginated endpoints return PaginatedResponse<T>
+const gauges: PaginatedResponse<GaugeNode> = await fetch('/v3/gauges').then(r => r.json());
+```
 
 ### Core Model Categories
 

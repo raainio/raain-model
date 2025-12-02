@@ -22,7 +22,7 @@ import {RaainNodeType} from '../organization/RaainNodeType';
  *
  * @external
  *  - API: /gauges
- *  - API: /gauges/:id
+ *  - API: /gauges/:gaugeId
  */
 export class GaugeNode extends RaainNode {
     /** Type identifier for gauge nodes */
@@ -43,7 +43,7 @@ export class GaugeNode extends RaainNode {
     /** Associated team */
     public team: TeamNode;
 
-    /** Internal configuration storage */
+    // internal
     private configurationAsJSON: string;
 
     /**

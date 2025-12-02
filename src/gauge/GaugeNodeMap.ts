@@ -4,7 +4,7 @@ import {GaugeMeasure} from './GaugeMeasure';
 
 /**
  * @external
- *  - API: /gauges/:id
+ *  - API: /gauges/:gaugeId
  */
 export class GaugeNodeMap extends GaugeNode {
     private map: string; // GaugeMeasure[]; stringified

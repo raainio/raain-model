@@ -1,13 +1,11 @@
 import {RainComputationAbstract} from './RainComputationAbstract';
-import {Link, RaainNode} from '../organization';
+import {Link, RaainNode, RaainNodeType} from '../organization';
 import {SpeedMatrixContainer} from '../quality';
 import {RainComputation} from './RainComputation';
-import {RaainNodeType} from '../organization/RaainNodeType';
 
 /**
  * @external
- *  - API: /rains/:id/computations/:computationId/compares
- *  - API: /rains/:id/cumulatives/:cumulativeId/compares
+ *  - API: /rains/:rainId/cumulatives/:rainComputationCumulativeId/compares
  */
 export class RainComputationQuality extends RainComputationAbstract {
     public static readonly TYPE = RaainNodeType.RainComputationQuality;

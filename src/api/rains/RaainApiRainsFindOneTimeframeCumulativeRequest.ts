@@ -1,7 +1,6 @@
 // GET /rains/:rainId query parameters
-export interface RaainApiRainsFindOneRequest {
-    format: string;
-    forced: boolean | string;
+export interface RaainApiRainsFindOneTimeframeCumulativeRequest {
+    format: 'timeframeCumulative';
     begin: string;
     end: string;
     provider: string;

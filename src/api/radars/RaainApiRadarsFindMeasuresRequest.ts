@@ -2,5 +2,5 @@
 export interface RaainApiRadarsFindMeasuresRequest {
     begin: string;
     end: string;
-    withValues: boolean | string;
+    withValues: string;
 }

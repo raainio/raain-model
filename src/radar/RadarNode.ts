@@ -4,7 +4,7 @@ import {RaainNodeType} from '../organization/RaainNodeType';
 /**
  * @external
  *  - API: /radars
- *  - API: /radars/:id
+ *  - API: /radars/:radarId
  */
 export class RadarNode extends RaainNode {
     public static TYPE = RaainNodeType.RadarNode;

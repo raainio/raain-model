@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [3.1.5] - 2025-12-01
+
 ### Added
 
 - API contracts: requests arguments and bodies
@@ -270,9 +272,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- Improved type safety by changing configurationAsJSON parameter from `any` to `string` in RainNode
 - Updated .gitignore to exclude .output.txt file
-- Modified parameter types from `any` to `string` for configurationAsJSON
 - Enhanced node creation with proper link handling
 - Improved type safety and error handling across components
 

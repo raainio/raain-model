@@ -68,4 +68,8 @@ export class LatLng {
     toJSON() {
         return {lat: this.lat, lng: this.lng};
     }
+
+    toString() {
+        return JSON.stringify(this.toJSON());
+    }
 }

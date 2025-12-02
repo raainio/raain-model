@@ -1,6 +1,6 @@
 // GET /gauges/:gaugeId query parameters
 export interface RaainApiGaugesFindOneRequest {
-    format: string;
+    format: 'cartesian-map';
     begin: string;
     end: string;
 }
