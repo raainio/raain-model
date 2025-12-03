@@ -16,7 +16,7 @@ export class GaugeMeasure extends Measure {
     constructor(json: {
         id: string;
         values: IPolarMeasureValue[] | ICartesianMeasureValue[] | number[];
-        date?: Date;
+        date?: Date | string;
         validity?: number;
         configurationAsJSON?: string;
         gauge?: string;

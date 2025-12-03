@@ -11,7 +11,7 @@ export class PositionHistory extends PositionValue {
     constructor(json: {
         id: string;
         label: string;
-        date: Date;
+        date: Date | string;
         x: number;
         y: number;
         value: number;

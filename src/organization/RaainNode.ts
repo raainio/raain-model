@@ -129,11 +129,6 @@ export class RaainNode implements IVersion {
         return uniqBy(linksPurified, JSON.stringify);
     }
 
-    /**
-     * Converts the node to a JSON object.
-     *
-     * @returns A JSON object containing the node's data
-     */
     public toJSON() {
         const json: {
             id: string;

@@ -11,7 +11,7 @@ export class RainComputation extends RainComputationAbstract {
 
     constructor(json: {
         id: string;
-        date: Date;
+        date: Date | string;
         isReady: boolean;
         results: string[] | RainPolarMeasureValue[] | RainCartesianMeasureValue[];
         links?: Link[] | RaainNode[];
@@ -20,7 +20,7 @@ export class RainComputation extends RainComputationAbstract {
         progressIngest?: number;
         progressComputing?: number;
         timeSpentInMs?: number;
-        isDoneDate?: Date;
+        isDoneDate?: Date | string;
         launchedBy?: string;
         rain?: string | Link | RaainNode;
         radars?: string[] | Link[] | RaainNode[];

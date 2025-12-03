@@ -51,6 +51,70 @@ describe('RainSpeed', () => {
         expect(rs.latLngs[0][1].lng).eq(4.56);
     });
 
+    it('should wrap a single plain object into a [topLeft,bottomRight] pair', () => {
+        const rs = new RainSpeed({
+            azimuthInDegrees: 10,
+            speedInMetersPerSec: 1,
+            latLngs: {lat: 7.89, lng: 10.11},
+        });
+        expect(rs.latLngs.length).eq(1);
+        expect(rs.latLngs[0][0]).to.be.instanceOf(LatLng);
+        expect(rs.latLngs[0][0].lat).eq(7.89);
+        expect(rs.latLngs[0][0].lng).eq(10.11);
+        expect(rs.latLngs[0][1]).to.be.instanceOf(LatLng);
+        expect(rs.latLngs[0][1].lat).eq(7.89);
+        expect(rs.latLngs[0][1].lng).eq(10.11);
+    });
+
+    it('should convert array of plain object pairs to LatLng instances', () => {
+        const rs = new RainSpeed({
+            azimuthInDegrees: 20,
+            speedInMetersPerSec: 5,
+            latLngs: [
+                [{lat: 0, lng: 0}, {lat: 2, lng: 2}],
+                [{lat: 3, lng: 3}, {lat: 5, lng: 5}],
+            ],
+        });
+        expect(rs.latLngs.length).eq(2);
+        expect(rs.latLngs[0][0]).to.be.instanceOf(LatLng);
+        expect(rs.latLngs[0][1]).to.be.instanceOf(LatLng);
+        expect(rs.latLngs[1][0]).to.be.instanceOf(LatLng);
+        expect(rs.latLngs[1][1]).to.be.instanceOf(LatLng);
+        expect(rs.latLngs[0][0].lat).eq(0);
+        expect(rs.latLngs[0][1].lat).eq(2);
+        expect(rs.latLngs[1][0].lat).eq(3);
+        expect(rs.latLngs[1][1].lat).eq(5);
+    });
+
+    it('should preserve LatLng instances in array of pairs', () => {
+        const topLeft = new LatLng({lat: 1, lng: 1});
+        const bottomRight = new LatLng({lat: 2, lng: 2});
+        const rs = new RainSpeed({
+            azimuthInDegrees: 30,
+            speedInMetersPerSec: 10,
+            latLngs: [[topLeft, bottomRight]],
+        });
+        expect(rs.latLngs.length).eq(1);
+        expect(rs.latLngs[0][0]).to.be.instanceOf(LatLng);
+        expect(rs.latLngs[0][1]).to.be.instanceOf(LatLng);
+        expect(rs.latLngs[0][0].lat).eq(1);
+        expect(rs.latLngs[0][1].lat).eq(2);
+    });
+
+    it('should handle mixed LatLng instances and plain objects in pairs', () => {
+        const topLeft = new LatLng({lat: 1, lng: 1});
+        const rs = new RainSpeed({
+            azimuthInDegrees: 40,
+            speedInMetersPerSec: 15,
+            latLngs: [[topLeft, {lat: 3, lng: 3}]] as any,
+        });
+        expect(rs.latLngs.length).eq(1);
+        expect(rs.latLngs[0][0]).to.be.instanceOf(LatLng);
+        expect(rs.latLngs[0][1]).to.be.instanceOf(LatLng);
+        expect(rs.latLngs[0][0].lat).eq(1);
+        expect(rs.latLngs[0][1].lat).eq(3);
+    });
+
     it('getCenter should delegate to CartesianTools.GetLatLngRectsCenter', () => {
         const topLeft = new LatLng({lat: 0, lng: 0});
         const bottomRight = new LatLng({lat: 2, lng: 2});

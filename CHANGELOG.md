@@ -7,7 +7,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [3.1.5] - 2025-12-01
+## [3.1.7] - 2025-12-03
+
+### Added
+
+- `BuildQueryString` utility function for API query parameter serialization
+- `RainSpeedMap.toJSON()` method for proper serialization
+
+### Changed
+
+- Improved JSON serialization with ISO date strings in `RainSpeed`, `RainSpeedMap`, and `RainComputationAbstract`
+- Constructor flexibility: date fields now accept `Date | string` across multiple classes (`QualityPoint`, `RainSpeed`,
+  `RainSpeedMap`, `EventNode`, `RainComputationAbstract`)
+- `RainSpeed` now accepts plain `{lat, lng}` objects in addition to `LatLng` instances for latLngs
+- `RainSpeedMap` constructor accepts serialized `RainSpeed` JSON output
+
+### Fixed
+
+- `QualityPoint.getTimeDeltaInMinutes()` now handles undefined dates gracefully
+
+## [3.1.6] - 2025-12-02
 
 ### Added
 

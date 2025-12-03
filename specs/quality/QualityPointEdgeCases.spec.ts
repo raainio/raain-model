@@ -53,9 +53,8 @@ describe('QualityPoint Edge Cases', () => {
             remark: 'null dates',
         });
 
-        // Check that dates are set to Unix epoch when constructed with null
-        expect(qualityPointNullDates.gaugeDate.getTime()).to.equal(0);
-        expect(qualityPointNullDates.rainDate.getTime()).to.equal(0);
+        expect(qualityPointNullDates.gaugeDate).to.equal(undefined);
+        expect(qualityPointNullDates.rainDate).to.equal(undefined);
         // getTimeDeltaInMinutes should return 0 for equal dates
         expect(qualityPointNullDates.getTimeDeltaInMinutes()).to.equal(0);
     });

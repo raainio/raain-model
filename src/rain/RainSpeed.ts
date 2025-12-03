@@ -14,14 +14,18 @@ export class RainSpeed {
         azimuthInDegrees: number;
         speedInMetersPerSec: number;
         trustRatio?: number;
-        date?: Date;
-        latLngs?: [LatLng, LatLng][] | LatLng;
+        date?: Date | string;
+        latLngs?:
+            | [{lat: number; lng: number}, {lat: number; lng: number}][]
+            | [LatLng, LatLng][]
+            | {lat: number; lng: number}
+            | LatLng;
     }) {
         this.azimuthInDegrees = json.azimuthInDegrees;
         this.speedInMetersPerSec = json.speedInMetersPerSec;
         this.trustRatio = json.trustRatio ?? -1;
         if (json.date) {
-            this.date = json.date;
+            this.date = new Date(json.date);
         }
         this.setArea(json.latLngs);
     }
@@ -30,13 +34,24 @@ export class RainSpeed {
         return CartesianTools.GetLatLngRectsCenter(this.latLngs);
     }
 
-    public toJSON() {
+    public toJSON(): {
+        azimuthInDegrees: number;
+        speedInMetersPerSec: number;
+        trustRatio: number;
+        date: string | undefined;
+        latLngs: [{lat: number; lng: number}, {lat: number; lng: number}][];
+    } {
         return {
             azimuthInDegrees: this.azimuthInDegrees,
             speedInMetersPerSec: this.speedInMetersPerSec,
             trustRatio: this.trustRatio,
-            date: this.date,
-            latLngs: this.latLngs,
+            date: this.date?.toISOString(),
+            latLngs: this.latLngs.map((ll) => {
+                return [ll[0].toJSON(), ll[1].toJSON()] as [
+                    {lat: number; lng: number},
+                    {lat: number; lng: number},
+                ];
+            }),
         };
     }
 
@@ -105,11 +120,33 @@ export class RainSpeed {
         });
     }
 
-    private setArea(latLngs: [LatLng, LatLng][] | LatLng) {
-        let latLngsToSet = latLngs ?? [];
-        if (latLngs instanceof LatLng) {
-            latLngsToSet = [[latLngs, latLngs]];
+    private setArea(
+        latLngs:
+            | [{lat: number; lng: number}, {lat: number; lng: number}][]
+            | [LatLng, LatLng][]
+            | {lat: number; lng: number}
+            | LatLng
+    ) {
+        // Handle undefined/null
+        if (!latLngs) {
+            this.latLngs = [];
+            return;
         }
-        this.latLngs = latLngsToSet as [LatLng, LatLng][];
+
+        // Handle single point (LatLng instance or plain object)
+        if (!Array.isArray(latLngs)) {
+            const point = latLngs instanceof LatLng ? latLngs : new LatLng(latLngs);
+            this.latLngs = [[point, point]];
+            return;
+        }
+
+        // Handle array of pairs - ensure all items are LatLng instances
+        this.latLngs = (latLngs as [{lat: number; lng: number}, {lat: number; lng: number}][]).map(
+            (pair) => {
+                const p0 = pair[0] instanceof LatLng ? pair[0] : new LatLng(pair[0]);
+                const p1 = pair[1] instanceof LatLng ? pair[1] : new LatLng(pair[1]);
+                return [p0, p1] as [LatLng, LatLng];
+            }
+        );
     }
 }

@@ -28,7 +28,7 @@ export class RainComputationCumulative extends RainComputationAbstract {
         progressIngest?: number;
         progressComputing?: number;
         timeSpentInMs?: number;
-        isDoneDate?: Date;
+        isDoneDate?: Date | string;
         launchedBy?: string;
         rain?: string | Link | RaainNode;
         radars?: string[] | Link[] | RaainNode[];

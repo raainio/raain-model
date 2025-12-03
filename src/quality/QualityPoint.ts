@@ -13,8 +13,8 @@ export class QualityPoint {
     constructor(json: {
         gaugeId: string;
         gaugeLabel: string;
-        gaugeDate: Date;
-        rainDate: Date;
+        gaugeDate: Date | string;
+        rainDate: Date | string;
         gaugeCartesianValue: CartesianValue;
         rainCartesianValues: CartesianValue[];
         speed: {x: number; y: number};
@@ -22,8 +22,8 @@ export class QualityPoint {
     }) {
         this.gaugeId = json.gaugeId;
         this.gaugeLabel = json.gaugeLabel;
-        this.gaugeDate = new Date(json.gaugeDate);
-        this.rainDate = new Date(json.rainDate);
+        this.gaugeDate = json.gaugeDate ? new Date(json.gaugeDate) : undefined;
+        this.rainDate = json.rainDate ? new Date(json.rainDate) : undefined;
         this.gaugeCartesianValue = json.gaugeCartesianValue;
         this.rainCartesianValues = json.rainCartesianValues;
         this.speed = json.speed;
@@ -85,8 +85,11 @@ export class QualityPoint {
     }
 
     getTimeDeltaInMinutes(): number {
-        const delta = this.rainDate.getTime() - this.gaugeDate.getTime();
-        return Math.round(delta / 60000);
+        if (this.rainDate && this.gaugeDate) {
+            const delta = this.rainDate.getTime() - this.gaugeDate.getTime();
+            return Math.round(delta / 60000);
+        }
+        return 0;
     }
 
     accumulateValues(qualityPoint: QualityPoint) {

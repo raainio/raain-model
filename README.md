@@ -87,43 +87,42 @@ and [API swagger](https://api.sandbox.radartorain.com/v3/docs).
 The following table lists which REST API endpoints return or accept which model classes in this library:
 
 <!-- MODEL_MAPPING_TABLE_START -->
-
-| API endpoint (pattern)                                                                | Exposes model class         | Notes                                               |
-|---------------------------------------------------------------------------------------|-----------------------------|-----------------------------------------------------|
-| `/radars`                                                                             | `RadarNode[]`               | Search for radars                                   |
-| `/radars/:radarId`                                                                    | `RadarNode`                 | Get a radar by ID                                   |
-| `/radars/:radarId/measures`                                                           | `RadarMeasure[]`            | Get radar measures                                  |
-| `/radars/:radarId/measures/:radarMeasureId`                                           | `RadarMeasure`              | Get a radar measure by ID                           |
-| `/gauges`                                                                             | `GaugeNode[]`               | Search for gauges                                   |
-| `/gauges/:gaugeId`                                                                    | `GaugeNode`                 | Get a gauge by ID                                   |
-| `/gauges/:gaugeId?format=cartesian-map`                                               | `GaugeNodeMap`              | Get a gauge by ID (format=cartesian-map)            |
-| `/gauges/:gaugeId/measures`                                                           | `GaugeMeasure[]`            | Get gauge measures                                  |
-| `/rains`                                                                              | `RainNode[]`                | Search for rain zones                               |
-| `/rains/:rainId`                                                                      | `RainNode`                  | Get a rain zone by ID                               |
-| `/rains/:rainId/cumulatives/:rainComputationCumulativeId`                             | `RainComputationCumulative` | Get a cumulative computation                        |
-| `/rains/:rainId/cumulatives/:rainComputationCumulativeId?format=cartesian-map`        | `RainComputationMap`        | Get a cumulative computation (format=cartesian-map) |
-| `/rains/:rainId/cumulatives/:rainComputationCumulativeId/compares`                    | `RainComputationQuality[]`  | Get cumulative quality metrics                      |
-| `/rains/:rainId/cumulatives/:rainComputationCumulativeId/cumulative/:cumulativeHours` | `RainComputationCumulative` | Get cumulative computation data                     |
-| `/notifications`                                                                      | `EventNode[]`               | Get all notifications                               |
-| `/notifications/:notificationId`                                                      | `EventNode`                 | Get a notification by ID                            |
-| `/teams`                                                                              | `TeamNode[]`                | Search for teams                                    |
-| `/teams/:teamId`                                                                      | `TeamNode`                  | Get a team by ID                                    |
-
+| API endpoint (pattern) | Exposes model class | Notes |
+|------------------------|---------------------|-------|
+| `/radars` | `RadarNode[]` | Search for radars |
+| `/radars/:radarId` | `RadarNode` | Get a radar by ID |
+| `/radars/:radarId/measures` | `RadarMeasure[]` | Get radar measures |
+| `/radars/:radarId/measures/:radarMeasureId` | `RadarMeasure` | Get a radar measure by ID |
+| `/gauges` | `GaugeNode[]` | Search for gauges |
+| `/gauges/:gaugeId` | `GaugeNode` | Get a gauge by ID |
+| `/gauges/:gaugeId?format=cartesian-map` | `GaugeNodeMap` | Get a gauge by ID (format=cartesian-map) |
+| `/gauges/:gaugeId/measures` | `GaugeMeasure[]` | Get gauge measures |
+| `/rains` | `RainNode[]` | Search for rain zones |
+| `/rains/:rainId` | `RainNode` | Get a rain zone by ID |
+| `/rains/:rainId/cumulatives/:rainComputationCumulativeId` | `RainComputationCumulative` | Get a cumulative computation |
+| `/rains/:rainId/cumulatives/:rainComputationCumulativeId?format=cartesian-map` | `RainComputationMap` | Get a cumulative computation (format=cartesian-map) |
+| `/rains/:rainId/cumulatives/:rainComputationCumulativeId/compares` | `RainComputationQuality[]` | Get cumulative quality metrics |
+| `/rains/:rainId/cumulatives/:rainComputationCumulativeId/cumulative/:cumulativeHours` | `RainComputationCumulative` | Get cumulative computation data |
+| `/notifications` | `EventNode[]` | Get all notifications |
+| `/notifications/:notificationId` | `EventNode` | Get a notification by ID |
+| `/teams` | `TeamNode[]` | Search for teams |
+| `/teams/:teamId` | `TeamNode` | Get a team by ID |
 <!-- MODEL_MAPPING_TABLE_END -->
 
 **Note**: All endpoints are prefixed with the API version (e.g., `/v3/...`).
 
 ### API Contracts (`api/`)
 
-The `api/` directory provides TypeScript interfaces for API request and response contracts, enabling type-safe API integration.
+The `api/` directory provides TypeScript interfaces for API request and response contracts, enabling type-safe API
+integration.
 
 **Contract Types:**
 
-| Suffix          | Purpose                   | Example                                   |
-|-----------------|---------------------------|-------------------------------------------|
-| `*Request`      | Query parameters (GET)    | `RaainApiGaugesFindMeasuresRequest`       |
-| `*RequestBody`  | Request body (POST/PUT)   | `RaainApiGaugesUpsertMeasureRequestBody`  |
-| `*Response`     | Response body             | `RaainApiGaugesFindMeasuresResponse`      |
+| Suffix         | Purpose                 | Example                                  |
+|----------------|-------------------------|------------------------------------------|
+| `*Request`     | Query parameters (GET)  | `RaainApiGaugesFindMeasuresRequest`      |
+| `*RequestBody` | Request body (POST/PUT) | `RaainApiGaugesUpsertMeasureRequestBody` |
+| `*Response`    | Response body           | `RaainApiGaugesFindMeasuresResponse`     |
 
 **Common Types:**
 

@@ -10,7 +10,7 @@ export class CartesianGaugeHistory {
     constructor(json: {
         gaugeId: string;
         gaugeLabel: string;
-        date: Date;
+        date: Date | string;
         value: CartesianValue;
         configurationAsJSON: string;
     }) {

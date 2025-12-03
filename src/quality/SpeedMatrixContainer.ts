@@ -60,7 +60,7 @@ export class SpeedMatrixContainer {
         const comparesPerDate: IComparePerDate[] = [];
         const compareCumulative: ICompare = {
             name:
-                'cumulative_' + qualities.reduce((p, rcq) => p + '_' + rcq.date.toISOString(), ''),
+                'cumulative_' + qualities.reduce((p, rcq) => p + '_' + rcq.date?.toISOString(), ''),
             date: qualities[0]?.date,
             qualityPointsLegacy: [],
             qualityPoints: [],
@@ -95,7 +95,7 @@ export class SpeedMatrixContainer {
                 []
             );
             for (const qualityPoint of qualityPoints) {
-                const key = qualityPoint.gaugeDate.toISOString() + '_' + qualityPoint.gaugeId;
+                const key = qualityPoint.gaugeDate?.toISOString() + '_' + qualityPoint.gaugeId;
                 if (typeof minDeltaPerDate_GaugeId[key] === 'undefined') {
                     minDeltaPerDate_GaugeId[key] = qualityPoint.getDelta();
                 }
@@ -112,7 +112,7 @@ export class SpeedMatrixContainer {
             compare.compareTimeline.forEach((timeline) => {
                 for (let i = timeline.qualityPoints.length - 1; i >= 0; i--) {
                     const qualityPoint = timeline.qualityPoints[i];
-                    const key = qualityPoint.gaugeDate.toISOString() + '_' + qualityPoint.gaugeId;
+                    const key = qualityPoint.gaugeDate?.toISOString() + '_' + qualityPoint.gaugeId;
                     if (
                         !qualityPointToUsePerDate_GaugeId[key] &&
                         typeof minDeltaPerDate_GaugeId[key] !== 'undefined' &&

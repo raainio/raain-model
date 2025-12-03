@@ -36,7 +36,7 @@ export class RainComputationAbstract extends RaainNode {
 
     constructor(json: {
         id: string;
-        date: Date;
+        date: Date | string;
         isReady: boolean;
 
         name?: string;
@@ -46,7 +46,7 @@ export class RainComputationAbstract extends RaainNode {
         progressIngest?: number;
         progressComputing?: number;
         timeSpentInMs?: number;
-        isDoneDate?: Date;
+        isDoneDate?: Date | string;
         launchedBy?: string;
         rain?: string | Link | RaainNode;
         radars?: string[] | Link[] | RaainNode[];
@@ -137,12 +137,12 @@ export class RainComputationAbstract extends RaainNode {
         version?: string;
         isReady: boolean;
         name: string;
-        date: Date;
+        date: string;
         quality: number;
         progressIngest: number;
         progressComputing: number;
         timeSpentInMs: number;
-        isDoneDate: Date;
+        isDoneDate: string;
         launchedBy: string;
         rain: string;
         radars: string[];
@@ -160,13 +160,13 @@ export class RainComputationAbstract extends RaainNode {
 
         return {
             ...json,
-            date: this.date,
+            date: this.date?.toISOString(),
             quality: this.quality,
             progressIngest: this.progressIngest,
             progressComputing: this.progressComputing,
             timeSpentInMs: this.timeSpentInMs,
             isReady: this.isReady,
-            isDoneDate: this.isDoneDate,
+            isDoneDate: this.isDoneDate?.toISOString(),
             launchedBy: this.launchedBy,
             name: this.name,
             rain: rainLink,

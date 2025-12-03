@@ -10,7 +10,7 @@ export class RadarNodeMap extends RadarNode {
         id: string;
         latitude: number;
         longitude: number;
-        date: Date;
+        date: Date | string;
         map: RadarMeasure[] | string;
         name: string;
         description: string;

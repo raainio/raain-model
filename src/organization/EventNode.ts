@@ -18,16 +18,16 @@ export class EventNode {
         status: number;
         red: boolean;
         description: string;
-        created: Date;
-        modified: Date;
+        created: Date | string;
+        modified: Date | string;
     }) {
         this.id = json.id;
         this.title = json.title;
         this.status = json.status;
         this.red = json.red;
         this.description = json.description;
-        this.created = json.created;
-        this.modified = json.modified;
+        this.created = new Date(json.created);
+        this.modified = new Date(json.modified);
     }
 
     public toJSON() {

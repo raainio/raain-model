@@ -5,7 +5,10 @@ export class RainSpeedMap {
     public rainSpeeds: RainSpeed[];
     public date?: Date;
 
-    constructor(json: {rainSpeeds: RainSpeed[]; date?: Date}) {
+    constructor(json: {
+        rainSpeeds: (RainSpeed | ReturnType<RainSpeed['toJSON']>)[];
+        date?: Date | string;
+    }) {
         this.rainSpeeds = json.rainSpeeds.map((s) => new RainSpeed(s));
         if (json.date) {
             this.date = new Date(json.date);
@@ -97,6 +100,13 @@ export class RainSpeedMap {
             lat: newLatLng.lat,
             lng: newLatLng.lng,
         });
+    }
+
+    public toJSON() {
+        return {
+            rainSpeeds: this.rainSpeeds?.map((s) => s.toJSON()) ?? [],
+            date: this.date?.toISOString(),
+        };
     }
 
     protected normalizePoint(

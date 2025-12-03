@@ -24,7 +24,7 @@ export class RainComputationQuality extends RainComputationAbstract {
         progressIngest?: number;
         progressComputing?: number;
         timeSpentInMs?: number;
-        isDoneDate?: Date;
+        isDoneDate?: Date | string;
         launchedBy?: string;
         rain?: Link | RaainNode;
         radars?: Link[] | RaainNode[];
