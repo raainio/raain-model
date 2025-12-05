@@ -71,8 +71,14 @@ describe('RainSpeed', () => {
             azimuthInDegrees: 20,
             speedInMetersPerSec: 5,
             latLngs: [
-                [{lat: 0, lng: 0}, {lat: 2, lng: 2}],
-                [{lat: 3, lng: 3}, {lat: 5, lng: 5}],
+                [
+                    {lat: 0, lng: 0},
+                    {lat: 2, lng: 2},
+                ],
+                [
+                    {lat: 3, lng: 3},
+                    {lat: 5, lng: 5},
+                ],
             ],
         });
         expect(rs.latLngs.length).eq(2);

@@ -109,7 +109,7 @@ export class PolarMeasureValueMap {
         if (azimuthIndex >= 0) {
             if (azimuthIndex >= this.builtMeasureValuePolarContainers.length) {
                 // throw new Error('Impossible to getPolarValue azimuth from ' + JSON.stringify(json));
-                // TODO debug mode with console ? console.warn('### raain-model > getPolarValue Impossible from azimuth ', json);
+                // console.warn('### raain-model > getPolarValue Impossible from azimuth', json);
                 return null;
             }
 

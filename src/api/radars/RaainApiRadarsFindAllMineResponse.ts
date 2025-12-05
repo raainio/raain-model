@@ -1,11 +1,7 @@
-import {PaginationRequest} from '../common';
-import {RadarNode} from '../../radar/RadarNode';
+import {PaginationResponse} from '../common';
+import {RadarNode} from '../../radar';
 
 // GET /radars response body
-export interface RaainApiRadarsFindAllMineResponse extends PaginationRequest {
+export interface RaainApiRadarsFindAllMineResponse extends PaginationResponse {
     radars: ReturnType<RadarNode['toJSON']>[];
-    total: number;
-    totalPages: number;
-    hasNext: boolean;
-    hasPrev: boolean;
 }

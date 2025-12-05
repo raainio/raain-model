@@ -14,7 +14,7 @@ export class RainComputationQuality extends RainComputationAbstract {
 
     constructor(json: {
         id: string;
-        date: Date;
+        date: Date | string;
         isReady: boolean;
         qualitySpeedMatrixContainer: SpeedMatrixContainer;
 

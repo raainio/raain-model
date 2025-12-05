@@ -1,11 +1,7 @@
-import {PaginationRequest} from '../common';
-import {RainNode} from '../../rain/RainNode';
+import {PaginationResponse} from '../common';
+import {RainNode} from '../../rain';
 
 // GET /rains response body
-export interface RaainApiRainsFindAllMineResponse extends PaginationRequest {
+export interface RaainApiRainsFindAllMineResponse extends PaginationResponse {
     rains: ReturnType<RainNode['toJSON']>[];
-    total: number;
-    totalPages: number;
-    hasNext: boolean;
-    hasPrev: boolean;
 }
