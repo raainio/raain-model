@@ -43,24 +43,24 @@ export class QualityPoint {
         });
     }
 
-    getGaugeValue(): number {
+    getGaugeValue() {
         return this.gaugeCartesianValue?.value;
     }
 
-    getRainValue(): number {
+    getRainValue() {
         const sum = this.rainCartesianValues.reduce((prev, rcv) => prev + rcv.value, 0);
         return this.rainCartesianValues.length ? sum / this.rainCartesianValues.length : 0;
     }
 
-    getRainLat(): number {
+    getRainLat() {
         return this.getMiddleValue()?.lat;
     }
 
-    getRainLng(): number {
+    getRainLng() {
         return this.getMiddleValue()?.lng;
     }
 
-    getDelta(): number {
+    getDelta() {
         const rain = this.getRainValue();
         const gauge = this.getGaugeValue();
         if (typeof rain !== 'number' || typeof gauge !== 'number') {
@@ -69,7 +69,7 @@ export class QualityPoint {
         return Math.abs(rain - gauge);
     }
 
-    getRatio(): number {
+    getRatio() {
         let ratio = 0;
         if (this.getRainValue() === 0) {
             return ratio;
@@ -84,7 +84,7 @@ export class QualityPoint {
         return ratio;
     }
 
-    getTimeDeltaInMinutes(): number {
+    getTimeDeltaInMinutes() {
         if (this.rainDate && this.gaugeDate) {
             const delta = this.rainDate.getTime() - this.gaugeDate.getTime();
             return Math.round(delta / 60000);
@@ -101,7 +101,7 @@ export class QualityPoint {
         }
     }
 
-    private getMiddleValue(): CartesianValue {
+    private getMiddleValue(): CartesianValue | null {
         if (!this.rainCartesianValues || this.rainCartesianValues.length === 0) {
             return null;
         }

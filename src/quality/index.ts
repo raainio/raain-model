@@ -1,3 +1,4 @@
+export * from './QualityIndicatorMethod';
 export * from './QualityPoint';
 export * from './SpeedMatrix';
 export * from './SpeedMatrixContainer';

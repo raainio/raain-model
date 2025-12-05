@@ -2,8 +2,12 @@ import {SpeedMatrix} from './SpeedMatrix';
 import {PositionValue} from './position/PositionValue';
 import {PositionHistory} from './history/PositionHistory';
 import {QualityPoint} from './QualityPoint';
-import {CartesianValue} from '../cartesian/CartesianValue';
-import {RainComputationQuality} from '../rain/RainComputationQuality';
+import {
+    QualityIndicatorMethod,
+    QualityIndicatorOptions,
+    QualityNormalizationOptions,
+} from './QualityIndicatorMethod';
+import {RainComputationQuality} from '../rain';
 
 export interface ICompares {
     comparesPerDate: IComparePerDate[];
@@ -95,14 +99,16 @@ export class SpeedMatrixContainer {
                 []
             );
             for (const qualityPoint of qualityPoints) {
+                const delta = qualityPoint.getDelta();
+                if (typeof delta === 'undefined') {
+                    continue;
+                }
+
                 const key = qualityPoint.gaugeDate?.toISOString() + '_' + qualityPoint.gaugeId;
                 if (typeof minDeltaPerDate_GaugeId[key] === 'undefined') {
-                    minDeltaPerDate_GaugeId[key] = qualityPoint.getDelta();
+                    minDeltaPerDate_GaugeId[key] = delta;
                 }
-                minDeltaPerDate_GaugeId[key] = Math.min(
-                    minDeltaPerDate_GaugeId[key],
-                    qualityPoint.getDelta()
-                );
+                minDeltaPerDate_GaugeId[key] = Math.min(minDeltaPerDate_GaugeId[key], delta);
             }
         }
 
@@ -216,28 +222,6 @@ export class SpeedMatrixContainer {
         return null;
     }
 
-    protected static mergeDateMin(d1: Date, d2: Date): Date {
-        const stillComputed = this.mergeStillComputed(d1, d2);
-        if (stillComputed === null) {
-            return new Date(Math.min(new Date(d1).getTime(), new Date(d2).getTime()));
-        }
-        if (stillComputed !== undefined) {
-            return new Date(stillComputed);
-        }
-        return stillComputed;
-    }
-
-    protected static mergeDateMax(d1: Date, d2: Date): Date {
-        const stillComputed = this.mergeStillComputed(d1, d2);
-        if (stillComputed === null) {
-            return new Date(Math.max(new Date(d1).getTime(), new Date(d2).getTime()));
-        }
-        if (stillComputed !== undefined) {
-            return new Date(stillComputed);
-        }
-        return stillComputed;
-    }
-
     protected static mergeAvg(v1: number, v2: number): number {
         if (v1 === 0 && v2 === 0) {
             return 0;
@@ -250,69 +234,10 @@ export class SpeedMatrixContainer {
         return stillComputed;
     }
 
-    protected static mergeMin(v1: number, v2: number): number {
-        const stillComputed = this.mergeStillComputed(v1, v2);
-        if (stillComputed === null) {
-            return Math.min(v1, v2);
-        }
-        return stillComputed;
-    }
-
     protected static mergeConcat(a1: Array<any>, a2: Array<any>): Array<any> {
         const stillComputed = this.mergeStillComputed(a1, a2);
         if (stillComputed === null) {
             return a1.concat(a2);
-        }
-        return stillComputed;
-    }
-
-    protected static mergeReduce(
-        a1: Array<QualityPoint>,
-        a2: Array<QualityPoint>
-    ): Array<QualityPoint> {
-        const stillComputed = this.mergeStillComputed(a1, a2);
-        if (stillComputed === null) {
-            const ids = new Map();
-            const concatted: QualityPoint[] = a1.concat(a2);
-            for (const qualityPoint of concatted) {
-                const oldValue = {
-                    gaugeValue: 0,
-                    rainValue: 0,
-                };
-                // if (ids.has(qualityPoint.gaugeId)) {
-                //     oldValue = ids.get(qualityPoint.gaugeId);
-                // }
-                ids.set(qualityPoint.gaugeId, {
-                    gaugeLabel: qualityPoint.gaugeLabel,
-                    gaugeValue: qualityPoint.getGaugeValue() + oldValue.gaugeValue,
-                    gaugeLat: qualityPoint.gaugeCartesianValue.lat,
-                    gaugeLng: qualityPoint.gaugeCartesianValue.lng,
-                    rainValue: qualityPoint.getRainValue() + oldValue.rainValue,
-                    rainLat: qualityPoint.getRainLat(),
-                    rainLng: qualityPoint.getRainLng(),
-                    gaugeDate: qualityPoint.gaugeDate,
-                    rainDate: qualityPoint.rainDate,
-                    rainCartesianValues: qualityPoint.rainCartesianValues,
-                    remark: qualityPoint.remark,
-                });
-            }
-
-            return [...ids].map(([id, value]) => {
-                return new QualityPoint({
-                    gaugeId: id,
-                    gaugeLabel: value.gaugeLabel,
-                    gaugeDate: value.gaugeDate,
-                    rainDate: value.rainDate,
-                    gaugeCartesianValue: new CartesianValue({
-                        value: value.gaugeValue,
-                        lat: value.gaugeLat,
-                        lng: value.gaugeLng,
-                    }),
-                    rainCartesianValues: value.rainCartesianValues,
-                    speed: null,
-                    remark: value.remark,
-                });
-            });
         }
         return stillComputed;
     }
@@ -385,7 +310,7 @@ export class SpeedMatrixContainer {
         return [];
     }
 
-    getMaxGauge(matrixName?: string): number {
+    getMaxGauge(matrixName?: string) {
         const qualityPoints = this.getQualityPoints(matrixName);
         let max = -1;
         for (const p of qualityPoints) {
@@ -394,7 +319,7 @@ export class SpeedMatrixContainer {
         return max;
     }
 
-    getMaxRain(matrixName?: string): number {
+    getMaxRain(matrixName?: string) {
         const qualityPoints = this.getQualityPoints(matrixName);
         let max = -1;
         for (const p of qualityPoints) {
@@ -404,12 +329,37 @@ export class SpeedMatrixContainer {
     }
 
     /**
-     * Get summed quality indicator (0 ideally)
-     *  @link SpeedMatrix.ComputeQualityIndicator
+     * Get quality indicator.
+     * By default returns raw values (0 ideally for DELTA, 1 ideally for NASH_SUTCLIFFE).
+     * With normalize=true, returns 0-100 scale where 100=best for all methods.
+     *
+     * @param matrixName - Optional matrix name to filter quality points
+     * @param options - Quality indicator calculation options
+     * @param options.method - The calculation method (default: NASH_SUTCLIFFE)
+     * @param options.normalize - If true, normalizes result to 0-100 (0=bad, 100=best)
+     * @param options.normalizationOptions - Options for normalization (reference max values)
+     * @returns Quality indicator value
      */
-    getQuality(matrixName?: string): number {
+    getQuality(
+        matrixName?: string,
+        options: QualityIndicatorOptions & {
+            normalize?: boolean;
+            normalizationOptions?: QualityNormalizationOptions;
+        } = {}
+    ) {
         const qualityPoints = this.getQualityPoints(matrixName);
-        return SpeedMatrix.ComputeQualityIndicator(qualityPoints);
+        const method = options.method ?? QualityIndicatorMethod.NASH_SUTCLIFFE;
+        const rawValue = SpeedMatrix.ComputeQualityIndicator(qualityPoints, options);
+
+        if (options.normalize) {
+            return SpeedMatrix.NormalizeQualityIndicator(
+                rawValue,
+                method,
+                options.normalizationOptions
+            );
+        }
+
+        return rawValue;
     }
 
     getTrustedIndicators(): number[] {
@@ -462,7 +412,7 @@ export class SpeedMatrixContainer {
         return indicAverage > SpeedMatrix.DEFAULT_TRUSTED_INDICATOR / 2;
     }
 
-    getFlattenMatrixCount(): number {
+    getFlattenMatrixCount() {
         return this.flattenMatrices.length;
     }
 

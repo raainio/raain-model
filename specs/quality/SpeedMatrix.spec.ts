@@ -3,6 +3,7 @@ import {
     CartesianTools,
     CartesianValue,
     Position,
+    QualityIndicatorMethod,
     QualityPoint,
     RainComputationQuality,
     SpeedMatrix,
@@ -131,7 +132,11 @@ describe('SpeedMatrix', () => {
         // 1) Verify creation
         qualitySpeedMatrixContainer1.logMergedMatrix({normalize: false, logger: optionalLogger});
         speedMatrix1.logFlatten({logger: optionalLogger, simplify: false});
-        expect(qualitySpeedMatrixContainer1.getQuality()).eq(0.5);
+        expect(
+            qualitySpeedMatrixContainer1.getQuality(undefined, {
+                method: QualityIndicatorMethod.DELTA,
+            })
+        ).eq(0.5);
         expect(qualitySpeedMatrixContainer1.getMaxGauge()).eq(10);
         expect(qualitySpeedMatrixContainer1.getMaxRain()).eq(10.5);
         expect(qualitySpeedMatrixContainer1.getQualityPoints().length).eq(1);
@@ -180,7 +185,11 @@ describe('SpeedMatrix', () => {
 
         // 2) Verify merging
         qualitySpeedMatrixContainer2.logMergedMatrix({normalize: false, logger: optionalLogger});
-        expect(qualitySpeedMatrixContainer2.getQuality()).eq(0.38000000000000045);
+        expect(
+            qualitySpeedMatrixContainer2.getQuality(undefined, {
+                method: QualityIndicatorMethod.DELTA,
+            })
+        ).eq(0.38000000000000045);
         expect(qualitySpeedMatrixContainer2.getMaxGauge()).eq(10.399999999999999);
         expect(qualitySpeedMatrixContainer2.getMaxRain()).eq(10.5);
         const qps = qualitySpeedMatrixContainer2.getQualityPoints();

@@ -3,6 +3,7 @@ import {
     CartesianTools,
     CartesianValue,
     Position,
+    QualityIndicatorMethod,
     QualityPoint,
     RainComputationQuality,
     SpeedMatrix,
@@ -158,5 +159,90 @@ describe('SpeedMatrixContainer (additional tests)', () => {
             0
         );
         expect(totalDedup).to.equal(1);
+    });
+
+    describe('getQuality with normalize option', () => {
+        it('should return raw value by default', () => {
+            const qp1 = buildQP('g1', 10, 15); // delta = 5
+            const qp2 = buildQP('g2', 20, 16); // delta = 4
+            const m = new SpeedMatrix('0', '', [qp1, qp2], undefined, 1, smallRange, roundScale);
+            const c = new SpeedMatrixContainer({matrices: [m]});
+
+            // Raw DELTA = (5 + 4) / 2 = 4.5
+            const rawDelta = c.getQuality(undefined, {method: QualityIndicatorMethod.DELTA});
+            expect(rawDelta).to.equal(4.5);
+        });
+
+        it('should return normalized value when normalize=true', () => {
+            const qp1 = buildQP('g1', 10, 15); // delta = 5
+            const qp2 = buildQP('g2', 20, 16); // delta = 4
+            const m = new SpeedMatrix('0', '', [qp1, qp2], undefined, 1, smallRange, roundScale);
+            const c = new SpeedMatrixContainer({matrices: [m]});
+
+            // Raw DELTA = 4.5, normalized = 100 - (4.5/10)*100 = 55
+            const normalizedDelta = c.getQuality(undefined, {
+                method: QualityIndicatorMethod.DELTA,
+                normalize: true,
+            });
+            expect(normalizedDelta).to.equal(55);
+        });
+
+        it('should return 100 for perfect predictions when normalized', () => {
+            const qp1 = buildQP('g1', 10, 10);
+            const qp2 = buildQP('g2', 20, 20);
+            const m = new SpeedMatrix('0', '', [qp1, qp2], undefined, 1, smallRange, roundScale);
+            const c = new SpeedMatrixContainer({matrices: [m]});
+
+            const methods = [
+                QualityIndicatorMethod.DELTA,
+                QualityIndicatorMethod.RATIO,
+                QualityIndicatorMethod.SUCCESS_RATE,
+                QualityIndicatorMethod.RMSE,
+                QualityIndicatorMethod.MAPE,
+                QualityIndicatorMethod.NASH_SUTCLIFFE,
+            ];
+
+            for (const method of methods) {
+                const normalized = c.getQuality(undefined, {method, normalize: true});
+                expect(normalized).to.equal(100, `${method} should return 100 for perfect`);
+            }
+        });
+
+        it('should use custom normalization options', () => {
+            const qp1 = buildQP('g1', 10, 15); // delta = 5
+            const qp2 = buildQP('g2', 20, 16); // delta = 4
+            const m = new SpeedMatrix('0', '', [qp1, qp2], undefined, 1, smallRange, roundScale);
+            const c = new SpeedMatrixContainer({matrices: [m]});
+
+            // Raw DELTA = 4.5, with maxRef=20: normalized = 100 - (4.5/20)*100 = 77.5
+            const normalized = c.getQuality(undefined, {
+                method: QualityIndicatorMethod.DELTA,
+                normalize: true,
+                normalizationOptions: {deltaMaxRef: 20},
+            });
+            expect(normalized).to.equal(77.5);
+        });
+
+        it('should work with all methods', () => {
+            const qp1 = buildQP('g1', 10, 12);
+            const qp2 = buildQP('g2', 20, 18);
+            const m = new SpeedMatrix('0', '', [qp1, qp2], undefined, 1, smallRange, roundScale);
+            const c = new SpeedMatrixContainer({matrices: [m]});
+
+            const methods = [
+                QualityIndicatorMethod.DELTA,
+                QualityIndicatorMethod.RATIO,
+                QualityIndicatorMethod.SUCCESS_RATE,
+                QualityIndicatorMethod.RMSE,
+                QualityIndicatorMethod.MAPE,
+                QualityIndicatorMethod.NASH_SUTCLIFFE,
+            ];
+
+            for (const method of methods) {
+                const normalized = c.getQuality(undefined, {method, normalize: true});
+                expect(normalized).to.be.at.least(0, `${method} should be >= 0`);
+                expect(normalized).to.be.at.most(100, `${method} should be <= 100`);
+            }
+        });
     });
 });

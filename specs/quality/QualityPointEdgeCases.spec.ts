@@ -1,6 +1,7 @@
 import {expect} from 'chai';
 import {
     CartesianValue,
+    QualityIndicatorMethod,
     QualityPoint,
     RainComputationQuality,
     SpeedMatrix,
@@ -120,7 +121,11 @@ describe('SpeedMatrix Edge Cases', () => {
 
         const speedMatrix = new SpeedMatrix('test', '', [qualityPoint]);
         expect(speedMatrix.getQualityPoints().length).eq(1);
-        expect(SpeedMatrix.ComputeQualityIndicator(speedMatrix.getQualityPoints())).eq(0);
+        expect(
+            SpeedMatrix.ComputeQualityIndicator(speedMatrix.getQualityPoints(), {
+                method: QualityIndicatorMethod.DELTA,
+            })
+        ).eq(0);
     });
 });
 
@@ -221,7 +226,8 @@ describe('RainComputationQuality Edge Cases', () => {
         expect(rainComputationQuality.isReady).eq(true);
         expect(
             SpeedMatrix.ComputeQualityIndicator(
-                rainComputationQuality.qualitySpeedMatrixContainer.getQualityPoints()
+                rainComputationQuality.qualitySpeedMatrixContainer.getQualityPoints(),
+                {method: QualityIndicatorMethod.DELTA}
             )
         ).eq(99);
     });

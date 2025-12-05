@@ -9,6 +9,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- **BREAKING:** `QualityIndicator` interface updated:
+  - Replaced `version` field with `computingVersion` and `qualityVersion` (parsed from `C<version>-Q<version>` format)
+  - Added `lastUpdatedAt` field (ISO date string - max createdAt of records in period)
+  - Results are now sorted by `lastUpdatedAt` descending (most recent first)
+
+## [3.1.8] - 2025-12-05
+
+### Changed
+
 - Updated API contracts
 
 ## [3.1.7] - 2025-12-03

@@ -192,8 +192,80 @@ const gauges: PaginatedResponse<GaugeNode> = await fetch('/v3/gauges').then(r =>
 **Quality & Analysis**
 
 - `RainComputationQuality`: Quality metrics comparing radar vs gauge
-- `SpeedMatrix`: Quality assessment matrix
+- `SpeedMatrix`: Quality assessment matrix with multiple indicator methods
+- `QualityIndicatorMethod`: Enum for quality calculation strategies
 - `RainSpeed` / `RainSpeedMap`: Rain speed tracking and storage
+
+#### Quality Indicator Methods
+
+The `SpeedMatrixContainer.getQuality()` method supports multiple methods to assess radar prediction quality against
+gauge measurements:
+
+```typescript
+import {QualityIndicatorMethod, SpeedMatrixContainer} from 'raain-model';
+
+const container = new SpeedMatrixContainer({matrices: [...]});
+
+// Default (NASH_SUTCLIFFE) - returns raw value (0 to 1)
+const nse = container.getQuality();
+
+// Use specific method - returns raw value
+const delta = container.getQuality('m1', {
+    method: QualityIndicatorMethod.DELTA
+});
+
+// With normalize=true - returns 0-100 scale (0=bad, 100=best)
+const normalizedDelta = container.getQuality('m1', {
+    method: QualityIndicatorMethod.DELTA,
+    normalize: true
+});
+
+// With custom threshold for SUCCESS_RATE
+const success = container.getQuality('m1', {
+    method: QualityIndicatorMethod.SUCCESS_RATE,
+    successThreshold: 0.9  // 90% match required
+});
+
+// With custom normalization options
+const customNormalized = container.getQuality('m1', {
+    method: QualityIndicatorMethod.RMSE,
+    normalize: true,
+    normalizationOptions: {rmseMaxRef: 20}  // 20 mm/h as max reference
+});
+```
+
+**Nash-Sutcliffe Efficiency (NSE)** is particularly useful for hydrology:
+
+- **NSE = 1**: Perfect prediction
+- **NSE > 0.7**: Good model
+- **NSE = 0**: Model equals using the mean value
+- **NSE < 0**: Model is worse than just predicting the mean
+
+All methods:
+
+| Method           | Range    | Perfect | Description                                     |
+|------------------|----------|---------|-------------------------------------------------|
+| `NASH_SUTCLIFFE` | -∞ → 1   | 1       | Hydrology standard (default)                    |
+| `DELTA`          | 0 → ∞    | 0       | Average absolute difference                     |
+| `RATIO`          | 0 → 1    | 1       | Average of min/max ratio between values         |
+| `SUCCESS_RATE`   | 0 → 100  | 100     | Percentage of points meeting threshold          |
+| `RMSE`           | 0 → ∞    | 0       | Root Mean Square Error (penalizes large errors) |
+| `MAPE`           | 0 → 100+ | 0       | Mean Absolute Percentage Error                  |
+
+**Normalizing Quality Indicators (0 = bad, 100 = best)**
+
+All quality methods can be normalized to a unified 0-100 scale for easier comparison.
+
+| Method           | Normalization Formula        | Default Reference |
+|------------------|------------------------------|-------------------|
+| `SUCCESS_RATE`   | value (already 0-100)        | -                 |
+| `RATIO`          | value × 100                  | -                 |
+| `NASH_SUTCLIFFE` | clamp(value, 0, 1) × 100     | min clamp: 0      |
+| `DELTA`          | 100 - (value / maxRef) × 100 | maxRef: 10 mm/h   |
+| `RMSE`           | 100 - (value / maxRef) × 100 | maxRef: 10 mm/h   |
+| `MAPE`           | 100 - (value / maxRef) × 100 | maxRef: 100%      |
+
+Default reference values are available via `QUALITY_NORMALIZATION_DEFAULTS`.
 
 #### 🌍 Coordinate Systems Explained
 
