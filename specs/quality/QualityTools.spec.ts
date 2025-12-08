@@ -43,6 +43,26 @@ describe('QualityTools', () => {
         // expect(QualityTools.MapLatLngToPosition(latLng).y).eq(48.86902);
     });
 
+    it('realistic map positions then IsAroundLatLng', () => {
+        const gaugeHistory = new Position({
+            x: -74.81639,
+            y: 40.27639,
+        });
+        const pixel = new Position({
+            x: -74.815,
+            y: 40.26,
+        });
+        const gaugeLatLng = QualityTools.MapPositionToLatLng(gaugeHistory);
+        const pixelLatLng = QualityTools.MapPositionToLatLng(pixel);
+
+        // pixelLatLng looks like in the 3x3 square around the gaugeLatLng
+        const bOkRelativePos = CartesianTools.IsAroundLatLng(gaugeLatLng, pixelLatLng, {
+            inEarthMap: true,
+            stepRange: 1,
+        });
+        expect(bOkRelativePos).eq(true);
+    });
+
     it('should CreateNDimArray', () => {
         const createdEmptyNDimArray = QualityTools.CreateNDimArray([1, 2, 3]);
         expect(createdEmptyNDimArray.length).eq(1);

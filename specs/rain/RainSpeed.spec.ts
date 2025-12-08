@@ -289,7 +289,8 @@ describe('RainSpeed', () => {
             // Value preserved
             expect(result.value).eq(6.7);
             // Should move westward (opposite of eastward)
-            expect(result.lat).to.be.eq(45);
+            // With floor-based pixel snapping, lat becomes 44.99
+            expect(result.lat).to.be.eq(44.99);
             expect(result.lng).to.be.lessThan(10.0);
         });
     });

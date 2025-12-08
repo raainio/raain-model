@@ -60,9 +60,21 @@ export class CartesianMeasureValue implements ICartesianMeasureValue {
 
     setCartesianValues(
         cartesianValues: CartesianValue[],
-        options?: {mergeStrategy: MergeStrategy}
+        options?: {
+            mergeStrategy?: MergeStrategy;
+            valuesPrecision?: number;
+            removeNullValues?: boolean;
+        }
     ): void {
         let merged: CartesianValue[] = cartesianValues;
+        const transformValue = (val: number) => {
+            if (!options?.valuesPrecision) {
+                return val;
+            }
+
+            const multiplier = Math.pow(10, options.valuesPrecision);
+            return Math.trunc(val * multiplier) / multiplier;
+        };
 
         if (options?.mergeStrategy && options?.mergeStrategy !== MergeStrategy.NONE) {
             const cartesianTools = new CartesianTools();
@@ -99,15 +111,24 @@ export class CartesianMeasureValue implements ICartesianMeasureValue {
 
             if (options.mergeStrategy === MergeStrategy.AVERAGE) {
                 for (const {sum, count, lat, lng} of map.values()) {
-                    merged.push(new CartesianValue({lat, lng, value: sum / count}));
+                    const value = transformValue(sum / count);
+                    if (!options?.removeNullValues || value) {
+                        merged.push(new CartesianValue({lat, lng, value}));
+                    }
                 }
             } else if (options.mergeStrategy === MergeStrategy.SUM) {
                 for (const {sum, lat, lng} of map.values()) {
-                    merged.push(new CartesianValue({lat, lng, value: sum}));
+                    const value = transformValue(sum);
+                    if (!options?.removeNullValues || value) {
+                        merged.push(new CartesianValue({lat, lng, value}));
+                    }
                 }
             } else if (options.mergeStrategy === MergeStrategy.MAX) {
                 for (const {max, lat, lng} of map.values()) {
-                    merged.push(new CartesianValue({lat, lng, value: max}));
+                    const value = transformValue(max);
+                    if (!options?.removeNullValues || value) {
+                        merged.push(new CartesianValue({lat, lng, value}));
+                    }
                 }
             }
         }

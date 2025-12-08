@@ -503,12 +503,13 @@ describe('RainSpeedMap', () => {
              * THEN: Should round first, then check strict containment, returning the matching area
              */
             it('should round coordinates then apply strict containment logic', () => {
+                // With floor-based snapping, point (50.005, 10.005) floors to (50.0, 10.0)
                 const area1 = [
-                    new LatLng({lat: 50.0001, lng: 10.0}),
+                    new LatLng({lat: 50.0, lng: 10.0}),
                     new LatLng({lat: 50.2, lng: 10.2}),
                 ] as [LatLng, LatLng];
                 const area2 = [
-                    new LatLng({lat: 50.0002, lng: 10.0}),
+                    new LatLng({lat: 50.0, lng: 10.0}),
                     new LatLng({lat: 50.5, lng: 10.5}),
                 ] as [LatLng, LatLng];
 
@@ -524,7 +525,8 @@ describe('RainSpeedMap', () => {
                 });
                 const map = new RainSpeedMap({rainSpeeds: [rs1, rs2]});
 
-                const result = map.getRainSpeed(new LatLng({lat: 49.9991, lng: 9.9991}), {
+                // Point (50.005, 10.005) floors to (50.0, 10.0), which is inside both areas
+                const result = map.getRainSpeed(new LatLng({lat: 50.005, lng: 10.005}), {
                     inEarthMap: true,
                     strictContaining: true,
                 });

@@ -334,7 +334,7 @@ describe('Rain', function () {
             (m) => new RainCartesianMeasureValue(m as any)
         );
         expect(mappedRainCartesianMeasureValues.length).eq(1);
-        expect(mappedRainCartesianMeasureValues[0].getCartesianValues().length).eq(50267);
+        expect(mappedRainCartesianMeasureValues[0].getCartesianValues().length).eq(50100);
     });
 
     it('should challenge rainComputation merge', () => {

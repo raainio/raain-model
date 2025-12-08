@@ -79,8 +79,8 @@ describe('CartesianTools', () => {
                 inEarthMap: true,
             })
         ).eq(true);
-        // centerLatLng.lat - 0.001 snaps to a DIFFERENT pixel (12.34 vs 12.35)
-        // So with stepRange 0, it should return false
+        // centerLatLng.lat - 0.001 = 12.3446 is in the SAME pixel as 12.3456 ([12.34, 12.35))
+        // So with stepRange 0, it should return true
         expect(
             CartesianTools.IsAroundLatLng(
                 center,
@@ -90,8 +90,8 @@ describe('CartesianTools', () => {
                     inEarthMap: true,
                 }
             )
-        ).eq(false);
-        // But with stepRange 1, it should detect adjacent pixels
+        ).eq(true);
+        // With stepRange 1, also true (same pixel)
         expect(
             CartesianTools.IsAroundLatLng(
                 center,
@@ -438,13 +438,13 @@ describe('CartesianTools', () => {
 
             // These raw coordinates snap to ADJACENT pixels
             const rawCenter = new LatLng({lat: 12.004, lng: 45.003});
-            const rawAround = new LatLng({lat: 12.006, lng: 45.007});
+            const rawAround = new LatLng({lat: 12.015, lng: 45.016}); // Different pixel
 
             // Verify they snap to adjacent pixels
             const snappedCenter = cartesianTools.getLatLngFromEarthMap(rawCenter);
             const snappedAround = cartesianTools.getLatLngFromEarthMap(rawAround);
 
-            // 12.004 rounds to 12.0, 12.006 rounds to 12.01 (adjacent pixels)
+            // 12.004 floors to 12.0, 12.015 floors to 12.01 (adjacent pixels)
             expect(snappedCenter.lat).eq(12.0);
             expect(snappedAround.lat).eq(12.01);
             expect(snappedCenter.lng).eq(45.0);
@@ -473,19 +473,19 @@ describe('CartesianTools', () => {
          * THEN: Should detect all 8 neighbors as "around"
          */
         it('should detect all 8 adjacent pixels as around with stepRange 1', () => {
-            const centerLatLng = new LatLng({lat: 0, lng: 0});
+            const centerLatLng = new LatLng({lat: 0.005, lng: 0.005}); // Center in pixel [0, 0.01)
 
             // 8 directions: N, NE, E, SE, S, SW, W, NW
-            const pixelSizeToTest = 0.01499999;
+            // Use values that floor to adjacent pixels
             const neighbors = [
-                {lat: pixelSizeToTest, lng: 0}, // N
-                {lat: pixelSizeToTest, lng: pixelSizeToTest}, // NE
-                {lat: 0, lng: pixelSizeToTest}, // E
-                {lat: -pixelSizeToTest, lng: pixelSizeToTest}, // SE
-                {lat: -pixelSizeToTest, lng: 0}, // S
-                {lat: -pixelSizeToTest, lng: -pixelSizeToTest}, // SW
-                {lat: 0, lng: -pixelSizeToTest}, // W
-                {lat: pixelSizeToTest, lng: -pixelSizeToTest}, // NW
+                {lat: 0.015, lng: 0.005}, // N: floors to [0.01, 0]
+                {lat: 0.015, lng: 0.015}, // NE: floors to [0.01, 0.01]
+                {lat: 0.005, lng: 0.015}, // E: floors to [0, 0.01]
+                {lat: -0.005, lng: 0.015}, // SE: floors to [-0.01, 0.01]
+                {lat: -0.005, lng: 0.005}, // S: floors to [-0.01, 0]
+                {lat: -0.005, lng: -0.005}, // SW: floors to [-0.01, -0.01]
+                {lat: 0.005, lng: -0.005}, // W: floors to [0, -0.01]
+                {lat: 0.015, lng: -0.005}, // NW: floors to [0.01, -0.01]
             ];
 
             for (const neighbor of neighbors) {
@@ -704,7 +704,7 @@ describe('CartesianTools', () => {
         cartesianTools.adjustRainNodeWithSquareWidth(rainNode, 250);
 
         expect(rainNode.latLngRectsAsJSON).eq(
-            '[[{"lat":49.95,"lng":3.615},{"lat":52.19,"lng":7.184}]]'
+            '[[{"lat":49.94,"lng":3.615},{"lat":52.19,"lng":7.184}]]'
         );
     });
 
@@ -781,9 +781,9 @@ describe('CartesianTools', () => {
             const result = cartesianTools.getLatLngFromEarthMap(input);
 
             // Should snap to south-west corner of pixel containing (0.005, 0.005)
-            // With Math.round, 0.005 rounds UP to the pixel with SW corner at 0.01
-            expect(result.lat).eq(0.01);
-            expect(result.lng).eq(0.01);
+            // Point 0.005 is in pixel [0, 0.01), so SW corner is 0.0
+            expect(result.lat).eq(0);
+            expect(result.lng).eq(0);
         });
 
         it('should return south-west corner when position is explicitly "south-west"', () => {
@@ -794,8 +794,9 @@ describe('CartesianTools', () => {
                 position: CartesianPixelPosition.SW,
             });
 
-            expect(result.lat).eq(0.01);
-            expect(result.lng).eq(0.01);
+            // Point 0.005 is in pixel [0, 0.01), so SW corner is 0.0
+            expect(result.lat).eq(0);
+            expect(result.lng).eq(0);
         });
 
         /**
@@ -812,9 +813,9 @@ describe('CartesianTools', () => {
             });
 
             // South-east: same latitude as SW, but longitude + lngScale
-            // At equator: lat = 0.01, lng = 0.01 + 0.01 = 0.02
-            expect(result.lat).eq(0.01);
-            expect(result.lng).eq(0.02);
+            // At equator: lat = 0, lng = 0 + 0.01 = 0.01
+            expect(result.lat).eq(0);
+            expect(result.lng).eq(0.01);
         });
 
         /**
@@ -831,9 +832,9 @@ describe('CartesianTools', () => {
             });
 
             // North-west: latitude + latScale, same longitude as SW
-            // At equator: lat = 0.01 + 0.01 = 0.02, lng = 0.01
-            expect(result.lat).eq(0.02);
-            expect(result.lng).eq(0.01);
+            // At equator: lat = 0 + 0.01 = 0.01, lng = 0
+            expect(result.lat).eq(0.01);
+            expect(result.lng).eq(0);
         });
 
         /**
@@ -850,9 +851,9 @@ describe('CartesianTools', () => {
             });
 
             // North-east: both latitude and longitude increased
-            // At equator: lat = 0.01 + 0.01 = 0.02, lng = 0.01 + 0.01 = 0.02
-            expect(result.lat).eq(0.02);
-            expect(result.lng).eq(0.02);
+            // At equator: lat = 0 + 0.01 = 0.01, lng = 0 + 0.01 = 0.01
+            expect(result.lat).eq(0.01);
+            expect(result.lng).eq(0.01);
         });
 
         /**
@@ -869,9 +870,9 @@ describe('CartesianTools', () => {
             });
 
             // Center: SW corner + half of lat/lng scales
-            // At equator: lat = 0.01 + 0.01/2 = 0.015, lng = 0.01 + 0.01/2 = 0.015
-            expect(result.lat).eq(0.015);
-            expect(result.lng).eq(0.015);
+            // At equator: lat = 0 + 0.01/2 = 0.005, lng = 0 + 0.01/2 = 0.005
+            expect(result.lat).eq(0.005);
+            expect(result.lng).eq(0.005);
         });
 
         /**
@@ -888,9 +889,9 @@ describe('CartesianTools', () => {
             });
 
             // At 45°, longitude scale is 0.014
-            // SW corner: lat = 45.01, lng = 45.01
-            expect(result.lat).eq(45.01);
-            expect(result.lng).eq(45.01);
+            // Point 45.005 is in pixel [45, 45.01) for lat, [44.996, 45.01) for lng
+            expect(result.lat).eq(45);
+            expect(result.lng).eq(44.996);
         });
 
         /**
@@ -906,9 +907,9 @@ describe('CartesianTools', () => {
                 position: CartesianPixelPosition.SE,
             });
 
-            // South-east: lat = 45.01, lng = 45.01 + 0.014 = 45.024
-            expect(result.lat).eq(45.01);
-            expect(result.lng).eq(45.024);
+            // South-east: lat = 45, lng = 44.996 + 0.014 = 45.01
+            expect(result.lat).eq(45);
+            expect(result.lng).eq(45.01);
         });
 
         /**
@@ -924,9 +925,9 @@ describe('CartesianTools', () => {
                 position: CartesianPixelPosition.NW,
             });
 
-            // North-west: lat = 45.01 + 0.01 = 45.02, lng = 45.01
-            expect(result.lat).eq(45.02);
-            expect(result.lng).eq(45.01);
+            // North-west: lat = 45 + 0.01 = 45.01, lng = 44.996
+            expect(result.lat).eq(45.01);
+            expect(result.lng).eq(44.996);
         });
 
         /**
@@ -942,9 +943,9 @@ describe('CartesianTools', () => {
                 position: CartesianPixelPosition.NE,
             });
 
-            // North-east: lat = 45.01 + 0.01 = 45.02, lng = 45.01 + 0.014 = 45.024
-            expect(result.lat).eq(45.02);
-            expect(result.lng).eq(45.024);
+            // North-east: lat = 45 + 0.01 = 45.01, lng = 44.996 + 0.014 = 45.01
+            expect(result.lat).eq(45.01);
+            expect(result.lng).eq(45.01);
         });
 
         /**
@@ -960,9 +961,9 @@ describe('CartesianTools', () => {
                 position: CartesianPixelPosition.C,
             });
 
-            // Center: lat = 45.01 + 0.01/2 = 45.015, lng = 45.01 + 0.014/2 = 45.017
-            expect(result.lat).eq(45.015);
-            expect(result.lng).eq(45.017);
+            // Center: lat = 45 + 0.01/2 = 45.005, lng = 44.996 + 0.014/2 = 45.003
+            expect(result.lat).eq(45.005);
+            expect(result.lng).eq(45.003);
         });
 
         /**
@@ -979,8 +980,9 @@ describe('CartesianTools', () => {
             });
 
             // At -85°, longitude scale is 0.115
-            expect(result.lat).eq(-85.0);
-            expect(result.lng).eq(-176.985);
+            // Point -85.005 is in pixel [-85.01, -85.0), -177.005 is in pixel [-177.1, -176.985)
+            expect(result.lat).eq(-85.01);
+            expect(result.lng).eq(-177.1);
         });
 
         /**
@@ -996,9 +998,9 @@ describe('CartesianTools', () => {
                 position: CartesianPixelPosition.C,
             });
 
-            // Center: lat = -85.0 + 0.01/2 = -84.995, lng = -176.985 + 0.115/2 = -176.9275
-            expect(result.lat).eq(-84.995);
-            expect(result.lng).eq(-176.9275);
+            // Center: lat = -85.01 + 0.01/2 = -85.005, lng = -177.1 + 0.115/2 = -177.0425
+            expect(result.lat).eq(-85.005);
+            expect(result.lng).eq(-177.0425);
         });
 
         /**
@@ -1014,9 +1016,9 @@ describe('CartesianTools', () => {
                 position: CartesianPixelPosition.NE,
             });
 
-            // North-east: lat = -85.0 + 0.01 = -84.99, lng = -176.985 + 0.115 = -176.87
-            expect(result.lat).eq(-84.99);
-            expect(result.lng).eq(-176.87);
+            // North-east: lat = -85.01 + 0.01 = -85.0, lng = -177.1 + 0.115 = -176.985
+            expect(result.lat).eq(-85);
+            expect(result.lng).eq(-176.985);
         });
 
         /**
@@ -1027,21 +1029,21 @@ describe('CartesianTools', () => {
         it('should return same center for all points within the same pixel', () => {
             const cartesianTools = new CartesianTools(0.01);
 
-            // Note: 12.005 rounds up to pixel at 12.01, so use inputs that round to same pixel
+            // All these points are in pixel [12.0, 12.01) so should have same center
             const inputs = [
+                new LatLng({lat: 12.001, lng: 12.001}),
                 new LatLng({lat: 12.005, lng: 12.005}),
                 new LatLng({lat: 12.009, lng: 12.008}),
-                new LatLng({lat: 12.01, lng: 12.012}),
             ];
 
             const results = inputs.map((input) =>
                 cartesianTools.getLatLngFromEarthMap(input, {position: CartesianPixelPosition.C})
             );
 
-            // All should map to same pixel center (pixel with SW corner at 12.01)
+            // All should map to same pixel center (pixel with SW corner at 12.0)
             results.forEach((result) => {
-                expect(result.lat).eq(12.015);
-                expect(result.lng).eq(12.015);
+                expect(result.lat).eq(12.005);
+                expect(result.lng).eq(12.005);
             });
         });
 
@@ -1063,13 +1065,13 @@ describe('CartesianTools', () => {
                 position: CartesianPixelPosition.C,
             });
 
-            // 0.005 -> pixel with SW at 0.01 -> center at 0.015
-            expect(center1.lat).eq(0.015);
-            expect(center1.lng).eq(0.015);
+            // 0.005 -> pixel [0, 0.01) with SW at 0 -> center at 0.005
+            expect(center1.lat).eq(0.005);
+            expect(center1.lng).eq(0.005);
 
-            // 0.015 -> pixel with SW at 0.02 -> center at 0.025
-            expect(center2.lat).eq(0.025);
-            expect(center2.lng).eq(0.015);
+            // 0.015 -> pixel [0.01, 0.02) with SW at 0.01 -> center at 0.015
+            expect(center2.lat).eq(0.015);
+            expect(center2.lng).eq(0.005);
 
             // Centers should be different
             expect(center1.lat).not.eq(center2.lat);
@@ -1088,9 +1090,9 @@ describe('CartesianTools', () => {
                 position: CartesianPixelPosition.SE,
             });
 
-            // 179.995 -> pixel with SW at 180.0, SE = 180.0 + 0.01 = 180.01
+            // 179.995 -> pixel with SW at 179.99, SE = 179.99 + 0.01 = 180.0
             expect(result.lat).eq(0.0);
-            expect(result.lng).eq(180.01);
+            expect(result.lng).eq(180);
         });
 
         /**
@@ -1114,12 +1116,12 @@ describe('CartesianTools', () => {
                 position: CartesianPixelPosition.NE,
             });
 
-            // Center should be midpoint of SW and NE
+            // Center should be midpoint of SW and NE (use closeTo for floating point)
             const expectedLat = (sw.lat + ne.lat) / 2;
             const expectedLng = (sw.lng + ne.lng) / 2;
 
-            expect(result.lat).eq(expectedLat);
-            expect(result.lng).eq(expectedLng);
+            expect(result.lat).closeTo(expectedLat, 1e-10);
+            expect(result.lng).closeTo(expectedLng, 1e-10);
         });
 
         /**
@@ -1188,9 +1190,9 @@ describe('CartesianTools', () => {
                 position: CartesianPixelPosition.C,
             });
 
-            // Center should be midpoint of SW and NE diagonal
-            expect(center.lat).eq((sw.lat + ne.lat) / 2);
-            expect(center.lng).eq((sw.lng + ne.lng) / 2);
+            // Center should be midpoint of SW and NE diagonal (use closeTo for floating point)
+            expect(center.lat).closeTo((sw.lat + ne.lat) / 2, 1e-10);
+            expect(center.lng).closeTo((sw.lng + ne.lng) / 2, 1e-10);
 
             // Also verify with other diagonal (SE and NW)
             const se = cartesianTools.getLatLngFromEarthMap(input, {
@@ -1200,8 +1202,8 @@ describe('CartesianTools', () => {
                 position: CartesianPixelPosition.NW,
             });
 
-            expect(center.lat).eq((se.lat + nw.lat) / 2);
-            expect(center.lng).eq((se.lng + nw.lng) / 2);
+            expect(center.lat).closeTo((se.lat + nw.lat) / 2, 1e-10);
+            expect(center.lng).closeTo((se.lng + nw.lng) / 2, 1e-10);
         });
 
         /**

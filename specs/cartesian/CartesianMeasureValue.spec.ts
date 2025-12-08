@@ -171,5 +171,173 @@ describe('CartesianMeasureValue', () => {
             const minMax = cmv.getMinMaxValues();
             expect(minMax).to.deep.equal({min: 5, max: 20});
         });
+
+        it('should truncate values to specified precision', () => {
+            const values = [
+                new CartesianValue({lat: 0, lng: 0, value: 0.123456}),
+                new CartesianValue({lat: 0, lng: 0, value: 0.654321}),
+                new CartesianValue({lat: 1, lng: 1, value: 1.999999}),
+            ];
+            const cmv = new CartesianMeasureValue({cartesianValues: []});
+            cmv.setCartesianValues(values, {mergeStrategy: MergeStrategy.AVERAGE, valuesPrecision: 4});
+
+            const result = cmv.getCartesianValues();
+            expect(result.length).to.equal(2);
+
+            const v00 = cmv.getCartesianValue({lat: 0, lng: 0});
+            const v11 = cmv.getCartesianValue({lat: 1, lng: 1});
+
+            // (0.123456 + 0.654321) / 2 = 0.388888... truncated to 4 decimals = 0.3888
+            expect(v00?.value).to.equal(0.3888);
+            // 1.999999 truncated to 4 decimals = 1.9999
+            expect(v11?.value).to.equal(1.9999);
+        });
+
+        describe('removeNullValues option', () => {
+            it('should remove values with value === 0 when removeNullValues is true (AVERAGE)', () => {
+                const values = [
+                    new CartesianValue({lat: 0, lng: 0, value: 0}),
+                    new CartesianValue({lat: 0, lng: 0, value: 0}),
+                    new CartesianValue({lat: 1, lng: 1, value: 10}),
+                    new CartesianValue({lat: 2, lng: 2, value: 0}),
+                ];
+                const cmv = new CartesianMeasureValue({cartesianValues: []});
+                cmv.setCartesianValues(values, {
+                    mergeStrategy: MergeStrategy.AVERAGE,
+                    removeNullValues: true,
+                });
+
+                const result = cmv.getCartesianValues();
+                expect(result.length).to.equal(1);
+                expect(cmv.getCartesianValue({lat: 1, lng: 1})?.value).to.equal(10);
+                expect(cmv.getCartesianValue({lat: 0, lng: 0})).to.be.null;
+                expect(cmv.getCartesianValue({lat: 2, lng: 2})).to.be.null;
+            });
+
+            it('should remove values with value === 0 when removeNullValues is true (SUM)', () => {
+                const values = [
+                    new CartesianValue({lat: 0, lng: 0, value: 0}),
+                    new CartesianValue({lat: 1, lng: 1, value: 5}),
+                    new CartesianValue({lat: 1, lng: 1, value: 3}),
+                    new CartesianValue({lat: 2, lng: 2, value: 0}),
+                ];
+                const cmv = new CartesianMeasureValue({cartesianValues: []});
+                cmv.setCartesianValues(values, {
+                    mergeStrategy: MergeStrategy.SUM,
+                    removeNullValues: true,
+                });
+
+                const result = cmv.getCartesianValues();
+                expect(result.length).to.equal(1);
+                expect(cmv.getCartesianValue({lat: 1, lng: 1})?.value).to.equal(8);
+                expect(cmv.getCartesianValue({lat: 0, lng: 0})).to.be.null;
+            });
+
+            it('should remove values with value === 0 when removeNullValues is true (MAX)', () => {
+                const values = [
+                    new CartesianValue({lat: 0, lng: 0, value: 0}),
+                    new CartesianValue({lat: 0, lng: 0, value: 0}),
+                    new CartesianValue({lat: 1, lng: 1, value: 0}),
+                    new CartesianValue({lat: 1, lng: 1, value: 15}),
+                    new CartesianValue({lat: 2, lng: 2, value: 0}),
+                ];
+                const cmv = new CartesianMeasureValue({cartesianValues: []});
+                cmv.setCartesianValues(values, {
+                    mergeStrategy: MergeStrategy.MAX,
+                    removeNullValues: true,
+                });
+
+                const result = cmv.getCartesianValues();
+                expect(result.length).to.equal(1);
+                expect(cmv.getCartesianValue({lat: 1, lng: 1})?.value).to.equal(15);
+                expect(cmv.getCartesianValue({lat: 0, lng: 0})).to.be.null;
+            });
+
+            it('should keep values with value === 0 when removeNullValues is false', () => {
+                const values = [
+                    new CartesianValue({lat: 0, lng: 0, value: 0}),
+                    new CartesianValue({lat: 1, lng: 1, value: 10}),
+                ];
+                const cmv = new CartesianMeasureValue({cartesianValues: []});
+                cmv.setCartesianValues(values, {
+                    mergeStrategy: MergeStrategy.AVERAGE,
+                    removeNullValues: false,
+                });
+
+                const result = cmv.getCartesianValues();
+                expect(result.length).to.equal(2);
+                expect(cmv.getCartesianValue({lat: 0, lng: 0})?.value).to.equal(0);
+                expect(cmv.getCartesianValue({lat: 1, lng: 1})?.value).to.equal(10);
+            });
+
+            it('should keep values with value === 0 when removeNullValues is undefined', () => {
+                const values = [
+                    new CartesianValue({lat: 0, lng: 0, value: 0}),
+                    new CartesianValue({lat: 1, lng: 1, value: 10}),
+                ];
+                const cmv = new CartesianMeasureValue({cartesianValues: []});
+                cmv.setCartesianValues(values, {mergeStrategy: MergeStrategy.AVERAGE});
+
+                const result = cmv.getCartesianValues();
+                expect(result.length).to.equal(2);
+                expect(cmv.getCartesianValue({lat: 0, lng: 0})?.value).to.equal(0);
+            });
+
+            it('should handle all zero values with removeNullValues true', () => {
+                const values = [
+                    new CartesianValue({lat: 0, lng: 0, value: 0}),
+                    new CartesianValue({lat: 1, lng: 1, value: 0}),
+                    new CartesianValue({lat: 2, lng: 2, value: 0}),
+                ];
+                const cmv = new CartesianMeasureValue({cartesianValues: []});
+                cmv.setCartesianValues(values, {
+                    mergeStrategy: MergeStrategy.SUM,
+                    removeNullValues: true,
+                });
+
+                const result = cmv.getCartesianValues();
+                expect(result.length).to.equal(0);
+            });
+
+            it('should remove values that become 0 after truncation when removeNullValues is true', () => {
+                const values = [
+                    new CartesianValue({lat: 0, lng: 0, value: 0.0001}),
+                    new CartesianValue({lat: 0, lng: 0, value: 0.0002}),
+                    new CartesianValue({lat: 1, lng: 1, value: 1.5}),
+                ];
+                const cmv = new CartesianMeasureValue({cartesianValues: []});
+                cmv.setCartesianValues(values, {
+                    mergeStrategy: MergeStrategy.AVERAGE,
+                    valuesPrecision: 2,
+                    removeNullValues: true,
+                });
+
+                const result = cmv.getCartesianValues();
+                // (0.0001 + 0.0002) / 2 = 0.00015 -> truncated to 2 decimals = 0.00 -> removed
+                expect(result.length).to.equal(1);
+                expect(cmv.getCartesianValue({lat: 1, lng: 1})?.value).to.equal(1.5);
+                expect(cmv.getCartesianValue({lat: 0, lng: 0})).to.be.null;
+            });
+
+            it('should keep values that become 0 after truncation when removeNullValues is false', () => {
+                const values = [
+                    new CartesianValue({lat: 0, lng: 0, value: 0.0001}),
+                    new CartesianValue({lat: 0, lng: 0, value: 0.0002}),
+                    new CartesianValue({lat: 1, lng: 1, value: 1.5}),
+                ];
+                const cmv = new CartesianMeasureValue({cartesianValues: []});
+                cmv.setCartesianValues(values, {
+                    mergeStrategy: MergeStrategy.AVERAGE,
+                    valuesPrecision: 2,
+                    removeNullValues: false,
+                });
+
+                const result = cmv.getCartesianValues();
+                // (0.0001 + 0.0002) / 2 = 0.00015 -> truncated to 2 decimals = 0.00 -> kept
+                expect(result.length).to.equal(2);
+                expect(cmv.getCartesianValue({lat: 1, lng: 1})?.value).to.equal(1.5);
+                expect(cmv.getCartesianValue({lat: 0, lng: 0})?.value).to.equal(0);
+            });
+        });
     });
 });

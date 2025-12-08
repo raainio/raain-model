@@ -485,7 +485,9 @@ export class CartesianTools {
     public getScaleLatLngFromEarth(fromLatLng: LatLng): LatLng {
         const earthMap = EarthMap.initialize(this);
 
-        const posLat = Math.round((90 + fromLatLng.lat) / earthMap.latitudeScale);
+        // Use floor (not round) to find the pixel that CONTAINS the point
+        // Add epsilon to handle floating point precision (e.g., 13025.999... → 13026)
+        const posLat = Math.floor((90 + fromLatLng.lat) / earthMap.latitudeScale + 1e-9);
         const latitudeLongitudeScale = earthMap.latitudeLongitudeScales[posLat];
         return new LatLng({lat: this.scale, lng: latitudeLongitudeScale});
     }
@@ -496,11 +498,14 @@ export class CartesianTools {
     ): LatLng {
         const earthMap = EarthMap.initialize(this);
 
-        const posLat = Math.round((90 + fromLatLng.lat) / earthMap.latitudeScale);
+        // Use floor (not round) to find the pixel that CONTAINS the point
+        // Add epsilon to handle floating point precision (e.g., 13025.999... → 13026)
+        const posLat = Math.floor((90 + fromLatLng.lat) / earthMap.latitudeScale + 1e-9);
         const latSW = CartesianTools.LimitWithPrecision(earthMap.latitudes[posLat]);
         const latitudeLongitudeScale = earthMap.latitudeLongitudeScales[posLat];
 
-        const lngPos = Math.round(fromLatLng.lng / latitudeLongitudeScale);
+        // Use floor (not round) to find the pixel that CONTAINS the point
+        const lngPos = Math.floor(fromLatLng.lng / latitudeLongitudeScale + 1e-9);
         const lngSW = CartesianTools.LimitWithPrecision(lngPos * latitudeLongitudeScale);
 
         // Default position is south-west corner

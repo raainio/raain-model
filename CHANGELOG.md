@@ -7,12 +7,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- `CartesianMeasureValue.setCartesianValues()` new options:
+    - `valuesPrecision`: Truncate values to specified decimal places
+    - `removeNullValues`: Filter out zero/null values from merged results
+
+### Fixed
+
+- `CartesianTools.getScaleLatLngFromEarth()` and `getLatLngFromEarth()`: Changed from `Math.round` to
+  `Math.floor` with
+  epsilon handling to correctly find the pixel that contains a point (fixes floating point precision issues like
+  13025.999... → 13026)
+
+## [3.1.9] - 2025-12-05
+
 ### Changed
 
-- **BREAKING:** `QualityIndicator` interface updated:
-  - Replaced `version` field with `computingVersion` and `qualityVersion` (parsed from `C<version>-Q<version>` format)
-  - Added `lastUpdatedAt` field (ISO date string - max createdAt of records in period)
-  - Results are now sorted by `lastUpdatedAt` descending (most recent first)
+- `QualityIndicator` interface updated:
+    - Replaced `version` field with `computingVersion` and `qualityVersion` (parsed from `C<version>-Q<version>` format)
+    - Added `lastUpdatedAt` field (ISO date string - max createdAt of records in period)
+    - Results are now sorted by `lastUpdatedAt` descending (most recent first)
 
 ## [3.1.8] - 2025-12-05
 
@@ -531,7 +546,45 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Initial release
 - First extracts from RAAIN services
 
-[Unreleased]: https://github.com/raainio/raain-model/compare/v3.0.23...HEAD
+[Unreleased]: https://github.com/raainio/raain-model/compare/v3.1.10...HEAD
+
+[3.1.10]: https://github.com/raainio/raain-model/compare/v3.1.9...v3.1.10
+
+[3.1.9]: https://github.com/raainio/raain-model/compare/v3.1.8...v3.1.9
+
+[3.1.8]: https://github.com/raainio/raain-model/compare/v3.1.7...v3.1.8
+
+[3.1.7]: https://github.com/raainio/raain-model/compare/v3.1.6...v3.1.7
+
+[3.1.6]: https://github.com/raainio/raain-model/compare/v3.1.4...v3.1.6
+
+[3.1.4]: https://github.com/raainio/raain-model/compare/v3.1.2...v3.1.4
+
+[3.1.2]: https://github.com/raainio/raain-model/compare/v3.1.1...v3.1.2
+
+[3.1.1]: https://github.com/raainio/raain-model/compare/v3.0.37...v3.1.1
+
+[3.0.37]: https://github.com/raainio/raain-model/compare/v3.0.36...v3.0.37
+
+[3.0.36]: https://github.com/raainio/raain-model/compare/v3.0.34...v3.0.36
+
+[3.0.34]: https://github.com/raainio/raain-model/compare/v3.0.32...v3.0.34
+
+[3.0.32]: https://github.com/raainio/raain-model/compare/v3.0.30...v3.0.32
+
+[3.0.30]: https://github.com/raainio/raain-model/compare/v3.0.29...v3.0.30
+
+[3.0.29]: https://github.com/raainio/raain-model/compare/v3.0.28...v3.0.29
+
+[3.0.28]: https://github.com/raainio/raain-model/compare/v3.0.27...v3.0.28
+
+[3.0.27]: https://github.com/raainio/raain-model/compare/v3.0.26...v3.0.27
+
+[3.0.26]: https://github.com/raainio/raain-model/compare/v3.0.25...v3.0.26
+
+[3.0.25]: https://github.com/raainio/raain-model/compare/v3.0.24...v3.0.25
+
+[3.0.24]: https://github.com/raainio/raain-model/compare/v3.0.23...v3.0.24
 
 [3.0.23]: https://github.com/raainio/raain-model/compare/v3.0.22...v3.0.23
 
