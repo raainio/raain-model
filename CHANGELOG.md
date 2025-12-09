@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [3.1.11] - 2025-12-09
+
+### Added
+
+- `RaainApiRainsProgressResponse.inQueue` field to track queued jobs count
+
+## [3.1.10] - 2025-12-08
+
 ### Added
 
 - `CartesianMeasureValue.setCartesianValues()` new options:
@@ -546,7 +554,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Initial release
 - First extracts from RAAIN services
 
-[Unreleased]: https://github.com/raainio/raain-model/compare/v3.1.10...HEAD
+[Unreleased]: https://github.com/raainio/raain-model/compare/v3.1.11...HEAD
+
+[3.1.11]: https://github.com/raainio/raain-model/compare/v3.1.10...v3.1.11
 
 [3.1.10]: https://github.com/raainio/raain-model/compare/v3.1.9...v3.1.10
 

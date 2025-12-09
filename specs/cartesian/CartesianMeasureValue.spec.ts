@@ -179,7 +179,10 @@ describe('CartesianMeasureValue', () => {
                 new CartesianValue({lat: 1, lng: 1, value: 1.999999}),
             ];
             const cmv = new CartesianMeasureValue({cartesianValues: []});
-            cmv.setCartesianValues(values, {mergeStrategy: MergeStrategy.AVERAGE, valuesPrecision: 4});
+            cmv.setCartesianValues(values, {
+                mergeStrategy: MergeStrategy.AVERAGE,
+                valuesPrecision: 4,
+            });
 
             const result = cmv.getCartesianValues();
             expect(result.length).to.equal(2);
