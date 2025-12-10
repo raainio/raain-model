@@ -7,15 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- RainComputationCumulative windowInMinutes
+
 ## [3.1.11] - 2025-12-09
 
 ### Added
 
 - `RaainApiRainsProgressResponse.inQueue` field to track queued jobs count
-
-### Added
-
-- RainComputationCumulative windowInMinutes
 
 ## [3.1.10] - 2025-12-08
 
