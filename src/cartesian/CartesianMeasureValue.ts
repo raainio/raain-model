@@ -131,6 +131,8 @@ export class CartesianMeasureValue implements ICartesianMeasureValue {
                     }
                 }
             }
+        } else {
+            // TODO if only  valuesPrecision?: number; or  removeNullValues?: boolean; ?
         }
 
         this.cartesianValues = merged;

@@ -13,6 +13,7 @@ export class RainComputationCumulative extends RainComputationAbstract {
 
     public provider: string;
     public timeStepInMinutes: number;
+    public windowInMinutes: number;
 
     constructor(json: {
         id: string;
@@ -22,6 +23,7 @@ export class RainComputationCumulative extends RainComputationAbstract {
         provider: string;
         timeStepInMinutes: number;
 
+        windowInMinutes?: number;
         links?: Link[] | RaainNode[];
         version?: string;
         quality?: number;
@@ -39,6 +41,10 @@ export class RainComputationCumulative extends RainComputationAbstract {
         this.timeStepInMinutes = json.timeStepInMinutes;
         this.provider = json.provider;
         this.cumulative = json.cumulative;
+        this.windowInMinutes =
+            typeof json.windowInMinutes !== 'undefined'
+                ? json.windowInMinutes
+                : json.timeStepInMinutes;
     }
 
     protected _cumulative?: RainCartesianMeasureValue;
