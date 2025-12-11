@@ -9,6 +9,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- RaainApiRainsCumulativeCumulativesComparesRequest and RaainApiRainsCumulativeCumulativesComparesResponse
+
+## [3.1.12] - 2025-12-10
+
+### Added
+
 - RainComputationCumulative windowInMinutes
 
 ## [3.1.11] - 2025-12-09

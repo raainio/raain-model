@@ -42,6 +42,8 @@ export * from './rains/RaainApiRainsCumulativeCartesianMapResponse';
 export * from './rains/RaainApiRainsCumulativeCumulativeResponse';
 export * from './rains/RaainApiRainsCumulativeComparesRequest';
 export * from './rains/RaainApiRainsCumulativeComparesResponse';
+export * from './rains/RaainApiRainsCumulativeCumulativesComparesRequest';
+export * from './rains/RaainApiRainsCumulativeCumulativesComparesResponse';
 export * from './rains/RaainApiRainsProgressResponse';
 export * from './rains/RaainApiRainsProvidersResponse';
 export * from './rains/RaainApiRainsIndicatorsRequest';
