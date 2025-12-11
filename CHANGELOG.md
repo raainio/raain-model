@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [3.1.13] - 2025-12-11
+
 ### Added
 
 - RaainApiRainsCumulativeCumulativesComparesRequest and RaainApiRainsCumulativeCumulativesComparesResponse
