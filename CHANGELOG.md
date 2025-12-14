@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [3.1.14] - 2025-12-14
+
+### Added
+
+- `RaainApiRainsFindOneTimeframeCumulativeRequest.windowInMinutes` optional query parameter
+- `RainComputationCumulative.toJSON()` now includes `windowInMinutes` in output
+
+## [3.1.13] - 2025-12-11
+
 ### Added
 
 - RaainApiRainsCumulativeCumulativesComparesRequest and RaainApiRainsCumulativeCumulativesComparesResponse
@@ -94,7 +103,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- CartesianMeasureValue.setCartesianValues with mergeStrategy; breaking change => 3.1.x
+- CartesianMeasureValue.setCartesianValues with mergeStrategy; **breaking** change → 3.1.x
 
 ## [3.0.37] - 2025-10-27
 
@@ -564,7 +573,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Initial release
 - First extracts from RAAIN services
 
-[Unreleased]: https://github.com/raainio/raain-model/compare/v3.1.11...HEAD
+[Unreleased]: https://github.com/raainio/raain-model/compare/v3.1.14...HEAD
+
+[3.1.14]: https://github.com/raainio/raain-model/compare/v3.1.13...v3.1.14
+
+[3.1.13]: https://github.com/raainio/raain-model/compare/v3.1.12...v3.1.13
+
+[3.1.12]: https://github.com/raainio/raain-model/compare/v3.1.11...v3.1.12
 
 [3.1.11]: https://github.com/raainio/raain-model/compare/v3.1.10...v3.1.11
 

@@ -1,7 +1,6 @@
-import {Link, RaainNode} from '../organization';
+import {Link, RaainNode, RaainNodeType} from '../organization';
 import {RainCartesianMeasureValue} from '../cartesian';
 import {RainComputationAbstract} from './RainComputationAbstract';
-import {RaainNodeType} from '../organization/RaainNodeType';
 
 /**
  * @external
@@ -65,6 +64,7 @@ export class RainComputationCumulative extends RainComputationAbstract {
             ...json,
             provider: this.provider,
             timeStepInMinutes: this.timeStepInMinutes,
+            windowInMinutes: this.windowInMinutes,
             cumulative: this._cumulative?.toJSON(options),
         };
     }

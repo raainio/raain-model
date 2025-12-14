@@ -6,4 +6,5 @@ export interface RaainApiRainsFindOneTimeframeCumulativeRequest {
     provider: string;
     timeStepInMinutes: string;
     forced?: string;
+    windowInMinutes?: string;
 }
