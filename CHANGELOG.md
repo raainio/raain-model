@@ -42,8 +42,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
-- `CartesianTools.getScaleLatLngFromEarth()` and `getLatLngFromEarth()`: Changed from `Math.round` to
-  `Math.floor` with
+- **Breaking** (but we keep version) `CartesianTools.getScaleLatLngFromEarth()` and `getLatLngFromEarth()`:
+  Changed from `Math.round` to `Math.floor` with
   epsilon handling to correctly find the pixel that contains a point (fixes floating point precision issues like
   13025.999... → 13026)
 
