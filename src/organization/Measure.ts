@@ -1,7 +1,7 @@
 import {IPolarMeasureValue} from '../polar';
 import {RaainNode} from './RaainNode';
 import {ICartesianMeasureValue} from '../cartesian';
-import {calculateMinMax} from '../utils';
+import {Tools} from '../utils';
 
 export class Measure extends RaainNode {
     public date: Date;
@@ -71,7 +71,7 @@ export class Measure extends RaainNode {
 
         // For number[] type
         if (typeof this.values[0] === 'number') {
-            return calculateMinMax(this.values as number[]);
+            return Tools.calculateMinMax(this.values as number[]);
         }
 
         // Helper function to aggregate min/max values from an array of objects
