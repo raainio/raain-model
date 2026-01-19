@@ -1,7 +1,7 @@
 import {ICartesianMeasureValue} from './ICartesianMeasureValue';
 import {CartesianValue} from './CartesianValue';
 import {LatLng} from './LatLng';
-import {calculateMinMax} from '../utils';
+import {Tools} from '../utils';
 import {CartesianTools} from './CartesianTools';
 import {MergeStrategy} from '../rain';
 
@@ -47,7 +47,7 @@ export class CartesianMeasureValue implements ICartesianMeasureValue {
 
         const allValues = values.map((v) => v.value).filter((v) => v !== null && v !== undefined);
 
-        return calculateMinMax(allValues);
+        return Tools.calculateMinMax(allValues);
     }
 
     getCartesianValuesStringified(): string {

@@ -48,6 +48,10 @@ export * from './rains/RaainApiRainsProgressResponse';
 export * from './rains/RaainApiRainsProvidersResponse';
 export * from './rains/RaainApiRainsIndicatorsRequest';
 export * from './rains/RaainApiRainsIndicatorsResponse';
+export * from './rains/RaainApiRainsCumulativesListRequest';
+export * from './rains/RaainApiRainsCumulativesListResponse';
+export * from './rains/RaainApiRainsCumulativesCreateRequest';
+export * from './rains/RaainApiRainsCumulativesCreateResponse';
 
 // Notifications
 export * from './notifications/RaainApiNotificationsAddRequestBody';

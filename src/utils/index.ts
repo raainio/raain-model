@@ -1,1 +1,1 @@
-export * from './minMaxUtils';
+export * from './Tools';

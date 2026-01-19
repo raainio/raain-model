@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [3.1.15] - 2026-01-19
+
+### Added
+
+- `RaainApiRainsCumulativesCreateRequest` and `RaainApiRainsCumulativesCreateResponse` for POST /rains/:rainId/cumulatives endpoint
+- `RaainApiRainsCumulativesListRequest` and `RaainApiRainsCumulativesListResponse` for GET /rains/:rainId/cumulatives endpoint
+- `CumulativePeriod` interface for cumulative period metadata
+
 ## [3.1.14] - 2025-12-14
 
 ### Added
@@ -42,8 +50,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
-- `CartesianTools.getScaleLatLngFromEarth()` and `getLatLngFromEarth()`: Changed from `Math.round` to
-  `Math.floor` with
+- **Breaking** (but we keep version) `CartesianTools.getScaleLatLngFromEarth()` and `getLatLngFromEarth()`:
+  Changed from `Math.round` to `Math.floor` with
   epsilon handling to correctly find the pixel that contains a point (fixes floating point precision issues like
   13025.999... → 13026)
 
@@ -573,7 +581,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Initial release
 - First extracts from RAAIN services
 
-[Unreleased]: https://github.com/raainio/raain-model/compare/v3.1.14...HEAD
+[Unreleased]: https://github.com/raainio/raain-model/compare/v3.1.15...HEAD
+
+[3.1.15]: https://github.com/raainio/raain-model/compare/v3.1.14...v3.1.15
 
 [3.1.14]: https://github.com/raainio/raain-model/compare/v3.1.13...v3.1.14
 
