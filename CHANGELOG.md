@@ -7,6 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [3.1.16] - 2026-01-21
+
+### Added
+
+- `PolarMeasureValueMap.iterate()` now supports `minExcludedValue` option to skip values below a threshold
+- Performance logging infrastructure in `PolarMeasureValueMap` (controlled by `shouldLogPerf` flag)
+- Performance spec tests for `PolarMeasureValueMap`
+
+### Fixed
+
+- Added null checks for `measureValuePolarContainer` in `PolarMeasureValue.getFiltered()` and `PolarMeasureValueMap.filterWithoutNullValues()`
+- `PolarMeasureValueMap.countPolar()` now handles containers without `getPolarEdgesCount` method
+
 ## [3.1.15] - 2026-01-19
 
 ### Added

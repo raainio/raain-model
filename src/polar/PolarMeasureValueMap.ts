@@ -3,17 +3,35 @@ import {PolarValue} from './PolarValue';
 import {PolarMeasureValue} from './PolarMeasureValue';
 import {PolarFilter} from './PolarFilter';
 
+const shouldLogPerf = false;
+
 /**
  * PolarMeasureValue Map tools to optimize get/set
  */
 export class PolarMeasureValueMap {
     protected builtMeasureValuePolarContainers: MeasureValuePolarContainer[] = [];
+    private buildTimeMs: number = 0;
 
     constructor(
         public polarMeasureValue: PolarMeasureValue,
         public buildPolarFilter: PolarFilter = new PolarFilter()
     ) {
+        const start = Date.now();
         this.buildFromPolar();
+        this.buildTimeMs = Date.now() - start;
+
+        if (shouldLogPerf && this.buildTimeMs > 50) {
+            const sourceAz = this.polarMeasureValue?.getAzimuthsCount() || 0;
+            const sourceEdges = this.polarMeasureValue?.getPolarEdgesCount() || 0;
+            const builtAz = this.builtMeasureValuePolarContainers.length;
+            const builtCells = this.countPolar();
+            console.log(
+                `(raain-model) perf: PolarMeasureValueMap.constructor ` +
+                    `buildTime=${this.buildTimeMs}ms ` +
+                    `source=[${sourceAz}az x ${sourceEdges}edges] ` +
+                    `built=[${builtAz}az x ${builtCells}cells]`
+            );
+        }
     }
 
     static Duplicate(polarMeasureValueMap: PolarMeasureValueMap): PolarMeasureValueMap {
@@ -61,6 +79,12 @@ export class PolarMeasureValueMap {
         const newPolarMeasureValueMap = new PolarMeasureValueMap(null);
         const measureValuePolarContainers = [];
         for (const measureValuePolarContainer of this.builtMeasureValuePolarContainers) {
+            if (!measureValuePolarContainer?.getFiltered) {
+                console.warn(
+                    '### raain-model > missing measureValuePolarContainer?.getFiltered ? '
+                );
+                continue;
+            }
             const duplicateMeasureValuePolarContainer = measureValuePolarContainer.getFiltered({
                 nullValues: false,
             });
@@ -173,6 +197,9 @@ export class PolarMeasureValueMap {
         });
     }
 
+    // Iterate over polar values with optional filtering
+    // - iterateOnEachEdge=false (default): azimuth-first (radial lines), more efficient
+    // - iterateOnEachEdge=true: edge-first (concentric circles), useful for ring-based operations
     iterate(
         onEachValue: (
             polarValue: PolarValue,
@@ -183,8 +210,10 @@ export class PolarMeasureValueMap {
         options?: {
             iterateOnEachEdge?: boolean;
             polarFilter?: PolarFilter;
+            minExcludedValue?: number; // Skip values <= minExcludedValue (e.g., 0 to skip zeros)
         }
     ): void | Promise<void> {
+        const start = Date.now();
         const azimuthMin =
             typeof options?.polarFilter?.azimuthMin !== 'undefined'
                 ? options?.polarFilter.azimuthMin
@@ -200,18 +229,76 @@ export class PolarMeasureValueMap {
                 ? options?.polarFilter.edgeMax
                 : this.polarMeasureValue.getPolarEdgesCount();
 
+        const mode = options?.iterateOnEachEdge ? 'edge-first' : 'azimuth-first';
+        const totalCells = this.countPolar();
+        let callCount = 0;
+
+        const wrappedCallback = (
+            polarValue: PolarValue,
+            azimuthIndex: number,
+            edgeIndex: number,
+            valueSetter: (newValue: number) => void
+        ) => {
+            callCount++;
+            return onEachValue(polarValue, azimuthIndex, edgeIndex, valueSetter);
+        };
+
+        const logPerf = () => {
+            if (!shouldLogPerf) {
+                return;
+            }
+
+            const timeMs = Date.now() - start;
+            if (timeMs > 50) {
+                const cellsPerMs = timeMs > 0 ? Math.round(totalCells / timeMs) : 0;
+                console.log(
+                    `(raain-model) perf: PolarMeasureValueMap.iterate ` +
+                        `time=${timeMs}ms ` +
+                        `cells=${totalCells} ` +
+                        `callCount=${callCount} ` +
+                        `rate=${cellsPerMs}cells/ms ` +
+                        `mode=${mode} ` +
+                        `filter=[az:${azimuthMin}-${azimuthMax}, edge:${edgeMin}-${edgeMax}]`
+                );
+            }
+        };
+
+        const minExcludedValue = options?.minExcludedValue;
+
+        let result: void | Promise<void>;
         if (options?.iterateOnEachEdge) {
-            return this.iterateOnEachEdge(azimuthMin, azimuthMax, edgeMin, edgeMax, onEachValue);
+            result = this.iterateOnEachEdge(
+                azimuthMin,
+                azimuthMax,
+                edgeMin,
+                edgeMax,
+                wrappedCallback,
+                minExcludedValue
+            );
         } else {
-            return this.iterateOnEachAzimuth(azimuthMin, azimuthMax, edgeMin, edgeMax, onEachValue);
+            result = this.iterateOnEachAzimuth(
+                azimuthMin,
+                azimuthMax,
+                edgeMin,
+                edgeMax,
+                wrappedCallback,
+                minExcludedValue
+            );
+        }
+
+        if (result instanceof Promise) {
+            return result.then(() => {
+                logPerf();
+            });
+        } else {
+            logPerf();
         }
     }
 
     countPolar() {
-        return this.builtMeasureValuePolarContainers.reduce(
-            (p, c) => p + c.getPolarEdgesCount(),
-            0
-        );
+        return this.builtMeasureValuePolarContainers.reduce((p, c) => {
+            return p + (c.getPolarEdgesCount ? c.getPolarEdgesCount() : c.polarEdges.length);
+        }, 0);
     }
 
     countPolarWithEdgeFilter(filter: any) {
@@ -260,6 +347,11 @@ export class PolarMeasureValueMap {
         this.builtMeasureValuePolarContainers = newMeasureValuePolarContainers;
     }
 
+    // Builds optimized containers from source PolarMeasureValue
+    // NOTE: Creates FULL edge arrays from edgeMin to edgeMax (based on polarEdgesCount),
+    // even if source containers have fewer edges. This means sparse edge data
+    // becomes dense after building, impacting iteration performance.
+    // Potential optimization: preserve source container edge bounds instead of expanding.
     protected buildFromPolar() {
         if (!this.polarMeasureValue) {
             return [];
@@ -322,6 +414,30 @@ export class PolarMeasureValueMap {
         }
 
         this.builtMeasureValuePolarContainers = builtMeasureValuePolarContainers;
+
+        // Log if significant data expansion occurred
+        if (shouldLogPerf) {
+            const sourceContainers = this.polarMeasureValue.getPolars();
+            const sourceActualCells = sourceContainers.reduce(
+                (sum, c) => sum + c.polarEdges.length,
+                0
+            );
+            const builtCells = builtMeasureValuePolarContainers.reduce(
+                (sum, c) => sum + c.polarEdges.length,
+                0
+            );
+            const expansionRatio = sourceActualCells > 0 ? builtCells / sourceActualCells : 0;
+
+            if (expansionRatio > 2 && builtCells > 10000) {
+                console.log(
+                    `(raain-model) perf: PolarMeasureValueMap.buildFromPolar ` +
+                        `expansion=${expansionRatio.toFixed(1)}x ` +
+                        `source=${sourceActualCells}cells(${sourceContainers.length}az) ` +
+                        `built=${builtCells}cells(${builtMeasureValuePolarContainers.length}az) ` +
+                        `filter=[az:${azimuthMin}-${azimuthMax}, edge:${edgeMin}-${edgeMax}]`
+                );
+            }
+        }
     }
 
     protected updatedAzimuth(azimuthIndexToUpdate: number) {
@@ -379,6 +495,9 @@ export class PolarMeasureValueMap {
         return {edgeIndex, distanceInMeters};
     }
 
+    // Azimuth-first iteration (default): iterates radial lines one by one
+    // Order: Az0-Edge0, Az0-Edge1, Az0-Edge2, ..., Az1-Edge0, Az1-Edge1, ...
+    // Performance: O(containers * edges_per_container) - efficient, only iterates actual data
     protected iterateOnEachAzimuth(
         azimuthMin: number,
         azimuthMax: number,
@@ -389,10 +508,12 @@ export class PolarMeasureValueMap {
             azimuthIndex: number,
             edgeIndex: number,
             valueSetter: (newValue: number) => void
-        ) => void | Promise<void>
+        ) => void | Promise<void>,
+        minExcludedValue?: number
     ) {
         const promises: Promise<void>[] = [];
         let isAsync = false;
+        const hasMinFilter = typeof minExcludedValue === 'number';
 
         let azimuthAbsoluteIndex = -1;
         let updatedAzimuth = -1;
@@ -414,6 +535,11 @@ export class PolarMeasureValueMap {
             const azimuthInDegrees = measureValuePolarContainer.azimuth;
             const polarEdges = measureValuePolarContainer.polarEdges;
             for (const [edgeIndex, value] of polarEdges.entries()) {
+                // Skip values <= minExcludedValue
+                if (hasMinFilter && value <= minExcludedValue) {
+                    continue;
+                }
+
                 const updated = this.updatedEdge(edgeIndex, measureValuePolarContainer, {
                     reverse: true,
                 });
@@ -453,6 +579,10 @@ export class PolarMeasureValueMap {
         }
     }
 
+    // Edge-first iteration: iterates concentric circles one by one
+    // Order: Az0-Edge0, Az1-Edge0, Az2-Edge0, ..., Az0-Edge1, Az1-Edge1, ...
+    // Performance: O(edgeRange * containers * edges_per_container) - less efficient
+    // For each target edge, scans ALL containers and ALL their edges to find matches
     protected iterateOnEachEdge(
         azimuthMin: number,
         azimuthMax: number,
@@ -463,10 +593,12 @@ export class PolarMeasureValueMap {
             azimuthIndex: number,
             edgeIndex: number,
             valueSetter: (newValue: number) => void
-        ) => void | Promise<void>
+        ) => void | Promise<void>,
+        minExcludedValue?: number
     ) {
         const promises: Promise<void>[] = [];
         let isAsync = false;
+        const hasMinFilter = typeof minExcludedValue === 'number';
 
         for (let edge = edgeMin; edge <= edgeMax; edge++) {
             let azimuthAbsoluteIndex = -1;
@@ -490,6 +622,11 @@ export class PolarMeasureValueMap {
                 const polarEdges = measureValuePolarContainer.polarEdges;
 
                 for (const [edgeIndex, value] of polarEdges.entries()) {
+                    // Skip values <= minExcludedValue
+                    if (hasMinFilter && value <= minExcludedValue) {
+                        continue;
+                    }
+
                     const updated = this.updatedEdge(edgeIndex, measureValuePolarContainer, {
                         reverse: true,
                     });

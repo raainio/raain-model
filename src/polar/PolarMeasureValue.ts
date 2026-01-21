@@ -288,6 +288,10 @@ export class PolarMeasureValue implements IPolarMeasureValue {
 
         let measureValuePolarContainers = [];
         for (const measureValuePolarContainer of this.measureValuePolarContainers) {
+            if (!measureValuePolarContainer) {
+                console.warn('### raain-model > missing measureValuePolarContainer ? ');
+                continue;
+            }
             let filteredMeasureValuePolarContainer = measureValuePolarContainer;
             if (measureValuePolarContainer.getFiltered) {
                 filteredMeasureValuePolarContainer =
