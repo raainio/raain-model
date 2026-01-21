@@ -594,7 +594,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Initial release
 - First extracts from RAAIN services
 
-[Unreleased]: https://github.com/raainio/raain-model/compare/v3.1.15...HEAD
+[Unreleased]: https://github.com/raainio/raain-model/compare/v3.1.16...HEAD
+
+[3.1.16]: https://github.com/raainio/raain-model/compare/v3.1.15...v3.1.16
 
 [3.1.15]: https://github.com/raainio/raain-model/compare/v3.1.14...v3.1.15
 
