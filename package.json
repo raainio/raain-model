@@ -1,6 +1,6 @@
 {
     "name": "raain-model",
-    "version": "3.1.17",
+    "version": "3.1.18",
     "author": "contact@radartorain.com",
     "homepage": "https://github.com/raainio/raain-model",
     "description": "radartorain.com api model",
@@ -26,7 +26,7 @@
         "bp:main:package": "git checkout package && git merge main -m \"$(git log -1 --pretty=%B main)\" && git push --set-upstream origin package && git checkout main",
         "build": "npm run build-dist",
         "build-dist": "rm -rf dist/ && npx tsc && cp package.json dist/ && cp *.md dist/",
-        "test": "nyc mocha --require ts-node/register 'specs/**/**.spec.ts'",
+        "test": "mocha --require ts-node/register 'specs/**/**.spec.ts'",
         "docs": "typedoc --out docs src/",
         "docs:serve": "npx serve docs"
     },

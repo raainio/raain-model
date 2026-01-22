@@ -4,4 +4,7 @@ export interface RaainApiRainsCumulativesListRequest {
     provider?: string;
     isReady?: boolean;
     forced?: boolean;
+    detailed?: boolean;
+    page?: number;
+    limit?: number;
 }
