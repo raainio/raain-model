@@ -11,8 +11,11 @@ export class RainComputationCumulative extends RainComputationAbstract {
     public static TYPE = RaainNodeType.RainComputationCumulative;
 
     public provider: string;
-    public timeStepInMinutes: number;
+    // cumulative period (60 x N minutes to get hours of cumulative)
+    // meaning that => this.date - this.windowInMinutes = beginning of the period
     public windowInMinutes: number;
+    // comparison time step
+    public timeStepInMinutes: number;
 
     constructor(json: {
         id: string;
@@ -20,9 +23,10 @@ export class RainComputationCumulative extends RainComputationAbstract {
         isReady: boolean;
         cumulative: RainCartesianMeasureValue;
         provider: string;
-        timeStepInMinutes: number;
+        windowInMinutes: number;
 
-        windowInMinutes?: number;
+        timeStepInMinutes?: number;
+
         links?: Link[] | RaainNode[];
         version?: string;
         quality?: number;
@@ -37,13 +41,13 @@ export class RainComputationCumulative extends RainComputationAbstract {
         originalDBZMax?: number;
     }) {
         super(json);
-        this.timeStepInMinutes = json.timeStepInMinutes;
+        this.windowInMinutes = json.windowInMinutes;
         this.provider = json.provider;
         this.cumulative = json.cumulative;
-        this.windowInMinutes =
-            typeof json.windowInMinutes !== 'undefined'
-                ? json.windowInMinutes
-                : json.timeStepInMinutes;
+        this.timeStepInMinutes =
+            typeof json.timeStepInMinutes !== 'undefined'
+                ? json.timeStepInMinutes
+                : json.windowInMinutes;
     }
 
     protected _cumulative?: RainCartesianMeasureValue;

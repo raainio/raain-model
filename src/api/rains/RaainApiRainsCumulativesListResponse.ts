@@ -1,8 +1,7 @@
 // GET /rains/:rainId/cumulatives response
+// provider/timeStepInMinutes are for quality comparison only, not cumulative images
 export interface CumulativePeriod {
     windowInMinutes: number;
-    provider: string;
-    timeStepInMinutes: number;
     periodBegin: string;
     periodEnd: string;
     count: number;
@@ -18,8 +17,6 @@ export interface IndividualCumulative {
     id: string;
     date: string;
     windowInMinutes: number;
-    provider: string;
-    timeStepInMinutes: number;
 }
 
 // Pagination info

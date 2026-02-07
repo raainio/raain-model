@@ -27,6 +27,7 @@ describe('RainComputationCumulative', () => {
             date: new Date(1720000000000),
             isReady: true,
             provider: 'test',
+            windowInMinutes: 60,
             timeStepInMinutes: 5,
             cumulative,
             version: '1.2.3',
@@ -46,6 +47,7 @@ describe('RainComputationCumulative', () => {
             date: new Date(1720000000000),
             isReady: false,
             provider: 'test',
+            windowInMinutes: 60,
             timeStepInMinutes: 5,
             cumulative,
         });
@@ -64,6 +66,7 @@ describe('RainComputationCumulative', () => {
             date: new Date(),
             isReady: false,
             provider: 'test',
+            windowInMinutes: 60,
             timeStepInMinutes: 5,
             cumulative: buildCumulative(),
         });

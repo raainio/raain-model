@@ -7,4 +7,6 @@ export interface RaainApiRainsCumulativesListRequest {
     detailed?: boolean;
     page?: number;
     limit?: number;
+    periodBegin?: string;
+    periodEnd?: string;
 }

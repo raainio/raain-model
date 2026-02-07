@@ -7,7 +7,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [3.1.17] - 2026-01-21
+## [3.1.19] - 2026-02-07
+
+### Changed
+
+- `RainComputationCumulative`: `windowInMinutes` is now required, `timeStepInMinutes` is now optional (defaults to
+  `windowInMinutes`)
+- `RainComputationAbstract`: quality parsing now preserves any numeric value instead of clamping negatives to -1
+- `RaainApiRainsCumulativeCumulativesComparesRequest`: replaced `cumulativeHours` with `provider` and
+  `timeStepInMinutes`
+- `CumulativePeriod` and `IndividualCumulative`: removed `provider` and `timeStepInMinutes` (quality comparison only,
+  not cumulative images)
+- `RaainApiRainsCumulativesListRequest`: added `periodBegin` and `periodEnd` optional query parameters
+- `CartesianValue`: documented SW corner pixel positioning convention
+
+## [3.1.18] - 2026-01-22
 
 ### Fixed
 
@@ -23,15 +37,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
-- Added null checks for `measureValuePolarContainer` in `PolarMeasureValue.getFiltered()` and `PolarMeasureValueMap.filterWithoutNullValues()`
+- Added null checks for `measureValuePolarContainer` in `PolarMeasureValue.getFiltered()` and
+  `PolarMeasureValueMap.filterWithoutNullValues()`
 - `PolarMeasureValueMap.countPolar()` now handles containers without `getPolarEdgesCount` method
 
 ## [3.1.15] - 2026-01-19
 
 ### Added
 
-- `RaainApiRainsCumulativesCreateRequest` and `RaainApiRainsCumulativesCreateResponse` for POST /rains/:rainId/cumulatives endpoint
-- `RaainApiRainsCumulativesListRequest` and `RaainApiRainsCumulativesListResponse` for GET /rains/:rainId/cumulatives endpoint
+- `RaainApiRainsCumulativesCreateRequest` and `RaainApiRainsCumulativesCreateResponse` for POST /rains/:
+  rainId/cumulatives endpoint
+- `RaainApiRainsCumulativesListRequest` and `RaainApiRainsCumulativesListResponse` for GET /rains/:rainId/cumulatives
+  endpoint
 - `CumulativePeriod` interface for cumulative period metadata
 
 ## [3.1.14] - 2025-12-14
@@ -600,7 +617,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Initial release
 - First extracts from RAAIN services
 
-[Unreleased]: https://github.com/raainio/raain-model/compare/v3.1.16...HEAD
+[Unreleased]: https://github.com/raainio/raain-model/compare/v3.1.19...HEAD
+
+[3.1.19]: https://github.com/raainio/raain-model/compare/v3.1.18...v3.1.19
+
+[3.1.18]: https://github.com/raainio/raain-model/compare/v3.1.17...v3.1.18
+
+[3.1.17]: https://github.com/raainio/raain-model/compare/v3.1.16...v3.1.17
 
 [3.1.16]: https://github.com/raainio/raain-model/compare/v3.1.15...v3.1.16
 

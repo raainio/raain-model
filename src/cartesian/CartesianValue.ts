@@ -1,5 +1,8 @@
 import {LatLng} from './LatLng';
 
+/**
+ * In a map pixel context (lat, lng) = South - West corner (see CartesianPixelPosition.SW) of the pixel
+ */
 export class CartesianValue extends LatLng {
     public value: number;
 
