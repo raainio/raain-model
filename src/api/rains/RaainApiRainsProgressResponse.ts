@@ -2,4 +2,6 @@
 export interface RaainApiRainsProgressResponse {
     inProgress: number;
     inQueue: number;
+    inQueueCompute?: number;
+    inQueueGround?: number;
 }
