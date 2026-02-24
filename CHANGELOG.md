@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- `SpeedMatrix.computeNashSutcliffe`: use relative error instead of -Infinity when gauge variance is zero but prediction is near-perfect (single-point or constant-gauge edge case)
+
 ## [3.1.19] - 2026-02-07
 
 ### Changed

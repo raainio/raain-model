@@ -341,6 +341,19 @@ describe('QualityIndicatorMethod', () => {
             });
             expect(indicator).to.equal(-Infinity);
         });
+
+        it('should return near-perfect score for single point with small error (not -Infinity)', () => {
+            // Real-world case: 1 gauge point, gauge=102.59 mm/h, rain=102.19 mm/h
+            // Relative error is tiny (0.4%) but denominator is 0 (single point → zero variance)
+            // Before fix: returned -Infinity. After fix: returns near 1.
+            const points = [createPoint(102.59, 102.19)];
+
+            const indicator = SpeedMatrix.ComputeQualityIndicator(points, {
+                method: QualityIndicatorMethod.NASH_SUTCLIFFE,
+            });
+            expect(indicator).to.be.greaterThan(0.99);
+            expect(indicator).to.be.lessThanOrEqual(1);
+        });
     });
 
     describe('Edge cases across all methods', () => {

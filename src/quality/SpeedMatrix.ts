@@ -372,8 +372,15 @@ export class SpeedMatrix {
 
         // Avoid division by zero (all gauge values are the same)
         if (sumSquaredDeviations === 0) {
-            // If predictions are also all the same and equal to gauge, perfect score
-            return sumSquaredErrors === 0 ? 1 : -Infinity;
+            if (sumSquaredErrors === 0) {
+                return 1;
+            }
+            // Use relative error when variance is zero: small error vs mean magnitude → near-perfect
+            const meanSquared = meanGauge * meanGauge * validPoints.length;
+            if (meanSquared > 0 && sumSquaredErrors / meanSquared < 0.01) {
+                return 1 - sumSquaredErrors / meanSquared;
+            }
+            return -Infinity;
         }
 
         return 1 - sumSquaredErrors / sumSquaredDeviations;
