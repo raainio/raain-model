@@ -5,6 +5,7 @@ export interface RaainApiRainsGetCountsResponse {
             percentImages?: number;
             percentRainy?: number;
             percentQ?: number;
+            percentComputations?: number;
             rainyCount?: number;
             rainySum?: number;
             year?: number;

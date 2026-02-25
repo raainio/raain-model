@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [3.1.22] - 2026-02-25
+
+### Added
+
+- `RaainApiRainsGetCountsResponse`: added optional `percentComputations` field to counts result
+
+## [3.1.21] - 2026-02-24
+
+### Added
+
+- `RaainApiRainsProgressResponse`: added optional `inQueueCompute` and `inQueueGround` fields to distinguish queued job types
+
 ## [3.1.20] - 2026-02-24
 
 ### Fixed
@@ -623,7 +635,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Initial release
 - First extracts from RAAIN services
 
-[Unreleased]: https://github.com/raainio/raain-model/compare/v3.1.19...HEAD
+[Unreleased]: https://github.com/raainio/raain-model/compare/v3.1.22...HEAD
+
+[3.1.22]: https://github.com/raainio/raain-model/compare/v3.1.21...v3.1.22
+
+[3.1.21]: https://github.com/raainio/raain-model/compare/v3.1.20...v3.1.21
+
+[3.1.20]: https://github.com/raainio/raain-model/compare/v3.1.19...v3.1.20
 
 [3.1.19]: https://github.com/raainio/raain-model/compare/v3.1.18...v3.1.19
 
