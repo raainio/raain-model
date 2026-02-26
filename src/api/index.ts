@@ -40,7 +40,6 @@ export * from './rains/RaainApiRainsCumulativesFindOneResponse';
 export * from './rains/RaainApiRainsCumulativeCartesianMapRequest';
 export * from './rains/RaainApiRainsCumulativeCartesianMapResponse';
 export * from './rains/RaainApiRainsCumulativeCumulativeResponse';
-export * from './rains/RaainApiRainsCumulativeComparesRequest';
 export * from './rains/RaainApiRainsCumulativeComparesResponse';
 export * from './rains/RaainApiRainsCumulativeCumulativesComparesRequest';
 export * from './rains/RaainApiRainsCumulativeCumulativesComparesResponse';

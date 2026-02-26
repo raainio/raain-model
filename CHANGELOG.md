@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [3.1.23] - 2026-02-26
+
+### Changed
+
+- Removed `RaainApiRainsCumulativeComparesRequest` (consolidated into `RaainApiRainsCumulativeCumulativesComparesRequest`)
+- `RaainApiRainsCumulativeCumulativesComparesRequest`: removed `date` field (only `provider` and `timeStepInMinutes` remain)
+
 ## [3.1.22] - 2026-02-25
 
 ### Added
