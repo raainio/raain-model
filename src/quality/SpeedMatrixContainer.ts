@@ -2,11 +2,7 @@ import {SpeedMatrix} from './SpeedMatrix';
 import {PositionValue} from './position/PositionValue';
 import {PositionHistory} from './history/PositionHistory';
 import {QualityPoint} from './QualityPoint';
-import {
-    QualityIndicatorMethod,
-    QualityIndicatorOptions,
-    QualityNormalizationOptions,
-} from './QualityIndicatorMethod';
+import {QualityIndicatorMethod, QualityIndicatorOptions} from './QualityIndicatorMethod';
 import {RainComputationQuality} from '../rain';
 
 export interface ICompares {
@@ -328,38 +324,12 @@ export class SpeedMatrixContainer {
         return max;
     }
 
-    /**
-     * Get quality indicator.
-     * By default returns raw values (0 ideally for DELTA, 1 ideally for NASH_SUTCLIFFE).
-     * With normalize=true, returns 0-100 scale where 100=best for all methods.
-     *
-     * @param matrixName - Optional matrix name to filter quality points
-     * @param options - Quality indicator calculation options
-     * @param options.method - The calculation method (default: NASH_SUTCLIFFE)
-     * @param options.normalize - If true, normalizes result to 0-100 (0=bad, 100=best)
-     * @param options.normalizationOptions - Options for normalization (reference max values)
-     * @returns Quality indicator value
-     */
-    getQuality(
-        matrixName?: string,
-        options: QualityIndicatorOptions & {
-            normalize?: boolean;
-            normalizationOptions?: QualityNormalizationOptions;
-        } = {}
-    ) {
+    // Get quality indicator.
+    // By default returns raw values (0 ideally for DELTA, 1 ideally for NASH_SUTCLIFFE).
+    // With normalize=true, returns 0-100 scale where 100=best for all methods.
+    getQuality(matrixName?: string, options: QualityIndicatorOptions = {}) {
         const qualityPoints = this.getQualityPoints(matrixName);
-        const method = options.method ?? QualityIndicatorMethod.NASH_SUTCLIFFE;
-        const rawValue = SpeedMatrix.ComputeQualityIndicator(qualityPoints, options);
-
-        if (options.normalize) {
-            return SpeedMatrix.NormalizeQualityIndicator(
-                rawValue,
-                method,
-                options.normalizationOptions
-            );
-        }
-
-        return rawValue;
+        return SpeedMatrix.ComputeQualityIndicator(qualityPoints, options);
     }
 
     getTrustedIndicators(): number[] {

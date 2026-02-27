@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- `QualityIndicatorOptions`: added `normalize` and `normalizationOptions` fields directly to the interface, unifying options across all quality indicator methods
+- `ComputeQualityIndicator`: now supports `normalize` option to return normalized values (0–100 or 0–1) in a single call
+- `ComputeNormalizedQualityIndicator`: now delegates to `ComputeQualityIndicator` with unified options (backward compatible)
+- `SpeedMatrixContainer.getQuality`: simplified signature to use `QualityIndicatorOptions` directly (removed ad-hoc type intersection)
+
+## [3.1.24] - 2026-02-27
+
 ### Added
 
 - `QualityNormalizationOptions`: added `normalizeScale` option to control output range (default `100` for 0–100, set to `1` for 0–1)

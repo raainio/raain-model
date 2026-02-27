@@ -29,6 +29,9 @@ export interface QualityIndicatorOptions {
     method?: QualityIndicatorMethod;
     // For SUCCESS_RATE: minimum ratio to consider "successful" (default: 0.8)
     successThreshold?: number;
+    // If true, normalizes result to 0-100 scale (0=bad, 100=best)
+    normalize?: boolean;
+    normalizationOptions?: QualityNormalizationOptions;
 }
 
 export interface QualityNormalizationOptions {

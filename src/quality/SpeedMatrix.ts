@@ -5,10 +5,10 @@ import {Position} from './position/Position';
 import {QualityPoint} from './QualityPoint';
 import {CartesianTools, CartesianValue} from '../cartesian';
 import {
+    QUALITY_NORMALIZATION_DEFAULTS,
     QualityIndicatorMethod,
     QualityIndicatorOptions,
     QualityNormalizationOptions,
-    QUALITY_NORMALIZATION_DEFAULTS,
 } from './QualityIndicatorMethod';
 
 export class SpeedMatrix {
@@ -56,15 +56,8 @@ export class SpeedMatrix {
         return created;
     }
 
-    /**
-     * Compute quality indicator comparing radar predictions vs gauge observations.
-     *
-     * @param points - Array of QualityPoint containing gauge and rain values
-     * @param options - Configuration options
-     * @param options.method - The calculation method (default: NASH_SUTCLIFFE)
-     * @param options.successThreshold - For SUCCESS_RATE: minimum ratio considered successful (default: 0.8)
-     * @returns Quality indicator value (interpretation depends on method)
-     */
+    // Compute quality indicator comparing radar predictions vs gauge observations.
+    // When options.normalize is true, normalizes result to 0-100 scale (0=bad, 100=best).
     public static ComputeQualityIndicator(
         points: QualityPoint[],
         options: QualityIndicatorOptions = {}
@@ -72,22 +65,39 @@ export class SpeedMatrix {
         const method = options.method ?? QualityIndicatorMethod.NASH_SUTCLIFFE;
         const successThreshold = options.successThreshold ?? 0.8;
 
+        let rawValue: number;
         switch (method) {
             case QualityIndicatorMethod.DELTA:
-                return SpeedMatrix.computeDelta(points);
+                rawValue = SpeedMatrix.computeDelta(points);
+                break;
             case QualityIndicatorMethod.RATIO:
-                return SpeedMatrix.computeRatio(points);
+                rawValue = SpeedMatrix.computeRatio(points);
+                break;
             case QualityIndicatorMethod.SUCCESS_RATE:
-                return SpeedMatrix.computeSuccessRate(points, successThreshold);
+                rawValue = SpeedMatrix.computeSuccessRate(points, successThreshold);
+                break;
             case QualityIndicatorMethod.RMSE:
-                return SpeedMatrix.computeRMSE(points);
+                rawValue = SpeedMatrix.computeRMSE(points);
+                break;
             case QualityIndicatorMethod.MAPE:
-                return SpeedMatrix.computeMAPE(points);
+                rawValue = SpeedMatrix.computeMAPE(points);
+                break;
             case QualityIndicatorMethod.NASH_SUTCLIFFE:
-                return SpeedMatrix.computeNashSutcliffe(points);
+                rawValue = SpeedMatrix.computeNashSutcliffe(points);
+                break;
             default:
-                return SpeedMatrix.computeDelta(points);
+                rawValue = SpeedMatrix.computeDelta(points);
         }
+
+        if (options.normalize) {
+            return SpeedMatrix.NormalizeQualityIndicator(
+                rawValue,
+                method,
+                options.normalizationOptions
+            );
+        }
+
+        return rawValue;
     }
 
     /**
@@ -145,23 +155,22 @@ export class SpeedMatrix {
         }
     }
 
-    /**
-     * Compute and normalize quality indicator in one call.
-     * Returns a value between 0 (worst) and 100 (best).
-     *
-     * @param points - Array of QualityPoint containing gauge and rain values
-     * @param indicatorOptions - Options for the quality indicator calculation
-     * @param normalizationOptions - Options for normalization (reference max values)
-     * @returns Normalized quality value between 0 (worst) and 100 (best)
-     */
+    // Compute and normalize quality indicator in one call.
+    // Returns a value between 0 (worst) and 100 (best).
     public static ComputeNormalizedQualityIndicator(
         points: QualityPoint[],
         indicatorOptions: QualityIndicatorOptions = {},
         normalizationOptions: QualityNormalizationOptions = {}
     ): number {
-        const method = indicatorOptions.method ?? QualityIndicatorMethod.NASH_SUTCLIFFE;
-        const rawValue = SpeedMatrix.ComputeQualityIndicator(points, indicatorOptions);
-        return SpeedMatrix.NormalizeQualityIndicator(rawValue, method, normalizationOptions);
+        const mergedOptions: QualityIndicatorOptions = {
+            ...indicatorOptions,
+            normalize: true,
+            normalizationOptions: {
+                ...indicatorOptions.normalizationOptions,
+                ...normalizationOptions,
+            },
+        };
+        return SpeedMatrix.ComputeQualityIndicator(points, mergedOptions);
     }
 
     static LogPositionValues(
