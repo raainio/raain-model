@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- `QualityNormalizationOptions`: added `normalizeScale` option to control output range (default `100` for 0–100, set to `1` for 0–1)
+
 ## [3.1.23] - 2026-02-26
 
 ### Changed

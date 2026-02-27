@@ -1,1 +1,1 @@
-export const bpInfo = {version: 'v3.1.23'};
+export const bpInfo = {version: 'v3.1.24'};

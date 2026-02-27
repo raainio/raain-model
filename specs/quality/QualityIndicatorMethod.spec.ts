@@ -711,6 +711,88 @@ describe('QualityIndicatorMethod', () => {
             });
         });
 
+        describe('normalizeScale option', () => {
+            it('should default to 0-100 scale', () => {
+                expect(
+                    SpeedMatrix.NormalizeQualityIndicator(0, QualityIndicatorMethod.MAPE)
+                ).to.equal(100);
+                expect(
+                    SpeedMatrix.NormalizeQualityIndicator(1, QualityIndicatorMethod.RATIO)
+                ).to.equal(100);
+            });
+
+            it('should support 0-1 scale for MAPE', () => {
+                expect(
+                    SpeedMatrix.NormalizeQualityIndicator(0, QualityIndicatorMethod.MAPE, {
+                        normalizeScale: 1,
+                    })
+                ).to.equal(1);
+                expect(
+                    SpeedMatrix.NormalizeQualityIndicator(50, QualityIndicatorMethod.MAPE, {
+                        normalizeScale: 1,
+                    })
+                ).to.equal(0.5);
+                expect(
+                    SpeedMatrix.NormalizeQualityIndicator(100, QualityIndicatorMethod.MAPE, {
+                        normalizeScale: 1,
+                    })
+                ).to.equal(0);
+                expect(
+                    SpeedMatrix.NormalizeQualityIndicator(200, QualityIndicatorMethod.MAPE, {
+                        normalizeScale: 1,
+                    })
+                ).to.equal(0);
+            });
+
+            it('should support 0-1 scale for all methods', () => {
+                const scale1 = {normalizeScale: 1};
+
+                // SUCCESS_RATE: 50% → 0.5
+                expect(
+                    SpeedMatrix.NormalizeQualityIndicator(
+                        50,
+                        QualityIndicatorMethod.SUCCESS_RATE,
+                        scale1
+                    )
+                ).to.equal(0.5);
+
+                // RATIO: 0.8 → 0.8
+                expect(
+                    SpeedMatrix.NormalizeQualityIndicator(0.8, QualityIndicatorMethod.RATIO, scale1)
+                ).to.equal(0.8);
+
+                // NASH_SUTCLIFFE: 0.9 → 0.9
+                expect(
+                    SpeedMatrix.NormalizeQualityIndicator(
+                        0.9,
+                        QualityIndicatorMethod.NASH_SUTCLIFFE,
+                        scale1
+                    )
+                ).to.equal(0.9);
+
+                // DELTA: 5 mm/h with default maxRef=10 → 0.5
+                expect(
+                    SpeedMatrix.NormalizeQualityIndicator(5, QualityIndicatorMethod.DELTA, scale1)
+                ).to.equal(0.5);
+
+                // RMSE: 5 mm/h with default maxRef=10 → 0.5
+                expect(
+                    SpeedMatrix.NormalizeQualityIndicator(5, QualityIndicatorMethod.RMSE, scale1)
+                ).to.equal(0.5);
+            });
+
+            it('should work with ComputeNormalizedQualityIndicator', () => {
+                const points = [createPoint(10, 10), createPoint(20, 20), createPoint(30, 30)];
+
+                const normalized = SpeedMatrix.ComputeNormalizedQualityIndicator(
+                    points,
+                    {method: QualityIndicatorMethod.MAPE},
+                    {normalizeScale: 1}
+                );
+                expect(normalized).to.equal(1);
+            });
+        });
+
         describe('Default values', () => {
             it('should export correct default values', () => {
                 expect(QUALITY_NORMALIZATION_DEFAULTS.DELTA_MAX_REF).to.equal(10);

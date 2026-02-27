@@ -109,35 +109,36 @@ export class SpeedMatrix {
         const nashMinClamp =
             options.nashSutcliffeMinClamp ??
             QUALITY_NORMALIZATION_DEFAULTS.NASH_SUTCLIFFE_MIN_CLAMP;
+        const scale = options.normalizeScale ?? 100;
 
         switch (method) {
             case QualityIndicatorMethod.SUCCESS_RATE:
                 // Already 0-100 where 100=best
-                return Math.max(0, Math.min(100, rawValue));
+                return Math.max(0, Math.min(scale, (rawValue / 100) * scale));
 
             case QualityIndicatorMethod.RATIO:
-                // 0-1 where 1=best → multiply by 100
-                return Math.max(0, Math.min(100, rawValue * 100));
+                // 0-1 where 1=best
+                return Math.max(0, Math.min(scale, rawValue * scale));
 
             case QualityIndicatorMethod.NASH_SUTCLIFFE:
                 // -∞ to 1 where 1=best → clamp and scale
                 const clampedNash = Math.max(nashMinClamp, Math.min(1, rawValue));
-                return clampedNash * 100;
+                return clampedNash * scale;
 
             case QualityIndicatorMethod.DELTA:
                 // 0-∞ where 0=best → invert using reference max
-                const normalizedDelta = Math.max(0, 100 - (rawValue / deltaMaxRef) * 100);
-                return Math.min(100, normalizedDelta);
+                const normalizedDelta = Math.max(0, scale - (rawValue / deltaMaxRef) * scale);
+                return Math.min(scale, normalizedDelta);
 
             case QualityIndicatorMethod.RMSE:
                 // 0-∞ where 0=best → invert using reference max
-                const normalizedRmse = Math.max(0, 100 - (rawValue / rmseMaxRef) * 100);
-                return Math.min(100, normalizedRmse);
+                const normalizedRmse = Math.max(0, scale - (rawValue / rmseMaxRef) * scale);
+                return Math.min(scale, normalizedRmse);
 
             case QualityIndicatorMethod.MAPE:
                 // 0-∞% where 0=best → invert using reference max
-                const normalizedMape = Math.max(0, 100 - (rawValue / mapeMaxRef) * 100);
-                return Math.min(100, normalizedMape);
+                const normalizedMape = Math.max(0, scale - (rawValue / mapeMaxRef) * scale);
+                return Math.min(scale, normalizedMape);
 
             default:
                 return rawValue;

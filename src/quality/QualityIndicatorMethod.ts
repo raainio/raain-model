@@ -40,6 +40,8 @@ export interface QualityNormalizationOptions {
     mapeMaxRef?: number;
     // Minimum value for NASH_SUTCLIFFE clamping (default: 0)
     nashSutcliffeMinClamp?: number;
+    // Scale for normalized output: 100 for 0-100, 1 for 0-1 (default: 100)
+    normalizeScale?: number;
 }
 
 // Default reference values for normalization (rainfall domain)
