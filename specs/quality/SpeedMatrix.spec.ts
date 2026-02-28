@@ -135,6 +135,7 @@ describe('SpeedMatrix', () => {
         expect(
             qualitySpeedMatrixContainer1.getQuality(undefined, {
                 method: QualityIndicatorMethod.DELTA,
+                normalize: false,
             })
         ).eq(0.5);
         expect(qualitySpeedMatrixContainer1.getMaxGauge()).eq(10);
@@ -188,6 +189,7 @@ describe('SpeedMatrix', () => {
         expect(
             qualitySpeedMatrixContainer2.getQuality(undefined, {
                 method: QualityIndicatorMethod.DELTA,
+                normalize: false,
             })
         ).eq(0.38000000000000045);
         expect(qualitySpeedMatrixContainer2.getMaxGauge()).eq(10.399999999999999);

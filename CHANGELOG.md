@@ -7,25 +7,49 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- `QualityIndicatorMethod.KLING_GUPTA`: new Kling-Gupta Efficiency (KGE) quality indicator (as default) — decomposes
+  model performance into correlation, variability bias, and volume bias (`1 - √((r-1)² + (α-1)² + (β-1)²)`)
+- `QualityNormalizationOptions.kgeMinClamp`: floor value when normalizing KGE (default: 0)
+- `QUALITY_NORMALIZATION_DEFAULTS.KGE_MIN_CLAMP`: default KGE normalization floor
+- JSDoc documentation for all `QualityIndicatorMethod` enum members, interfaces, and defaults (TypeDoc-compatible)
+
 ### Changed
 
-- `QualityIndicatorOptions`: added `normalize` and `normalizationOptions` fields directly to the interface, unifying options across all quality indicator methods
+- **Breaking**: Default quality indicator method changed from `NASH_SUTCLIFFE` to `KLING_GUPTA` — callers relying on the
+  default (no explicit `method` option) will now get KGE instead of NSE
+- **Breaking**: `normalize` now defaults to `true` (was `false`) — `ComputeQualityIndicator()` with no options now
+  returns normalized values instead of raw
+- **Breaking**: `normalizeScale` now defaults to `1` (was `100`) — normalized output is 0-1 by default instead of 0-100
+
+## [3.1.25] - 2026-02-27
+
+### Changed
+
+- `QualityIndicatorOptions`: added `normalize` and `normalizationOptions` fields directly to the interface, unifying
+  options across all quality indicator methods
 - `ComputeQualityIndicator`: now supports `normalize` option to return normalized values (0–100 or 0–1) in a single call
-- `ComputeNormalizedQualityIndicator`: now delegates to `ComputeQualityIndicator` with unified options (backward compatible)
-- `SpeedMatrixContainer.getQuality`: simplified signature to use `QualityIndicatorOptions` directly (removed ad-hoc type intersection)
+- `ComputeNormalizedQualityIndicator`: now delegates to `ComputeQualityIndicator` with unified options (backward
+  compatible)
+- `SpeedMatrixContainer.getQuality`: simplified signature to use `QualityIndicatorOptions` directly (removed ad-hoc type
+  intersection)
 
 ## [3.1.24] - 2026-02-27
 
 ### Added
 
-- `QualityNormalizationOptions`: added `normalizeScale` option to control output range (default `100` for 0–100, set to `1` for 0–1)
+- `QualityNormalizationOptions`: added `normalizeScale` option to control output range (default `100` for 0–100, set to
+  `1` for 0–1)
 
 ## [3.1.23] - 2026-02-26
 
 ### Changed
 
-- Removed `RaainApiRainsCumulativeComparesRequest` (consolidated into `RaainApiRainsCumulativeCumulativesComparesRequest`)
-- `RaainApiRainsCumulativeCumulativesComparesRequest`: removed `date` field (only `provider` and `timeStepInMinutes` remain)
+- Removed `RaainApiRainsCumulativeComparesRequest` (consolidated into
+  `RaainApiRainsCumulativeCumulativesComparesRequest`)
+- `RaainApiRainsCumulativeCumulativesComparesRequest`: removed `date` field (only `provider` and `timeStepInMinutes`
+  remain)
 
 ## [3.1.22] - 2026-02-25
 
@@ -37,13 +61,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- `RaainApiRainsProgressResponse`: added optional `inQueueCompute` and `inQueueGround` fields to distinguish queued job types
+- `RaainApiRainsProgressResponse`: added optional `inQueueCompute` and `inQueueGround` fields to distinguish queued job
+  types
 
 ## [3.1.20] - 2026-02-24
 
 ### Fixed
 
-- `SpeedMatrix.computeNashSutcliffe`: use relative error instead of -Infinity when gauge variance is zero but prediction is near-perfect (single-point or constant-gauge edge case)
+- `SpeedMatrix.computeNashSutcliffe`: use relative error instead of -Infinity when gauge variance is zero but prediction
+  is near-perfect (single-point or constant-gauge edge case)
 
 ## [3.1.19] - 2026-02-07
 

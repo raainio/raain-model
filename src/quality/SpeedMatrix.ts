@@ -57,12 +57,13 @@ export class SpeedMatrix {
     }
 
     // Compute quality indicator comparing radar predictions vs gauge observations.
-    // When options.normalize is true, normalizes result to 0-100 scale (0=bad, 100=best).
+    // Default: KGE, normalized to 0-1 scale (0=bad, 1=best).
     public static ComputeQualityIndicator(
         points: QualityPoint[],
         options: QualityIndicatorOptions = {}
     ): number {
-        const method = options.method ?? QualityIndicatorMethod.NASH_SUTCLIFFE;
+        const method = options.method ?? QualityIndicatorMethod.KLING_GUPTA;
+        const normalize = options.normalize ?? true;
         const successThreshold = options.successThreshold ?? 0.8;
 
         let rawValue: number;
@@ -85,11 +86,14 @@ export class SpeedMatrix {
             case QualityIndicatorMethod.NASH_SUTCLIFFE:
                 rawValue = SpeedMatrix.computeNashSutcliffe(points);
                 break;
+            case QualityIndicatorMethod.KLING_GUPTA:
+                rawValue = SpeedMatrix.computeKlingGupta(points);
+                break;
             default:
                 rawValue = SpeedMatrix.computeDelta(points);
         }
 
-        if (options.normalize) {
+        if (normalize) {
             return SpeedMatrix.NormalizeQualityIndicator(
                 rawValue,
                 method,
@@ -119,7 +123,7 @@ export class SpeedMatrix {
         const nashMinClamp =
             options.nashSutcliffeMinClamp ??
             QUALITY_NORMALIZATION_DEFAULTS.NASH_SUTCLIFFE_MIN_CLAMP;
-        const scale = options.normalizeScale ?? 100;
+        const scale = options.normalizeScale ?? 1;
 
         switch (method) {
             case QualityIndicatorMethod.SUCCESS_RATE:
@@ -134,6 +138,13 @@ export class SpeedMatrix {
                 // -∞ to 1 where 1=best → clamp and scale
                 const clampedNash = Math.max(nashMinClamp, Math.min(1, rawValue));
                 return clampedNash * scale;
+
+            case QualityIndicatorMethod.KLING_GUPTA:
+                // -∞ to 1 where 1=best → clamp and scale (same pattern as NSE)
+                const kgeMinClamp =
+                    options.kgeMinClamp ?? QUALITY_NORMALIZATION_DEFAULTS.KGE_MIN_CLAMP;
+                const clampedKge = Math.max(kgeMinClamp, Math.min(1, rawValue));
+                return clampedKge * scale;
 
             case QualityIndicatorMethod.DELTA:
                 // 0-∞ where 0=best → invert using reference max
@@ -394,6 +405,73 @@ export class SpeedMatrix {
         }
 
         return 1 - sumSquaredErrors / sumSquaredDeviations;
+    }
+
+    // Kling-Gupta Efficiency - decomposes into correlation (r), variability (α), bias (β)
+    // KGE = 1 - √((r-1)² + (α-1)² + (β-1)²)
+    // Range: -∞ to 1, Perfect: 1
+    private static computeKlingGupta(points: QualityPoint[]): number {
+        const validPoints: {rain: number; gauge: number}[] = [];
+
+        for (const point of points) {
+            const rain = point.getRainValue();
+            const gauge = point.getGaugeValue();
+            if (typeof rain === 'number' && typeof gauge === 'number') {
+                validPoints.push({rain, gauge});
+            }
+        }
+
+        if (validPoints.length === 0) {
+            return 0;
+        }
+
+        const n = validPoints.length;
+
+        // Compute means
+        const meanGauge = validPoints.reduce((sum, p) => sum + p.gauge, 0) / n;
+        const meanRain = validPoints.reduce((sum, p) => sum + p.rain, 0) / n;
+
+        // Compute standard deviations
+        let sumSqDevGauge = 0;
+        let sumSqDevRain = 0;
+        let sumCrossDeviation = 0;
+
+        for (const p of validPoints) {
+            const devGauge = p.gauge - meanGauge;
+            const devRain = p.rain - meanRain;
+            sumSqDevGauge += devGauge * devGauge;
+            sumSqDevRain += devRain * devRain;
+            sumCrossDeviation += devGauge * devRain;
+        }
+
+        const stdGauge = Math.sqrt(sumSqDevGauge / n);
+        const stdRain = Math.sqrt(sumSqDevRain / n);
+
+        // Handle edge case: no variability in observations
+        if (stdGauge === 0) {
+            if (stdRain === 0 && meanRain === meanGauge) {
+                return 1;
+            }
+            return -Infinity;
+        }
+
+        // Pearson correlation coefficient
+        let r: number;
+        if (stdRain === 0) {
+            r = 0;
+        } else {
+            r = sumCrossDeviation / n / (stdRain * stdGauge);
+        }
+
+        // Variability ratio (α) and bias ratio (β)
+        const alpha = stdRain / stdGauge;
+        const beta = meanGauge === 0 ? (meanRain === 0 ? 1 : Infinity) : meanRain / meanGauge;
+
+        return 1 - Math.sqrt(
+            (r - 1) * (r - 1) +
+            (alpha - 1) * (alpha - 1) +
+            (beta - 1) * (beta - 1)
+        );
     }
 
     renderFlatten(options: {normalize: boolean}): PositionValue[] {

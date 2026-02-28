@@ -124,6 +124,7 @@ describe('SpeedMatrix Edge Cases', () => {
         expect(
             SpeedMatrix.ComputeQualityIndicator(speedMatrix.getQualityPoints(), {
                 method: QualityIndicatorMethod.DELTA,
+                normalize: false,
             })
         ).eq(0);
     });
@@ -227,7 +228,7 @@ describe('RainComputationQuality Edge Cases', () => {
         expect(
             SpeedMatrix.ComputeQualityIndicator(
                 rainComputationQuality.qualitySpeedMatrixContainer.getQualityPoints(),
-                {method: QualityIndicatorMethod.DELTA}
+                {method: QualityIndicatorMethod.DELTA, normalize: false}
             )
         ).eq(99);
     });

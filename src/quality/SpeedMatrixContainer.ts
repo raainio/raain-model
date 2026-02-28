@@ -325,8 +325,8 @@ export class SpeedMatrixContainer {
     }
 
     // Get quality indicator.
-    // By default returns raw values (0 ideally for DELTA, 1 ideally for NASH_SUTCLIFFE).
-    // With normalize=true, returns 0-100 scale where 100=best for all methods.
+    // By default returns normalized 0-1 scale (0=bad, 1=best).
+    // Pass normalize: false for raw values (0=best for DELTA, 1=best for NSE/KGE).
     getQuality(matrixName?: string, options: QualityIndicatorOptions = {}) {
         const qualityPoints = this.getQualityPoints(matrixName);
         return SpeedMatrix.ComputeQualityIndicator(qualityPoints, options);

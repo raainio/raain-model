@@ -28,6 +28,7 @@ describe('QualityIndicatorMethod', () => {
 
             const indicator = SpeedMatrix.ComputeQualityIndicator(points, {
                 method: QualityIndicatorMethod.DELTA,
+                normalize: false,
             });
             expect(indicator).to.equal(0);
         });
@@ -41,6 +42,7 @@ describe('QualityIndicatorMethod', () => {
 
             const indicator = SpeedMatrix.ComputeQualityIndicator(points, {
                 method: QualityIndicatorMethod.DELTA,
+                normalize: false,
             });
             expect(indicator).to.equal(2);
         });
@@ -54,6 +56,7 @@ describe('QualityIndicatorMethod', () => {
 
             const indicator = SpeedMatrix.ComputeQualityIndicator(points, {
                 method: QualityIndicatorMethod.DELTA,
+                normalize: false,
             });
             expect(indicator).to.be.approximately(3.33, 0.01);
         });
@@ -61,6 +64,7 @@ describe('QualityIndicatorMethod', () => {
         it('should return 0 for empty points', () => {
             const indicator = SpeedMatrix.ComputeQualityIndicator([], {
                 method: QualityIndicatorMethod.DELTA,
+                normalize: false,
             });
             expect(indicator).to.equal(0);
         });
@@ -72,6 +76,7 @@ describe('QualityIndicatorMethod', () => {
 
             const indicator = SpeedMatrix.ComputeQualityIndicator(points, {
                 method: QualityIndicatorMethod.RATIO,
+                normalize: false,
             });
             expect(indicator).to.equal(1);
         });
@@ -84,6 +89,7 @@ describe('QualityIndicatorMethod', () => {
 
             const indicator = SpeedMatrix.ComputeQualityIndicator(points, {
                 method: QualityIndicatorMethod.RATIO,
+                normalize: false,
             });
             expect(indicator).to.equal(0.75);
         });
@@ -95,6 +101,7 @@ describe('QualityIndicatorMethod', () => {
 
             const indicator = SpeedMatrix.ComputeQualityIndicator(points, {
                 method: QualityIndicatorMethod.RATIO,
+                normalize: false,
             });
             expect(indicator).to.equal(0.5);
         });
@@ -107,6 +114,7 @@ describe('QualityIndicatorMethod', () => {
 
             const indicator = SpeedMatrix.ComputeQualityIndicator(points, {
                 method: QualityIndicatorMethod.RATIO,
+                normalize: false,
             });
             expect(indicator).to.equal(1);
         });
@@ -116,6 +124,7 @@ describe('QualityIndicatorMethod', () => {
 
             const indicator = SpeedMatrix.ComputeQualityIndicator(points, {
                 method: QualityIndicatorMethod.RATIO,
+                normalize: false,
             });
             expect(indicator).to.equal(0);
         });
@@ -127,6 +136,7 @@ describe('QualityIndicatorMethod', () => {
 
             const indicator = SpeedMatrix.ComputeQualityIndicator(points, {
                 method: QualityIndicatorMethod.SUCCESS_RATE,
+                normalize: false,
             });
             expect(indicator).to.equal(100);
         });
@@ -141,6 +151,7 @@ describe('QualityIndicatorMethod', () => {
 
             const indicator = SpeedMatrix.ComputeQualityIndicator(points, {
                 method: QualityIndicatorMethod.SUCCESS_RATE,
+                normalize: false,
             });
             expect(indicator).to.equal(50); // 2/4 = 50%
         });
@@ -154,6 +165,7 @@ describe('QualityIndicatorMethod', () => {
 
             const indicator = SpeedMatrix.ComputeQualityIndicator(points, {
                 method: QualityIndicatorMethod.SUCCESS_RATE,
+                normalize: false,
                 successThreshold: 0.5,
             });
             expect(indicator).to.be.approximately(66.67, 0.01);
@@ -167,6 +179,7 @@ describe('QualityIndicatorMethod', () => {
 
             const indicator = SpeedMatrix.ComputeQualityIndicator(points, {
                 method: QualityIndicatorMethod.SUCCESS_RATE,
+                normalize: false,
             });
             expect(indicator).to.equal(100);
         });
@@ -178,6 +191,7 @@ describe('QualityIndicatorMethod', () => {
 
             const indicator = SpeedMatrix.ComputeQualityIndicator(points, {
                 method: QualityIndicatorMethod.RMSE,
+                normalize: false,
             });
             expect(indicator).to.equal(0);
         });
@@ -192,6 +206,7 @@ describe('QualityIndicatorMethod', () => {
 
             const indicator = SpeedMatrix.ComputeQualityIndicator(points, {
                 method: QualityIndicatorMethod.RMSE,
+                normalize: false,
             });
             expect(indicator).to.equal(2);
         });
@@ -209,9 +224,11 @@ describe('QualityIndicatorMethod', () => {
 
             const rmseUniform = SpeedMatrix.ComputeQualityIndicator(uniformErrors, {
                 method: QualityIndicatorMethod.RMSE,
+                normalize: false,
             });
             const rmseLarge = SpeedMatrix.ComputeQualityIndicator(onelargeError, {
                 method: QualityIndicatorMethod.RMSE,
+                normalize: false,
             });
 
             // sqrt((4+4)/2) = 2 vs sqrt((0+16)/2) = sqrt(8) ≈ 2.83
@@ -227,6 +244,7 @@ describe('QualityIndicatorMethod', () => {
 
             const indicator = SpeedMatrix.ComputeQualityIndicator(points, {
                 method: QualityIndicatorMethod.MAPE,
+                normalize: false,
             });
             expect(indicator).to.equal(0);
         });
@@ -239,6 +257,7 @@ describe('QualityIndicatorMethod', () => {
 
             const indicator = SpeedMatrix.ComputeQualityIndicator(points, {
                 method: QualityIndicatorMethod.MAPE,
+                normalize: false,
             });
             expect(indicator).to.equal(10);
         });
@@ -251,6 +270,7 @@ describe('QualityIndicatorMethod', () => {
 
             const indicator = SpeedMatrix.ComputeQualityIndicator(points, {
                 method: QualityIndicatorMethod.MAPE,
+                normalize: false,
             });
             expect(indicator).to.equal(10);
         });
@@ -262,25 +282,19 @@ describe('QualityIndicatorMethod', () => {
 
             const indicator = SpeedMatrix.ComputeQualityIndicator(points, {
                 method: QualityIndicatorMethod.MAPE,
+                normalize: false,
             });
             expect(indicator).to.equal(200);
         });
     });
 
-    describe('NASH_SUTCLIFFE method (default)', () => {
-        it('should be the default method', () => {
-            const points = [createPoint(10, 10), createPoint(20, 20), createPoint(30, 30)];
-
-            // No options = NASH_SUTCLIFFE
-            const indicator = SpeedMatrix.ComputeQualityIndicator(points);
-            expect(indicator).to.equal(1);
-        });
-
+    describe('NASH_SUTCLIFFE method', () => {
         it('should return 1 for perfect predictions', () => {
             const points = [createPoint(10, 10), createPoint(20, 20), createPoint(30, 30)];
 
             const indicator = SpeedMatrix.ComputeQualityIndicator(points, {
                 method: QualityIndicatorMethod.NASH_SUTCLIFFE,
+                normalize: false,
             });
             expect(indicator).to.equal(1);
         });
@@ -290,6 +304,7 @@ describe('QualityIndicatorMethod', () => {
 
             const indicator = SpeedMatrix.ComputeQualityIndicator(points, {
                 method: QualityIndicatorMethod.NASH_SUTCLIFFE,
+                normalize: false,
             });
             expect(indicator).to.be.greaterThan(0.7);
             expect(indicator).to.be.lessThan(1);
@@ -305,6 +320,7 @@ describe('QualityIndicatorMethod', () => {
 
             const indicator = SpeedMatrix.ComputeQualityIndicator(points, {
                 method: QualityIndicatorMethod.NASH_SUTCLIFFE,
+                normalize: false,
             });
             expect(indicator).to.be.approximately(0, 0.01);
         });
@@ -319,6 +335,7 @@ describe('QualityIndicatorMethod', () => {
 
             const indicator = SpeedMatrix.ComputeQualityIndicator(points, {
                 method: QualityIndicatorMethod.NASH_SUTCLIFFE,
+                normalize: false,
             });
             expect(indicator).to.be.lessThan(0);
         });
@@ -328,6 +345,7 @@ describe('QualityIndicatorMethod', () => {
 
             const indicator = SpeedMatrix.ComputeQualityIndicator(points, {
                 method: QualityIndicatorMethod.NASH_SUTCLIFFE,
+                normalize: false,
             });
             // All same and perfect => 1
             expect(indicator).to.equal(1);
@@ -338,21 +356,127 @@ describe('QualityIndicatorMethod', () => {
 
             const indicator = SpeedMatrix.ComputeQualityIndicator(points, {
                 method: QualityIndicatorMethod.NASH_SUTCLIFFE,
+                normalize: false,
             });
             expect(indicator).to.equal(-Infinity);
         });
 
         it('should return near-perfect score for single point with small error (not -Infinity)', () => {
-            // Real-world case: 1 gauge point, gauge=102.59 mm/h, rain=102.19 mm/h
-            // Relative error is tiny (0.4%) but denominator is 0 (single point → zero variance)
-            // Before fix: returned -Infinity. After fix: returns near 1.
             const points = [createPoint(102.59, 102.19)];
 
             const indicator = SpeedMatrix.ComputeQualityIndicator(points, {
                 method: QualityIndicatorMethod.NASH_SUTCLIFFE,
+                normalize: false,
             });
             expect(indicator).to.be.greaterThan(0.99);
             expect(indicator).to.be.lessThanOrEqual(1);
+        });
+    });
+
+    describe('KLING_GUPTA method (default)', () => {
+        it('should be the default method with normalize and scale 1', () => {
+            const points = [createPoint(10, 10), createPoint(20, 20), createPoint(30, 30)];
+
+            // No options = KGE + normalize: true + normalizeScale: 1
+            const indicator = SpeedMatrix.ComputeQualityIndicator(points);
+            expect(indicator).to.equal(1);
+        });
+
+        it('should return 1 for perfect predictions', () => {
+            const points = [createPoint(10, 10), createPoint(20, 20), createPoint(30, 30)];
+
+            const indicator = SpeedMatrix.ComputeQualityIndicator(points, {
+                method: QualityIndicatorMethod.KLING_GUPTA,
+                normalize: false,
+            });
+            expect(indicator).to.equal(1);
+        });
+
+        it('should return high value (>0.7) for good predictions', () => {
+            const points = [createPoint(10, 12), createPoint(20, 18), createPoint(30, 28)];
+
+            const indicator = SpeedMatrix.ComputeQualityIndicator(points, {
+                method: QualityIndicatorMethod.KLING_GUPTA,
+                normalize: false,
+            });
+            expect(indicator).to.be.greaterThan(0.7);
+            expect(indicator).to.be.lessThan(1);
+        });
+
+        it('should be stricter than NSE on biased predictions', () => {
+            // Systematic bias: rain always underestimates by 20%
+            const points = [
+                createPoint(10, 8),
+                createPoint(20, 16),
+                createPoint(30, 24),
+                createPoint(40, 32),
+            ];
+
+            const kge = SpeedMatrix.ComputeQualityIndicator(points, {
+                method: QualityIndicatorMethod.KLING_GUPTA,
+                normalize: false,
+            });
+            const nse = SpeedMatrix.ComputeQualityIndicator(points, {
+                method: QualityIndicatorMethod.NASH_SUTCLIFFE,
+                normalize: false,
+            });
+
+            // Both should be positive (predictions are correlated) but KGE penalizes bias more
+            expect(kge).to.be.greaterThan(0);
+            expect(nse).to.be.greaterThan(0);
+            expect(kge).to.be.lessThan(nse);
+        });
+
+        it('should return negative value for poor predictions', () => {
+            const points = [
+                createPoint(10, 50),
+                createPoint(20, 50),
+                createPoint(30, 50),
+            ];
+
+            const indicator = SpeedMatrix.ComputeQualityIndicator(points, {
+                method: QualityIndicatorMethod.KLING_GUPTA,
+                normalize: false,
+            });
+            expect(indicator).to.be.lessThan(0);
+        });
+
+        it('should handle constant gauge values', () => {
+            const points = [createPoint(10, 10), createPoint(10, 10), createPoint(10, 10)];
+
+            const indicator = SpeedMatrix.ComputeQualityIndicator(points, {
+                method: QualityIndicatorMethod.KLING_GUPTA,
+                normalize: false,
+            });
+            expect(indicator).to.equal(1);
+        });
+
+        it('should return -Infinity for constant gauge with wrong predictions', () => {
+            const points = [createPoint(10, 20), createPoint(10, 20), createPoint(10, 20)];
+
+            const indicator = SpeedMatrix.ComputeQualityIndicator(points, {
+                method: QualityIndicatorMethod.KLING_GUPTA,
+                normalize: false,
+            });
+            expect(indicator).to.equal(-Infinity);
+        });
+
+        it('should return 0 for empty points', () => {
+            const indicator = SpeedMatrix.ComputeQualityIndicator([], {
+                method: QualityIndicatorMethod.KLING_GUPTA,
+                normalize: false,
+            });
+            expect(indicator).to.equal(0);
+        });
+
+        it('should return 1 for single perfect point', () => {
+            const points = [createPoint(100, 100)];
+
+            const indicator = SpeedMatrix.ComputeQualityIndicator(points, {
+                method: QualityIndicatorMethod.KLING_GUPTA,
+                normalize: false,
+            });
+            expect(indicator).to.equal(1);
         });
     });
 
@@ -365,10 +489,11 @@ describe('QualityIndicatorMethod', () => {
                 QualityIndicatorMethod.RMSE,
                 QualityIndicatorMethod.MAPE,
                 QualityIndicatorMethod.NASH_SUTCLIFFE,
+                QualityIndicatorMethod.KLING_GUPTA,
             ];
 
             for (const method of methods) {
-                const indicator = SpeedMatrix.ComputeQualityIndicator([], {method});
+                const indicator = SpeedMatrix.ComputeQualityIndicator([], {method, normalize: false});
                 expect(indicator).to.equal(0, `${method} should return 0 for empty array`);
             }
         });
@@ -377,25 +502,33 @@ describe('QualityIndicatorMethod', () => {
             const points = [createPoint(100, 100)];
 
             expect(
-                SpeedMatrix.ComputeQualityIndicator(points, {method: QualityIndicatorMethod.DELTA})
+                SpeedMatrix.ComputeQualityIndicator(points, {method: QualityIndicatorMethod.DELTA, normalize: false})
             ).to.equal(0);
             expect(
-                SpeedMatrix.ComputeQualityIndicator(points, {method: QualityIndicatorMethod.RATIO})
+                SpeedMatrix.ComputeQualityIndicator(points, {method: QualityIndicatorMethod.RATIO, normalize: false})
             ).to.equal(1);
             expect(
                 SpeedMatrix.ComputeQualityIndicator(points, {
                     method: QualityIndicatorMethod.SUCCESS_RATE,
+                    normalize: false,
                 })
             ).to.equal(100);
             expect(
-                SpeedMatrix.ComputeQualityIndicator(points, {method: QualityIndicatorMethod.RMSE})
+                SpeedMatrix.ComputeQualityIndicator(points, {method: QualityIndicatorMethod.RMSE, normalize: false})
             ).to.equal(0);
             expect(
-                SpeedMatrix.ComputeQualityIndicator(points, {method: QualityIndicatorMethod.MAPE})
+                SpeedMatrix.ComputeQualityIndicator(points, {method: QualityIndicatorMethod.MAPE, normalize: false})
             ).to.equal(0);
             expect(
                 SpeedMatrix.ComputeQualityIndicator(points, {
                     method: QualityIndicatorMethod.NASH_SUTCLIFFE,
+                    normalize: false,
+                })
+            ).to.equal(1);
+            expect(
+                SpeedMatrix.ComputeQualityIndicator(points, {
+                    method: QualityIndicatorMethod.KLING_GUPTA,
+                    normalize: false,
                 })
             ).to.equal(1);
         });
@@ -416,10 +549,10 @@ describe('QualityIndicatorMethod', () => {
 
             // Should only use the valid point
             expect(
-                SpeedMatrix.ComputeQualityIndicator(points, {method: QualityIndicatorMethod.DELTA})
+                SpeedMatrix.ComputeQualityIndicator(points, {method: QualityIndicatorMethod.DELTA, normalize: false})
             ).to.equal(0);
             expect(
-                SpeedMatrix.ComputeQualityIndicator(points, {method: QualityIndicatorMethod.RATIO})
+                SpeedMatrix.ComputeQualityIndicator(points, {method: QualityIndicatorMethod.RATIO, normalize: false})
             ).to.equal(1);
         });
     });
@@ -440,21 +573,31 @@ describe('QualityIndicatorMethod', () => {
 
             const delta = SpeedMatrix.ComputeQualityIndicator(points, {
                 method: QualityIndicatorMethod.DELTA,
+                normalize: false,
             });
             const ratio = SpeedMatrix.ComputeQualityIndicator(points, {
                 method: QualityIndicatorMethod.RATIO,
+                normalize: false,
             });
             const successRate = SpeedMatrix.ComputeQualityIndicator(points, {
                 method: QualityIndicatorMethod.SUCCESS_RATE,
+                normalize: false,
             });
             const rmse = SpeedMatrix.ComputeQualityIndicator(points, {
                 method: QualityIndicatorMethod.RMSE,
+                normalize: false,
             });
             const mape = SpeedMatrix.ComputeQualityIndicator(points, {
                 method: QualityIndicatorMethod.MAPE,
+                normalize: false,
             });
             const nse = SpeedMatrix.ComputeQualityIndicator(points, {
                 method: QualityIndicatorMethod.NASH_SUTCLIFFE,
+                normalize: false,
+            });
+            const kge = SpeedMatrix.ComputeQualityIndicator(points, {
+                method: QualityIndicatorMethod.KLING_GUPTA,
+                normalize: false,
             });
 
             // Verify reasonable ranges
@@ -464,6 +607,7 @@ describe('QualityIndicatorMethod', () => {
             expect(rmse).to.be.greaterThan(0).and.lessThan(5);
             expect(mape).to.be.greaterThan(0).and.lessThan(50);
             expect(nse).to.be.greaterThan(0.9).and.lessThanOrEqual(1);
+            expect(kge).to.be.greaterThan(0.7).and.lessThanOrEqual(1);
 
             // Log for visibility (will show during test run)
             console.log('Real-world scenario results:');
@@ -475,12 +619,13 @@ describe('QualityIndicatorMethod', () => {
             console.log(`  RMSE: ${rmse.toFixed(2)} (lower is better, 0 = perfect)`);
             console.log(`  MAPE: ${mape.toFixed(1)}% (lower is better, 0 = perfect)`);
             console.log(`  NASH_SUTCLIFFE: ${nse.toFixed(3)} (higher is better, 1 = perfect)`);
+            console.log(`  KLING_GUPTA: ${kge.toFixed(3)} (higher is better, 1 = perfect)`);
         });
     });
 
     describe('NormalizeQualityIndicator', () => {
-        describe('should normalize all methods to 0-100 scale (0=bad, 100=best)', () => {
-            it('should return 100 for perfect predictions on all methods', () => {
+        describe('should normalize all methods to 0-1 scale (0=bad, 1=best)', () => {
+            it('should return 1 for perfect predictions on all methods', () => {
                 const points = [createPoint(10, 10), createPoint(20, 20), createPoint(30, 30)];
 
                 const methods = [
@@ -490,25 +635,26 @@ describe('QualityIndicatorMethod', () => {
                     QualityIndicatorMethod.RMSE,
                     QualityIndicatorMethod.MAPE,
                     QualityIndicatorMethod.NASH_SUTCLIFFE,
+                    QualityIndicatorMethod.KLING_GUPTA,
                 ];
 
                 for (const method of methods) {
                     const normalized = SpeedMatrix.ComputeNormalizedQualityIndicator(points, {
                         method,
                     });
-                    expect(normalized).to.equal(100, `${method} should return 100 for perfect`);
+                    expect(normalized).to.equal(1, `${method} should return 1 for perfect`);
                 }
             });
         });
 
         describe('SUCCESS_RATE normalization', () => {
-            it('should keep value as-is (already 0-100)', () => {
+            it('should scale to 0-1 by default', () => {
                 expect(
                     SpeedMatrix.NormalizeQualityIndicator(50, QualityIndicatorMethod.SUCCESS_RATE)
-                ).to.equal(50);
+                ).to.equal(0.5);
                 expect(
                     SpeedMatrix.NormalizeQualityIndicator(100, QualityIndicatorMethod.SUCCESS_RATE)
-                ).to.equal(100);
+                ).to.equal(1);
                 expect(
                     SpeedMatrix.NormalizeQualityIndicator(0, QualityIndicatorMethod.SUCCESS_RATE)
                 ).to.equal(0);
@@ -516,13 +662,13 @@ describe('QualityIndicatorMethod', () => {
         });
 
         describe('RATIO normalization', () => {
-            it('should multiply by 100', () => {
+            it('should pass through on 0-1 scale', () => {
                 expect(
                     SpeedMatrix.NormalizeQualityIndicator(1, QualityIndicatorMethod.RATIO)
-                ).to.equal(100);
+                ).to.equal(1);
                 expect(
                     SpeedMatrix.NormalizeQualityIndicator(0.5, QualityIndicatorMethod.RATIO)
-                ).to.equal(50);
+                ).to.equal(0.5);
                 expect(
                     SpeedMatrix.NormalizeQualityIndicator(0, QualityIndicatorMethod.RATIO)
                 ).to.equal(0);
@@ -530,16 +676,16 @@ describe('QualityIndicatorMethod', () => {
         });
 
         describe('NASH_SUTCLIFFE normalization', () => {
-            it('should clamp negative values to 0 and scale to 100', () => {
+            it('should clamp negative values to 0 and scale to 1', () => {
                 expect(
                     SpeedMatrix.NormalizeQualityIndicator(1, QualityIndicatorMethod.NASH_SUTCLIFFE)
-                ).to.equal(100);
+                ).to.equal(1);
                 expect(
                     SpeedMatrix.NormalizeQualityIndicator(
                         0.5,
                         QualityIndicatorMethod.NASH_SUTCLIFFE
                     )
-                ).to.equal(50);
+                ).to.equal(0.5);
                 expect(
                     SpeedMatrix.NormalizeQualityIndicator(0, QualityIndicatorMethod.NASH_SUTCLIFFE)
                 ).to.equal(0);
@@ -561,20 +707,53 @@ describe('QualityIndicatorMethod', () => {
                         QualityIndicatorMethod.NASH_SUTCLIFFE,
                         {nashSutcliffeMinClamp: -1}
                     )
-                ).to.equal(-50);
+                ).to.equal(-0.5);
+            });
+        });
+
+        describe('KLING_GUPTA normalization', () => {
+            it('should clamp negative values to 0 and scale to 1', () => {
+                expect(
+                    SpeedMatrix.NormalizeQualityIndicator(1, QualityIndicatorMethod.KLING_GUPTA)
+                ).to.equal(1);
+                expect(
+                    SpeedMatrix.NormalizeQualityIndicator(0.5, QualityIndicatorMethod.KLING_GUPTA)
+                ).to.equal(0.5);
+                expect(
+                    SpeedMatrix.NormalizeQualityIndicator(0, QualityIndicatorMethod.KLING_GUPTA)
+                ).to.equal(0);
+                expect(
+                    SpeedMatrix.NormalizeQualityIndicator(-1, QualityIndicatorMethod.KLING_GUPTA)
+                ).to.equal(0);
+                expect(
+                    SpeedMatrix.NormalizeQualityIndicator(
+                        -Infinity,
+                        QualityIndicatorMethod.KLING_GUPTA
+                    )
+                ).to.equal(0);
+            });
+
+            it('should allow custom min clamp', () => {
+                expect(
+                    SpeedMatrix.NormalizeQualityIndicator(
+                        -0.5,
+                        QualityIndicatorMethod.KLING_GUPTA,
+                        {kgeMinClamp: -1}
+                    )
+                ).to.equal(-0.5);
             });
         });
 
         describe('DELTA normalization', () => {
             it('should invert using reference max (default 10 mm/h)', () => {
-                // 0 error = 100 quality
+                // 0 error = 1 quality
                 expect(
                     SpeedMatrix.NormalizeQualityIndicator(0, QualityIndicatorMethod.DELTA)
-                ).to.equal(100);
-                // 5 mm/h error = 50 quality (with default maxRef=10)
+                ).to.equal(1);
+                // 5 mm/h error = 0.5 quality (with default maxRef=10)
                 expect(
                     SpeedMatrix.NormalizeQualityIndicator(5, QualityIndicatorMethod.DELTA)
-                ).to.equal(50);
+                ).to.equal(0.5);
                 // 10 mm/h error = 0 quality
                 expect(
                     SpeedMatrix.NormalizeQualityIndicator(10, QualityIndicatorMethod.DELTA)
@@ -586,12 +765,12 @@ describe('QualityIndicatorMethod', () => {
             });
 
             it('should use custom reference max', () => {
-                // 5 mm/h error with maxRef=20 = 75 quality
+                // 5 mm/h error with maxRef=20 = 0.75 quality
                 expect(
                     SpeedMatrix.NormalizeQualityIndicator(5, QualityIndicatorMethod.DELTA, {
                         deltaMaxRef: 20,
                     })
-                ).to.equal(75);
+                ).to.equal(0.75);
             });
         });
 
@@ -599,10 +778,10 @@ describe('QualityIndicatorMethod', () => {
             it('should invert using reference max (default 10 mm/h)', () => {
                 expect(
                     SpeedMatrix.NormalizeQualityIndicator(0, QualityIndicatorMethod.RMSE)
-                ).to.equal(100);
+                ).to.equal(1);
                 expect(
                     SpeedMatrix.NormalizeQualityIndicator(5, QualityIndicatorMethod.RMSE)
-                ).to.equal(50);
+                ).to.equal(0.5);
                 expect(
                     SpeedMatrix.NormalizeQualityIndicator(10, QualityIndicatorMethod.RMSE)
                 ).to.equal(0);
@@ -613,7 +792,7 @@ describe('QualityIndicatorMethod', () => {
                     SpeedMatrix.NormalizeQualityIndicator(5, QualityIndicatorMethod.RMSE, {
                         rmseMaxRef: 25,
                     })
-                ).to.equal(80);
+                ).to.equal(0.8);
             });
         });
 
@@ -621,10 +800,10 @@ describe('QualityIndicatorMethod', () => {
             it('should invert using reference max (default 100%)', () => {
                 expect(
                     SpeedMatrix.NormalizeQualityIndicator(0, QualityIndicatorMethod.MAPE)
-                ).to.equal(100);
+                ).to.equal(1);
                 expect(
                     SpeedMatrix.NormalizeQualityIndicator(50, QualityIndicatorMethod.MAPE)
-                ).to.equal(50);
+                ).to.equal(0.5);
                 expect(
                     SpeedMatrix.NormalizeQualityIndicator(100, QualityIndicatorMethod.MAPE)
                 ).to.equal(0);
@@ -639,7 +818,7 @@ describe('QualityIndicatorMethod', () => {
                     SpeedMatrix.NormalizeQualityIndicator(50, QualityIndicatorMethod.MAPE, {
                         mapeMaxRef: 200,
                     })
-                ).to.equal(75);
+                ).to.equal(0.75);
             });
         });
 
@@ -649,11 +828,11 @@ describe('QualityIndicatorMethod', () => {
                     createPoint(10, 12), // delta = 2
                     createPoint(20, 18), // delta = 2
                 ];
-                // Raw DELTA = 2, normalized = 100 - (2/10)*100 = 80
+                // Raw DELTA = 2, normalized = 1 - (2/10) = 0.8
                 const normalized = SpeedMatrix.ComputeNormalizedQualityIndicator(points, {
                     method: QualityIndicatorMethod.DELTA,
                 });
-                expect(normalized).to.equal(80);
+                expect(normalized).to.equal(0.8);
             });
 
             it('should pass normalization options', () => {
@@ -661,18 +840,18 @@ describe('QualityIndicatorMethod', () => {
                     createPoint(10, 12), // delta = 2
                     createPoint(20, 18), // delta = 2
                 ];
-                // Raw DELTA = 2, with maxRef=4: normalized = 100 - (2/4)*100 = 50
+                // Raw DELTA = 2, with maxRef=4: normalized = 1 - (2/4) = 0.5
                 const normalized = SpeedMatrix.ComputeNormalizedQualityIndicator(
                     points,
                     {method: QualityIndicatorMethod.DELTA},
                     {deltaMaxRef: 4}
                 );
-                expect(normalized).to.equal(50);
+                expect(normalized).to.equal(0.5);
             });
         });
 
         describe('Real-world scenario with normalization', () => {
-            it('should normalize all methods to comparable 0-100 scale', () => {
+            it('should normalize all methods to comparable 0-1 scale', () => {
                 const points = [
                     createPoint(0, 0),
                     createPoint(2.5, 2.8),
@@ -691,94 +870,99 @@ describe('QualityIndicatorMethod', () => {
                     QualityIndicatorMethod.RMSE,
                     QualityIndicatorMethod.MAPE,
                     QualityIndicatorMethod.NASH_SUTCLIFFE,
+                    QualityIndicatorMethod.KLING_GUPTA,
                 ];
 
-                console.log('\nNormalized quality indicators (0=bad, 100=best):');
+                console.log('\nNormalized quality indicators (0=bad, 1=best):');
                 for (const method of methods) {
-                    const raw = SpeedMatrix.ComputeQualityIndicator(points, {method});
+                    const raw = SpeedMatrix.ComputeQualityIndicator(points, {method, normalize: false});
                     const normalized = SpeedMatrix.ComputeNormalizedQualityIndicator(points, {
                         method,
                     });
 
-                    // All normalized values should be in 0-100 range
+                    // All normalized values should be in 0-1 range
                     expect(normalized).to.be.greaterThanOrEqual(0);
-                    expect(normalized).to.be.lessThanOrEqual(100);
+                    expect(normalized).to.be.lessThanOrEqual(1);
 
                     console.log(
-                        `  ${method.padEnd(15)}: raw=${raw.toFixed(2).padStart(8)} → normalized=${normalized.toFixed(1).padStart(6)}`
+                        `  ${method.padEnd(15)}: raw=${raw.toFixed(2).padStart(8)} → normalized=${normalized.toFixed(3).padStart(6)}`
                     );
                 }
             });
         });
 
         describe('normalizeScale option', () => {
-            it('should default to 0-100 scale', () => {
+            it('should default to 0-1 scale', () => {
                 expect(
                     SpeedMatrix.NormalizeQualityIndicator(0, QualityIndicatorMethod.MAPE)
-                ).to.equal(100);
-                expect(
-                    SpeedMatrix.NormalizeQualityIndicator(1, QualityIndicatorMethod.RATIO)
-                ).to.equal(100);
-            });
-
-            it('should support 0-1 scale for MAPE', () => {
-                expect(
-                    SpeedMatrix.NormalizeQualityIndicator(0, QualityIndicatorMethod.MAPE, {
-                        normalizeScale: 1,
-                    })
                 ).to.equal(1);
                 expect(
-                    SpeedMatrix.NormalizeQualityIndicator(50, QualityIndicatorMethod.MAPE, {
-                        normalizeScale: 1,
+                    SpeedMatrix.NormalizeQualityIndicator(1, QualityIndicatorMethod.RATIO)
+                ).to.equal(1);
+            });
+
+            it('should support 0-100 scale for MAPE', () => {
+                expect(
+                    SpeedMatrix.NormalizeQualityIndicator(0, QualityIndicatorMethod.MAPE, {
+                        normalizeScale: 100,
                     })
-                ).to.equal(0.5);
+                ).to.equal(100);
+                expect(
+                    SpeedMatrix.NormalizeQualityIndicator(50, QualityIndicatorMethod.MAPE, {
+                        normalizeScale: 100,
+                    })
+                ).to.equal(50);
                 expect(
                     SpeedMatrix.NormalizeQualityIndicator(100, QualityIndicatorMethod.MAPE, {
-                        normalizeScale: 1,
+                        normalizeScale: 100,
                     })
                 ).to.equal(0);
                 expect(
                     SpeedMatrix.NormalizeQualityIndicator(200, QualityIndicatorMethod.MAPE, {
-                        normalizeScale: 1,
+                        normalizeScale: 100,
                     })
                 ).to.equal(0);
             });
 
-            it('should support 0-1 scale for all methods', () => {
-                const scale1 = {normalizeScale: 1};
-
+            it('should support 0-1 scale for all methods (default)', () => {
                 // SUCCESS_RATE: 50% → 0.5
                 expect(
                     SpeedMatrix.NormalizeQualityIndicator(
                         50,
-                        QualityIndicatorMethod.SUCCESS_RATE,
-                        scale1
+                        QualityIndicatorMethod.SUCCESS_RATE
                     )
                 ).to.equal(0.5);
 
                 // RATIO: 0.8 → 0.8
                 expect(
-                    SpeedMatrix.NormalizeQualityIndicator(0.8, QualityIndicatorMethod.RATIO, scale1)
+                    SpeedMatrix.NormalizeQualityIndicator(0.8, QualityIndicatorMethod.RATIO)
                 ).to.equal(0.8);
 
                 // NASH_SUTCLIFFE: 0.9 → 0.9
                 expect(
                     SpeedMatrix.NormalizeQualityIndicator(
                         0.9,
-                        QualityIndicatorMethod.NASH_SUTCLIFFE,
-                        scale1
+                        QualityIndicatorMethod.NASH_SUTCLIFFE
                     )
                 ).to.equal(0.9);
 
                 // DELTA: 5 mm/h with default maxRef=10 → 0.5
                 expect(
-                    SpeedMatrix.NormalizeQualityIndicator(5, QualityIndicatorMethod.DELTA, scale1)
+                    SpeedMatrix.NormalizeQualityIndicator(5, QualityIndicatorMethod.DELTA)
                 ).to.equal(0.5);
 
                 // RMSE: 5 mm/h with default maxRef=10 → 0.5
                 expect(
-                    SpeedMatrix.NormalizeQualityIndicator(5, QualityIndicatorMethod.RMSE, scale1)
+                    SpeedMatrix.NormalizeQualityIndicator(5, QualityIndicatorMethod.RMSE)
                 ).to.equal(0.5);
+
+                // KLING_GUPTA: 0.9 → 0.9
+                expect(
+                    SpeedMatrix.NormalizeQualityIndicator(
+                        0.9,
+                        QualityIndicatorMethod.KLING_GUPTA
+                    )
+                ).to.equal(0.9);
             });
 
             it('should work with ComputeNormalizedQualityIndicator', () => {
@@ -786,8 +970,7 @@ describe('QualityIndicatorMethod', () => {
 
                 const normalized = SpeedMatrix.ComputeNormalizedQualityIndicator(
                     points,
-                    {method: QualityIndicatorMethod.MAPE},
-                    {normalizeScale: 1}
+                    {method: QualityIndicatorMethod.MAPE}
                 );
                 expect(normalized).to.equal(1);
             });
@@ -799,6 +982,7 @@ describe('QualityIndicatorMethod', () => {
                 expect(QUALITY_NORMALIZATION_DEFAULTS.RMSE_MAX_REF).to.equal(10);
                 expect(QUALITY_NORMALIZATION_DEFAULTS.MAPE_MAX_REF).to.equal(100);
                 expect(QUALITY_NORMALIZATION_DEFAULTS.NASH_SUTCLIFFE_MIN_CLAMP).to.equal(0);
+                expect(QUALITY_NORMALIZATION_DEFAULTS.KGE_MIN_CLAMP).to.equal(0);
             });
         });
     });
