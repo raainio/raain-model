@@ -2,4 +2,5 @@
 export interface RaainApiRainsCumulativeCumulativesComparesRequest {
     provider: string; // e.g. "Raain"
     timeStepInMinutes: number; // App granularity (e.g. 30), converted to windowInMinutes by raain-api
+    timeStepMode?: 'eq' | 'lte'; // 'eq' = exact match (default), 'lte' = all frequencies <= timeStepInMinutes
 }

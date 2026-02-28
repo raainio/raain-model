@@ -473,6 +473,27 @@ export class SpeedMatrixContainer {
             speedMatrixContainerToMergeIn.flattenMatrices
         );
 
+        // Deduplicate matrices by name: combine qualityPoints from same-name matrices
+        if (this.matrices?.length > 1) {
+            const byName = new Map<string, SpeedMatrix>();
+            for (const m of this.matrices) {
+                const existing = byName.get(m.name);
+                if (existing) {
+                    byName.set(m.name, SpeedMatrix.CreateFromJson({
+                        name: existing.name,
+                        remarks: existing.remarks,
+                        qualityPoints: [
+                            ...existing.getQualityPoints(),
+                            ...m.getQualityPoints(),
+                        ],
+                    }));
+                } else {
+                    byName.set(m.name, m);
+                }
+            }
+            this.matrices = [...byName.values()];
+        }
+
         return this;
     }
 

@@ -428,11 +428,7 @@ describe('QualityIndicatorMethod', () => {
         });
 
         it('should return negative value for poor predictions', () => {
-            const points = [
-                createPoint(10, 50),
-                createPoint(20, 50),
-                createPoint(30, 50),
-            ];
+            const points = [createPoint(10, 50), createPoint(20, 50), createPoint(30, 50)];
 
             const indicator = SpeedMatrix.ComputeQualityIndicator(points, {
                 method: QualityIndicatorMethod.KLING_GUPTA,
@@ -493,7 +489,10 @@ describe('QualityIndicatorMethod', () => {
             ];
 
             for (const method of methods) {
-                const indicator = SpeedMatrix.ComputeQualityIndicator([], {method, normalize: false});
+                const indicator = SpeedMatrix.ComputeQualityIndicator([], {
+                    method,
+                    normalize: false,
+                });
                 expect(indicator).to.equal(0, `${method} should return 0 for empty array`);
             }
         });
@@ -502,10 +501,16 @@ describe('QualityIndicatorMethod', () => {
             const points = [createPoint(100, 100)];
 
             expect(
-                SpeedMatrix.ComputeQualityIndicator(points, {method: QualityIndicatorMethod.DELTA, normalize: false})
+                SpeedMatrix.ComputeQualityIndicator(points, {
+                    method: QualityIndicatorMethod.DELTA,
+                    normalize: false,
+                })
             ).to.equal(0);
             expect(
-                SpeedMatrix.ComputeQualityIndicator(points, {method: QualityIndicatorMethod.RATIO, normalize: false})
+                SpeedMatrix.ComputeQualityIndicator(points, {
+                    method: QualityIndicatorMethod.RATIO,
+                    normalize: false,
+                })
             ).to.equal(1);
             expect(
                 SpeedMatrix.ComputeQualityIndicator(points, {
@@ -514,10 +519,16 @@ describe('QualityIndicatorMethod', () => {
                 })
             ).to.equal(100);
             expect(
-                SpeedMatrix.ComputeQualityIndicator(points, {method: QualityIndicatorMethod.RMSE, normalize: false})
+                SpeedMatrix.ComputeQualityIndicator(points, {
+                    method: QualityIndicatorMethod.RMSE,
+                    normalize: false,
+                })
             ).to.equal(0);
             expect(
-                SpeedMatrix.ComputeQualityIndicator(points, {method: QualityIndicatorMethod.MAPE, normalize: false})
+                SpeedMatrix.ComputeQualityIndicator(points, {
+                    method: QualityIndicatorMethod.MAPE,
+                    normalize: false,
+                })
             ).to.equal(0);
             expect(
                 SpeedMatrix.ComputeQualityIndicator(points, {
@@ -549,10 +560,16 @@ describe('QualityIndicatorMethod', () => {
 
             // Should only use the valid point
             expect(
-                SpeedMatrix.ComputeQualityIndicator(points, {method: QualityIndicatorMethod.DELTA, normalize: false})
+                SpeedMatrix.ComputeQualityIndicator(points, {
+                    method: QualityIndicatorMethod.DELTA,
+                    normalize: false,
+                })
             ).to.equal(0);
             expect(
-                SpeedMatrix.ComputeQualityIndicator(points, {method: QualityIndicatorMethod.RATIO, normalize: false})
+                SpeedMatrix.ComputeQualityIndicator(points, {
+                    method: QualityIndicatorMethod.RATIO,
+                    normalize: false,
+                })
             ).to.equal(1);
         });
     });
@@ -875,7 +892,10 @@ describe('QualityIndicatorMethod', () => {
 
                 console.log('\nNormalized quality indicators (0=bad, 1=best):');
                 for (const method of methods) {
-                    const raw = SpeedMatrix.ComputeQualityIndicator(points, {method, normalize: false});
+                    const raw = SpeedMatrix.ComputeQualityIndicator(points, {
+                        method,
+                        normalize: false,
+                    });
                     const normalized = SpeedMatrix.ComputeNormalizedQualityIndicator(points, {
                         method,
                     });
@@ -927,10 +947,7 @@ describe('QualityIndicatorMethod', () => {
             it('should support 0-1 scale for all methods (default)', () => {
                 // SUCCESS_RATE: 50% → 0.5
                 expect(
-                    SpeedMatrix.NormalizeQualityIndicator(
-                        50,
-                        QualityIndicatorMethod.SUCCESS_RATE
-                    )
+                    SpeedMatrix.NormalizeQualityIndicator(50, QualityIndicatorMethod.SUCCESS_RATE)
                 ).to.equal(0.5);
 
                 // RATIO: 0.8 → 0.8
@@ -958,20 +975,16 @@ describe('QualityIndicatorMethod', () => {
 
                 // KLING_GUPTA: 0.9 → 0.9
                 expect(
-                    SpeedMatrix.NormalizeQualityIndicator(
-                        0.9,
-                        QualityIndicatorMethod.KLING_GUPTA
-                    )
+                    SpeedMatrix.NormalizeQualityIndicator(0.9, QualityIndicatorMethod.KLING_GUPTA)
                 ).to.equal(0.9);
             });
 
             it('should work with ComputeNormalizedQualityIndicator', () => {
                 const points = [createPoint(10, 10), createPoint(20, 20), createPoint(30, 30)];
 
-                const normalized = SpeedMatrix.ComputeNormalizedQualityIndicator(
-                    points,
-                    {method: QualityIndicatorMethod.MAPE}
-                );
+                const normalized = SpeedMatrix.ComputeNormalizedQualityIndicator(points, {
+                    method: QualityIndicatorMethod.MAPE,
+                });
                 expect(normalized).to.equal(1);
             });
         });

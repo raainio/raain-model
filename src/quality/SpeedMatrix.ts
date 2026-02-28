@@ -467,10 +467,8 @@ export class SpeedMatrix {
         const alpha = stdRain / stdGauge;
         const beta = meanGauge === 0 ? (meanRain === 0 ? 1 : Infinity) : meanRain / meanGauge;
 
-        return 1 - Math.sqrt(
-            (r - 1) * (r - 1) +
-            (alpha - 1) * (alpha - 1) +
-            (beta - 1) * (beta - 1)
+        return (
+            1 - Math.sqrt((r - 1) * (r - 1) + (alpha - 1) * (alpha - 1) + (beta - 1) * (beta - 1))
         );
     }
 
