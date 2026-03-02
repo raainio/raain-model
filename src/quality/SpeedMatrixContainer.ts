@@ -479,14 +479,17 @@ export class SpeedMatrixContainer {
             for (const m of this.matrices) {
                 const existing = byName.get(m.name);
                 if (existing) {
-                    byName.set(m.name, SpeedMatrix.CreateFromJson({
-                        name: existing.name,
-                        remarks: existing.remarks,
-                        qualityPoints: [
-                            ...existing.getQualityPoints(),
-                            ...m.getQualityPoints(),
-                        ],
-                    }));
+                    byName.set(
+                        m.name,
+                        SpeedMatrix.CreateFromJson({
+                            name: existing.name,
+                            remarks: existing.remarks,
+                            qualityPoints: [
+                                ...existing.getQualityPoints(),
+                                ...m.getQualityPoints(),
+                            ],
+                        })
+                    );
                 } else {
                     byName.set(m.name, m);
                 }

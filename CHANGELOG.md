@@ -7,12 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [3.2.0] - 2026-02-28
+
+### Changed
+
+- **Breaking**: 3.1.x => 3.2.x (api stability)
+
 ## [3.1.27] - 2026-02-28
 
 ### Added
 
-- [RAD-178] `timeStepMode` option on cumulative compares request (eq/lte filtering)
-- [RAD-178] Deduplicate matrices by name in SpeedMatrixContainer merge (combine qualityPoints)
+- `timeStepMode` option on cumulative compares request (eq/lte filtering)
+- Deduplicate matrices by name in SpeedMatrixContainer merge (combine qualityPoints)
 
 ## [3.1.26] - 2026-02-28
 
