@@ -31,7 +31,7 @@ export class RainComputationAbstract extends RaainNode {
     protected mergeTools: {
         cartesianTools: CartesianTools;
         latsLngs: MergeLatLng[][];
-        limitPoints: LatLng[];
+        limitPoints?: LatLng[];
     };
 
     constructor(json: {
@@ -204,19 +204,23 @@ export class RainComputationAbstract extends RaainNode {
         const latLng = this.mergeTools.cartesianTools.getLatLngFromEarthMap(cartesianValue);
         const latLngScale = this.mergeTools.cartesianTools.getScaleLatLngFromEarth(latLng);
 
-        const latIndex = Math.round(
-            (latLng.lat - this.mergeTools.limitPoints[0].lat) / latLngScale.lat
-        );
-        const lngIndex = Math.round(
-            (latLng.lng - this.mergeTools.limitPoints[0].lng) / latLngScale.lng
-        );
+        let latIndex = 1,
+            lngIndex = 1;
+        if (this.mergeTools.limitPoints?.length) {
+            latIndex = Math.round(
+                (latLng.lat - this.mergeTools.limitPoints[0].lat) / latLngScale.lat
+            );
+            lngIndex = Math.round(
+                (latLng.lng - this.mergeTools.limitPoints[0].lng) / latLngScale.lng
+            );
+        }
 
         return {index: [latIndex, lngIndex], latLng};
     }
 
     protected buildLatLngMatrix(options: {
         cartesianTools: CartesianTools;
-        mergeLimitPoints: LatLng[];
+        mergeLimitPoints?: LatLng[];
     }) {
         const latsLngs: MergeLatLng[][] = [];
         this.mergeTools = {latsLngs, cartesianTools: options.cartesianTools, limitPoints: []};
@@ -289,12 +293,22 @@ export class RainComputationAbstract extends RaainNode {
         rainMeasures: RainMeasure[],
         options: {
             mergeStrategy: MergeStrategy;
-            mergeLimitPoints: [LatLng, LatLng];
+            mergeLimitPoints?: [LatLng, LatLng];
             removeNullValues?: boolean;
         }
     ): RainMeasure[] {
         if (rainMeasures.length === 0) {
             return [];
+        }
+
+        if (!options.mergeLimitPoints) {
+            options.mergeLimitPoints = this.computeLimitPointsFromMeasures(rainMeasures);
+            if (options.mergeLimitPoints) {
+                this.buildLatLngMatrix({
+                    cartesianTools: this.mergeTools.cartesianTools,
+                    mergeLimitPoints: options.mergeLimitPoints,
+                });
+            }
         }
 
         this.buildMergeTools(rainMeasures);
@@ -315,6 +329,34 @@ export class RainComputationAbstract extends RaainNode {
         ];
 
         return [rm];
+    }
+
+    protected computeLimitPointsFromMeasures(
+        rainMeasures: RainMeasure[]
+    ): [LatLng, LatLng] | undefined {
+        let minLat: number, minLng: number, maxLat: number, maxLng: number;
+        for (const rainMeasure of rainMeasures) {
+            for (const value of rainMeasure.values) {
+                if (typeof value['cartesianValues'] !== 'undefined') {
+                    const cmv = new CartesianMeasureValue(value as any);
+                    const lp = cmv.getLimitPoints();
+                    if (lp?.length === 2) {
+                        minLat =
+                            typeof minLat === 'undefined' ? lp[0].lat : Math.min(minLat, lp[0].lat);
+                        minLng =
+                            typeof minLng === 'undefined' ? lp[0].lng : Math.min(minLng, lp[0].lng);
+                        maxLat =
+                            typeof maxLat === 'undefined' ? lp[1].lat : Math.max(maxLat, lp[1].lat);
+                        maxLng =
+                            typeof maxLng === 'undefined' ? lp[1].lng : Math.max(maxLng, lp[1].lng);
+                    }
+                }
+            }
+        }
+        if (typeof minLat === 'undefined') {
+            return undefined;
+        }
+        return [new LatLng({lat: minLat, lng: minLng}), new LatLng({lat: maxLat, lng: maxLng})];
     }
 
     protected buildMergeCartesianValues(mergeStrategy: MergeStrategy, removeNullValues = false) {

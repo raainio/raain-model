@@ -7,7 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [3.2.0] - 2026-02-28
+### Fixed
+
+- `mergeCartesianResults` no longer silently produces empty data when `mergeLimitPoints` is undefined — limit points are
+  now auto-computed from the cartesian values, so all data is merged
+
+### Added
+
+- Tests for `mergeCartesianResults` without `mergeLimitPoints` (SUM, AVERAGE, MAX, empty results, single value,
+  equivalence with explicit limit points)
+
+## [3.2.1] - 2026-03-02
 
 ### Changed
 

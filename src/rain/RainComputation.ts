@@ -75,7 +75,7 @@ export class RainComputation extends RainComputationAbstract {
 
     mergeCartesianResults(options: {
         mergeStrategy: MergeStrategy;
-        mergeLimitPoints: [LatLng, LatLng];
+        mergeLimitPoints?: [LatLng, LatLng];
         cartesianTools: CartesianTools;
         removeNullValues?: boolean;
     }): RainMeasure[] {

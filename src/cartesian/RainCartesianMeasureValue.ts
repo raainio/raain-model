@@ -8,7 +8,7 @@ export class RainCartesianMeasureValue extends CartesianMeasureValue implements 
 
     constructor(json: {
         cartesianValues: string | CartesianValue[];
-        limitPoints: [LatLng, LatLng];
+        limitPoints?: [LatLng, LatLng];
         version: string;
     }) {
         super(json);

@@ -175,16 +175,14 @@ export class RainNode extends RaainNode {
     }
 
     public getCenter(): LatLng {
-        let center = new LatLng({lat: 0, lng: 0});
-
-        this.setDefaultLatLng(this['radars'], center);
+        this.setDefaultLatLng(this['radars']);
 
         if (this.latLngRectsAsJSON && this.latLngRectsAsJSON !== '[]') {
             const rects = JSON.parse(this.latLngRectsAsJSON);
-            center = CartesianTools.GetLatLngRectsCenter(rects);
+            return CartesianTools.GetLatLngRectsCenter(rects);
         }
 
-        return center;
+        return undefined;
     }
 
     public getLimitPoints(): [LatLng, LatLng] {

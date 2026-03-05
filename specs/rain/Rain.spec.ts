@@ -35,8 +35,7 @@ describe('Rain', function () {
             '{"id":"notEmpty","links":[],"name":"","status":-1,"quality":-1,"team":null,' +
                 '"radars":[],"gauges":[],"lastCompletedComputations":[]}'
         );
-        expect(rainNodeEmpty.getCenter().lat).eq(0);
-        expect(rainNodeEmpty.getCenter().lng).eq(0);
+        expect(rainNodeEmpty.getCenter()).eq(undefined);
 
         const radarNode1 = new RadarNode({
             id: 'rid',
@@ -395,5 +394,186 @@ describe('Rain', function () {
         expect(cartesianValuesFound.length).eq(110);
         expect(cartesianValuesFound[0].lat).eq(2);
         expect(cartesianValuesFound[0].lng).eq(1.5);
+    });
+
+    describe('mergeCartesianResults without mergeLimitPoints', () => {
+        const buildRainComputation = (
+            limitPointsOfEach: [LatLng, LatLng],
+            pixelWidth: LatLng,
+            resultCount = 4
+        ) => {
+            const rainCartesianMeasureValues = [];
+            for (let valueId = 1; valueId <= resultCount; valueId++) {
+                const cartesianValues = [];
+                for (
+                    let lat = limitPointsOfEach[0].lat;
+                    lat <= limitPointsOfEach[1].lat;
+                    lat += pixelWidth.lat
+                ) {
+                    for (
+                        let lng = limitPointsOfEach[0].lng;
+                        lng <= limitPointsOfEach[1].lng;
+                        lng += pixelWidth.lng
+                    ) {
+                        cartesianValues.push(new CartesianValue({lat, lng, value: valueId}));
+                    }
+                }
+                rainCartesianMeasureValues.push(
+                    new RainCartesianMeasureValue({
+                        cartesianValues,
+                        limitPoints: limitPointsOfEach,
+                        version: 'v',
+                    })
+                );
+            }
+            return new RainComputation({
+                id: 'noLimit',
+                date: new Date('2022-01-01'),
+                isReady: true,
+                results: rainCartesianMeasureValues,
+            });
+        };
+
+        it('should merge all values when mergeLimitPoints is undefined (SUM)', () => {
+            const limitPointsOfEach: [LatLng, LatLng] = [
+                new LatLng({lat: 1, lng: 1.5}),
+                new LatLng({lat: 2.5, lng: 2}),
+            ];
+            const pixelWidth = new LatLng({lat: 0.05, lng: 0.05});
+            const rainComputation = buildRainComputation(limitPointsOfEach, pixelWidth);
+            const cartesianTools = new CartesianTools();
+
+            const merged = rainComputation.mergeCartesianResults({
+                mergeStrategy: MergeStrategy.SUM,
+                cartesianTools,
+                mergeLimitPoints: undefined,
+                removeNullValues: true,
+            });
+
+            expect(merged.length).eq(1);
+            expect(merged[0].values.length).eq(1);
+            const cartesianValues: CartesianValue[] = (merged[0].values[0] as any).cartesianValues;
+            expect(cartesianValues.length).greaterThan(0);
+            // SUM of 4 results with values 1,2,3,4 => each cell = 10
+            expect(cartesianValues[0].value).eq(10);
+        });
+
+        it('should merge all values when mergeLimitPoints is undefined (AVERAGE)', () => {
+            const limitPointsOfEach: [LatLng, LatLng] = [
+                new LatLng({lat: 1, lng: 1.5}),
+                new LatLng({lat: 2.5, lng: 2}),
+            ];
+            const pixelWidth = new LatLng({lat: 0.05, lng: 0.05});
+            const rainComputation = buildRainComputation(limitPointsOfEach, pixelWidth);
+            const cartesianTools = new CartesianTools();
+
+            const merged = rainComputation.mergeCartesianResults({
+                mergeStrategy: MergeStrategy.AVERAGE,
+                cartesianTools,
+                mergeLimitPoints: undefined,
+                removeNullValues: true,
+            });
+
+            expect(merged.length).eq(1);
+            const cartesianValues: CartesianValue[] = (merged[0].values[0] as any).cartesianValues;
+            expect(cartesianValues.length).greaterThan(0);
+            // AVERAGE of 4 results with values 1,2,3,4 => each cell = 2.5
+            expect(cartesianValues[0].value).eq(2.5);
+        });
+
+        it('should merge all values when mergeLimitPoints is undefined (MAX)', () => {
+            const limitPointsOfEach: [LatLng, LatLng] = [
+                new LatLng({lat: 1, lng: 1.5}),
+                new LatLng({lat: 2.5, lng: 2}),
+            ];
+            const pixelWidth = new LatLng({lat: 0.05, lng: 0.05});
+            const rainComputation = buildRainComputation(limitPointsOfEach, pixelWidth);
+            const cartesianTools = new CartesianTools();
+
+            const merged = rainComputation.mergeCartesianResults({
+                mergeStrategy: MergeStrategy.MAX,
+                cartesianTools,
+                mergeLimitPoints: undefined,
+                removeNullValues: true,
+            });
+
+            expect(merged.length).eq(1);
+            const cartesianValues: CartesianValue[] = (merged[0].values[0] as any).cartesianValues;
+            expect(cartesianValues.length).greaterThan(0);
+            // MAX of 4 results with values 1,2,3,4 => each cell = 4
+            expect(cartesianValues[0].value).eq(4);
+        });
+
+        it('should handle empty results with no mergeLimitPoints', () => {
+            const rainComputation = new RainComputation({
+                id: 'empty',
+                date: new Date('2022-01-01'),
+                isReady: true,
+                results: [],
+            });
+            const cartesianTools = new CartesianTools();
+
+            const merged = rainComputation.mergeCartesianResults({
+                mergeStrategy: MergeStrategy.SUM,
+                cartesianTools,
+                mergeLimitPoints: undefined,
+            });
+
+            expect(merged.length).eq(1);
+            const cartesianValues: CartesianValue[] = (merged[0].values[0] as any).cartesianValues;
+            expect(cartesianValues.length).eq(0);
+        });
+
+        it('should handle single cartesian value with no mergeLimitPoints', () => {
+            const rainComputation = buildRainComputation(
+                [new LatLng({lat: 5, lng: 5}), new LatLng({lat: 5, lng: 5})],
+                new LatLng({lat: 0.01, lng: 0.01}),
+                1
+            );
+            const cartesianTools = new CartesianTools();
+
+            const merged = rainComputation.mergeCartesianResults({
+                mergeStrategy: MergeStrategy.SUM,
+                cartesianTools,
+                mergeLimitPoints: undefined,
+                removeNullValues: true,
+            });
+
+            expect(merged.length).eq(1);
+            const cartesianValues: CartesianValue[] = (merged[0].values[0] as any).cartesianValues;
+            expect(cartesianValues.length).eq(1);
+            expect(cartesianValues[0].value).eq(1);
+        });
+
+        it('should produce same results with explicit limitPoints matching data extent', () => {
+            const limitPointsOfEach: [LatLng, LatLng] = [
+                new LatLng({lat: 1, lng: 1.5}),
+                new LatLng({lat: 2.5, lng: 2}),
+            ];
+            const pixelWidth = new LatLng({lat: 0.05, lng: 0.05});
+            const cartesianTools = new CartesianTools();
+
+            const rc1 = buildRainComputation(limitPointsOfEach, pixelWidth);
+            const mergedWithout = rc1.mergeCartesianResults({
+                mergeStrategy: MergeStrategy.SUM,
+                cartesianTools,
+                mergeLimitPoints: undefined,
+                removeNullValues: true,
+            });
+
+            const rc2 = buildRainComputation(limitPointsOfEach, pixelWidth);
+            const mergedWith = rc2.mergeCartesianResults({
+                mergeStrategy: MergeStrategy.SUM,
+                cartesianTools,
+                mergeLimitPoints: limitPointsOfEach,
+                removeNullValues: true,
+            });
+
+            const valuesWithout: CartesianValue[] = (mergedWithout[0].values[0] as any)
+                .cartesianValues;
+            const valuesWith: CartesianValue[] = (mergedWith[0].values[0] as any).cartesianValues;
+            expect(valuesWithout.length).eq(valuesWith.length);
+            expect(valuesWithout[0].value).eq(valuesWith[0].value);
+        });
     });
 });

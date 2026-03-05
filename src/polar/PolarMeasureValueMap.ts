@@ -10,7 +10,8 @@ const shouldLogPerf = false;
  */
 export class PolarMeasureValueMap {
     protected builtMeasureValuePolarContainers: MeasureValuePolarContainer[] = [];
-    private buildTimeMs: number = 0;
+    protected readonly buildTimeMs: number = 0;
+    protected readonly defaultValue = 0;
 
     constructor(
         public polarMeasureValue: PolarMeasureValue,
@@ -66,7 +67,7 @@ export class PolarMeasureValueMap {
         });
 
         const filteredPolarMeasureValue = polarMeasureValue.getFiltered({
-            nullValues: true,
+            nullValues: false,
             ordered: true,
         });
 
@@ -127,7 +128,7 @@ export class PolarMeasureValueMap {
     }
 
     getPolarValue(json: {azimuthIndex: number; edgeIndex: number}): PolarValue | null {
-        let edgeValue = 0;
+        let edgeValue = this.defaultValue;
         let distanceInMetersFound = 0;
         const {azimuthIndex, azimuthInDegrees} = this.updatedAzimuth(json.azimuthIndex);
         if (azimuthIndex >= 0) {
@@ -331,7 +332,7 @@ export class PolarMeasureValueMap {
             const polarEdges = [];
             for (let edgeIndex = edgeMin; edgeIndex <= edgeMax; edgeIndex++) {
                 const polarValue = this.getPolarValue({azimuthIndex, edgeIndex});
-                polarEdges.push(polarValue?.value ?? 0);
+                polarEdges.push(polarValue?.value ?? this.defaultValue);
             }
             newMeasureValuePolarContainers.push(
                 new MeasureValuePolarContainer({
@@ -398,10 +399,10 @@ export class PolarMeasureValueMap {
                 });
                 if (!polarValue) {
                     console.warn(
-                        `### raain-model > polarValue mismatch on az:${azimuthInDegrees}, set 0 as default`
+                        `### raain-model > polarValue mismatch on az:${azimuthInDegrees}, set ${this.defaultValue} as default`
                     );
                 }
-                polarEdges.push(polarValue?.value ?? 0);
+                polarEdges.push(polarValue?.value ?? this.defaultValue);
             }
             builtMeasureValuePolarContainers.push(
                 new MeasureValuePolarContainer({
