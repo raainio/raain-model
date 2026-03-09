@@ -534,4 +534,93 @@ describe('Polar', () => {
         expect(staticDuplicated.polarMeasureValue.getAzimuthsCount()).eq(720);
         expect(staticDuplicated.polarMeasureValue.getPolarEdgesCount()).eq(255);
     });
+
+    it('should preserve buildPolarFilter zones through Duplicate', () => {
+        const azTotal = 10;
+        const distTotal = 8;
+        const measureValuePolarContainers: MeasureValuePolarContainer[] = [];
+        for (let i = 0; i < azTotal; i++) {
+            const polarEdges = [];
+            for (let j = 0; j < distTotal; j++) {
+                polarEdges.push(i * 10 + j);
+            }
+            measureValuePolarContainers.push(
+                new MeasureValuePolarContainer({
+                    azimuth: (i * 360) / azTotal,
+                    distance: 500,
+                    polarEdges,
+                })
+            );
+        }
+
+        const polarMeasureValue = new PolarMeasureValue({measureValuePolarContainers});
+        const originalFilter = new PolarFilter({
+            azimuthMin: 2,
+            azimuthMax: 7,
+            edgeMin: 1,
+            edgeMax: 5,
+        });
+        const polarMeasureValueMap = new PolarMeasureValueMap(polarMeasureValue, originalFilter);
+
+        // Verify original has the filter
+        expect(polarMeasureValueMap.buildPolarFilter.azimuthMin).eq(2);
+        expect(polarMeasureValueMap.buildPolarFilter.azimuthMax).eq(7);
+        expect(polarMeasureValueMap.buildPolarFilter.edgeMin).eq(1);
+        expect(polarMeasureValueMap.buildPolarFilter.edgeMax).eq(5);
+        expect(polarMeasureValueMap.buildPolarFilter.zones).to.have.length(1);
+
+        // Static Duplicate should preserve the filter
+        const duplicated = PolarMeasureValueMap.Duplicate(polarMeasureValueMap);
+        expect(duplicated.buildPolarFilter.azimuthMin).eq(2);
+        expect(duplicated.buildPolarFilter.azimuthMax).eq(7);
+        expect(duplicated.buildPolarFilter.edgeMin).eq(1);
+        expect(duplicated.buildPolarFilter.edgeMax).eq(5);
+        expect(duplicated.buildPolarFilter.zones).to.have.length(1);
+        expect(duplicated.buildPolarFilter.zones[0]).to.deep.equal({
+            azMin: 2,
+            azMax: 7,
+            edMin: 1,
+            edMax: 5,
+        });
+
+        // Duplicate from JSON (simulates deserialization)
+        const fromJson = PolarMeasureValueMap.Duplicate(
+            JSON.parse(JSON.stringify(polarMeasureValueMap))
+        );
+        expect(fromJson.buildPolarFilter.azimuthMin).eq(2);
+        expect(fromJson.buildPolarFilter.azimuthMax).eq(7);
+        expect(fromJson.buildPolarFilter.edgeMin).eq(1);
+        expect(fromJson.buildPolarFilter.edgeMax).eq(5);
+        expect(fromJson.buildPolarFilter.zones).to.have.length(1);
+
+        // Multi-zone filter
+        const multiZoneFilter = new PolarFilter({
+            zones: [
+                {azMin: 0, azMax: 3, edMin: 0, edMax: 2},
+                {azMin: 5, azMax: 8, edMin: 4, edMax: 7},
+            ],
+        });
+        const mapWithMultiZones = new PolarMeasureValueMap(polarMeasureValue, multiZoneFilter);
+        expect(mapWithMultiZones.buildPolarFilter.zones).to.have.length(2);
+
+        const duplicatedMulti = PolarMeasureValueMap.Duplicate(
+            JSON.parse(JSON.stringify(mapWithMultiZones))
+        );
+        expect(duplicatedMulti.buildPolarFilter.zones).to.have.length(2);
+        expect(duplicatedMulti.buildPolarFilter.zones[0]).to.deep.equal({
+            azMin: 0,
+            azMax: 3,
+            edMin: 0,
+            edMax: 2,
+        });
+        expect(duplicatedMulti.buildPolarFilter.zones[1]).to.deep.equal({
+            azMin: 5,
+            azMax: 8,
+            edMin: 4,
+            edMax: 7,
+        });
+
+        // Verify the duplicated filter is a new instance (not a reference)
+        expect(duplicated.buildPolarFilter).to.not.eq(polarMeasureValueMap.buildPolarFilter);
+    });
 });

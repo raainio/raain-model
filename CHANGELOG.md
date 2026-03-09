@@ -9,6 +9,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- `getFastHash()` method on `PolarMeasureValue`: hashes directly from numeric arrays (~30x faster than `getHash()` which
+  requires JSON.stringify). Returns a different hash value than `getHash()`.
+
+## [3.2.5] - 2026-03-09
+
+### Added
+
 - `buildPolarFilterFromMinValue(minValue = 0)` method on `PolarMeasureValueMap`: scans all values and returns a
   `PolarFilter` with zones where values > minValue, using row-run compression per azimuth. Handles pre-filtered maps
   with azimuth/edge offsets.

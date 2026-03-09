@@ -693,4 +693,53 @@ describe('PolarMeasureValueMap Performance', () => {
         // zone1: 6*6=36, zone2: 6*6=36, overlap [13-15]*[53-55] = 3*3=9
         expect(visited.length).to.eq(36 + 36 - 9);
     });
+
+    it('should measure getHash performance on big image', () => {
+        const polarMeasureValue = createFullPolarData();
+        const totalCells = azTotal * edgeTotal;
+
+        // Measure SimpleHash (default) — JSON.stringify + char-by-char hash
+        const startSimple = Date.now();
+        const simpleHash = polarMeasureValue.getHash();
+        const simpleTimeMs = Date.now() - startSimple;
+
+        expect(simpleHash.length).to.be.greaterThan(0);
+
+        // Measure getPolarsStringified cost separately
+        const startStringify = Date.now();
+        const stringified = polarMeasureValue.getPolarsStringified();
+        const stringifyTimeMs = Date.now() - startStringify;
+
+        const stringLength = stringified.length;
+
+        // Measure just the SimpleHash on the pre-stringified data
+        const startHashOnly = Date.now();
+        const hashOnly = (PolarMeasureValue as any).SimpleHash(stringified);
+        const hashOnlyTimeMs = Date.now() - startHashOnly;
+
+        expect(hashOnly).to.eq(simpleHash);
+
+        // Measure FastHash — direct numeric hashing, no stringify
+        const startFast = Date.now();
+        const fastHash = polarMeasureValue.getFastHash();
+        const fastTimeMs = Date.now() - startFast;
+
+        expect(fastHash.length).to.be.greaterThan(0);
+
+        const speedup = simpleTimeMs > 0 ? (simpleTimeMs / fastTimeMs).toFixed(1) : '∞';
+
+        console.log(
+            `  getHash perf (${azTotal}az x ${edgeTotal}edges = ${totalCells} cells):\n` +
+                `    SimpleHash total:   ${simpleTimeMs}ms (hash: ${simpleHash})\n` +
+                `      JSON.stringify:   ${stringifyTimeMs}ms\n` +
+                `      hash only:        ${hashOnlyTimeMs}ms\n` +
+                `      stringified:      ${stringLength} chars\n` +
+                `    FastHash total:     ${fastTimeMs}ms (hash: ${fastHash})\n` +
+                `    speedup:            ${speedup}x`
+        );
+
+        // Sanity: hash should complete in reasonable time
+        expect(simpleTimeMs).to.be.lessThan(5000, 'getHash took too long');
+        expect(fastTimeMs).to.be.lessThan(simpleTimeMs, 'FastHash should be faster than SimpleHash');
+    });
 });

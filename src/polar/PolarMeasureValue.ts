@@ -61,6 +61,18 @@ export class PolarMeasureValue implements IPolarMeasureValue {
         return hash.toString();
     }
 
+    // Hash directly from numeric arrays, skipping JSON.stringify
+    static FastHash(containers: MeasureValuePolarContainer[]): string {
+        let hash = 0;
+        for (const c of containers) {
+            hash = ((hash << 5) - hash + ((c.azimuth * 1000) | 0)) | 0;
+            for (const v of c.polarEdges) {
+                hash = ((hash << 5) - hash + ((v * 1000) | 0)) | 0;
+            }
+        }
+        return hash.toString();
+    }
+
     getAzimuthsCount(): number {
         if (this.azimuthsCount < 0) {
             this.count();
@@ -334,6 +346,10 @@ export class PolarMeasureValue implements IPolarMeasureValue {
             return PolarMeasureValue.SimpleHash(this.getPolarsStringified());
         }
         return '' + hash(this.getPolars());
+    }
+
+    public getFastHash(): string {
+        return PolarMeasureValue.FastHash(this.getPolars());
     }
 
     public getMinMaxValues(): {min: number; max: number} | null {
