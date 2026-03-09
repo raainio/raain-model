@@ -527,7 +527,9 @@ describe('PolarMeasureValueMap Performance', () => {
         console.log(
             `| Edge-first     | ${edTime.toFixed(2).padStart(9)} | ${edCount.toString().padStart(9)} |`
         );
-        console.log(`| Ratio (ed/az)  | ${(edTime / azTime).toFixed(1).padStart(9)}x |           |`);
+        console.log(
+            `| Ratio (ed/az)  | ${(edTime / azTime).toFixed(1).padStart(9)}x |           |`
+        );
 
         // Same cell count
         expect(edCount).to.eq(azCount);
@@ -629,9 +631,7 @@ describe('PolarMeasureValueMap Performance', () => {
         this.timeout(10000);
 
         const polar = createFullPolarData();
-        const zones = [
-            {azMin: 10, azMax: 12, edMin: 50, edMax: 52},
-        ];
+        const zones = [{azMin: 10, azMax: 12, edMin: 50, edMax: 52}];
         const map = new PolarMeasureValueMap(polar, new PolarFilter({zones}));
 
         // Bypass azimuth-first

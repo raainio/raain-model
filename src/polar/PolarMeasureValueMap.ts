@@ -316,6 +316,48 @@ export class PolarMeasureValueMap {
         }
     }
 
+    // Scans all built values and returns a PolarFilter with zones where values > minValue.
+    // Uses row-run compression: consecutive above-threshold edges on the same azimuth
+    // are merged into a single zone.
+    buildPolarFilterFromMinValue(minValue: number = 0): PolarFilter {
+        const zones: PolarFilterZone[] = [];
+        const globalAzMin = this.buildPolarFilter?.azimuthMin ?? 0;
+        const globalEdMin = this.buildPolarFilter?.edgeMin ?? 0;
+
+        for (let ci = 0; ci < this.builtMeasureValuePolarContainers.length; ci++) {
+            const container = this.builtMeasureValuePolarContainers[ci];
+            const azIdx = ci + globalAzMin;
+            const polarEdges = container.polarEdges;
+
+            let runStart = -1;
+            for (let ei = 0; ei < polarEdges.length; ei++) {
+                const above = polarEdges[ei] > minValue;
+                if (above && runStart < 0) {
+                    runStart = ei;
+                } else if (!above && runStart >= 0) {
+                    zones.push({
+                        azMin: azIdx,
+                        azMax: azIdx,
+                        edMin: runStart + globalEdMin,
+                        edMax: ei - 1 + globalEdMin,
+                    });
+                    runStart = -1;
+                }
+            }
+            // Close trailing run
+            if (runStart >= 0) {
+                zones.push({
+                    azMin: azIdx,
+                    azMax: azIdx,
+                    edMin: runStart + globalEdMin,
+                    edMax: polarEdges.length - 1 + globalEdMin,
+                });
+            }
+        }
+
+        return new PolarFilter({zones});
+    }
+
     countPolar() {
         return this.builtMeasureValuePolarContainers.reduce((p, c) => {
             return p + (c.getPolarEdgesCount ? c.getPolarEdgesCount() : c.polarEdges.length);

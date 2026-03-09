@@ -7,12 +7,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [3.2.3] - 2026-03-09
+### Added
+
+- `buildPolarFilterFromMinValue(minValue = 0)` method on `PolarMeasureValueMap`: scans all values and returns a
+  `PolarFilter` with zones where values > minValue, using row-run compression per azimuth. Handles pre-filtered maps
+  with azimuth/edge offsets.
+
+## [3.2.4] - 2026-03-09
 
 ### Changed
 
-- **PolarFilter**: unified `azimuthMin/Max, edgeMin/Max` fields into `zones: PolarFilterZone[]` with free-form `metadata` per zone. Backward-compatible constructor. Bounding box exposed via getters. `merging()` uses intersection semantics.
-- **PolarMeasureValueMap**: `iterate()` supports `bypass` option — when true, iterates only on zones stored in `buildPolarFilter` with deduplication. Throws if combined with `iterateOnEachEdge`.
+- **PolarFilter**: unified `azimuthMin/Max, edgeMin/Max` fields into `zones: PolarFilterZone[]` with free-form
+  `metadata` per zone. Backward-compatible constructor. Bounding box exposed via getters. `merging()` uses intersection
+  semantics.
+- **PolarMeasureValueMap**: `iterate()` supports `bypass` option — when true, iterates only on zones stored in
+  `buildPolarFilter` with deduplication. Throws if combined with `iterateOnEachEdge`.
 
 ### Added
 
