@@ -7,6 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- **PolarFilter**: unified `azimuthMin/Max, edgeMin/Max` fields into `zones: PolarFilterZone[]` with free-form `metadata` per zone. Backward-compatible constructor. Bounding box exposed via getters. `merging()` uses intersection semantics.
+- **PolarMeasureValueMap**: `iterate()` supports `bypass` option — when true, iterates only on zones stored in `buildPolarFilter` with deduplication. Throws if combined with `iterateOnEachEdge`.
+
+### Added
+
+- `PolarFilterZone` interface (`azMin, azMax, edMin, edMax, metadata?`)
+- `iterateOnZones()` method in `PolarMeasureValueMap` for zone-based traversal
+- Performance tests: bypass zones speedup, zone deduplication, bypass+edge error
+
+## [3.2.2] - 2026-03-05
+
 ### Fixed
 
 - `mergeCartesianResults` no longer silently produces empty data when `mergeLimitPoints` is undefined — limit points are

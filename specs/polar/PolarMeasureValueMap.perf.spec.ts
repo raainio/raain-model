@@ -1,5 +1,5 @@
 import {expect} from 'chai';
-import {MeasureValuePolarContainer, PolarMeasureValue, PolarMeasureValueMap} from '../../src';
+import {MeasureValuePolarContainer, PolarFilter, PolarMeasureValue, PolarMeasureValueMap} from '../../src';
 
 describe('PolarMeasureValueMap Performance', () => {
     // Use smaller dataset for CI to avoid timeouts (still meaningful for relative performance)
@@ -377,5 +377,109 @@ describe('PolarMeasureValueMap Performance', () => {
         expect(callCount2).to.be.lessThan(callCount1);
         // Note: timing assertions removed as micro-benchmark overhead may dominate with small datasets
         // The real benefit is visible with large datasets (720x1832) in local runs
+    });
+
+    it('should iterate faster with bypass on zones vs full scan', function () {
+        this.timeout(60000);
+        console.log('\n=== Bypass Zones Performance ===');
+        if (isCI) {
+            console.log('(Running with reduced dataset for CI)');
+        }
+        console.log('');
+
+        const polar = createFullPolarData();
+
+        // Simulate 3 gauge zones (±5 pixels around each) — small fraction of the grid
+        // Use indices that fit in CI mode (azTotal=180, edgeTotal=458)
+        const zones = [
+            {azMin: 10, azMax: 20, edMin: 50, edMax: 60, metadata: {lat: 48.0, lng: 2.0}},
+            {azMin: 50, azMax: 60, edMin: 100, edMax: 110, metadata: {lat: 48.1, lng: 2.1}},
+            {azMin: 100, azMax: 110, edMin: 200, edMax: 210, metadata: {lat: 48.2, lng: 2.2}},
+        ];
+
+        // Full scan
+        const map1 = new PolarMeasureValueMap(polar);
+        let fullCount = 0;
+        const startFull = performance.now();
+        map1.iterate((pv, az, ed, setter) => {
+            fullCount++;
+        });
+        const fullTime = performance.now() - startFull;
+
+        // Bypass with zones
+        const map2 = new PolarMeasureValueMap(polar, new PolarFilter({zones}));
+        let bypassCount = 0;
+        const startBypass = performance.now();
+        map2.iterate(
+            (pv, az, ed, setter) => {
+                bypassCount++;
+            },
+            {bypass: true}
+        );
+        const bypassTime = performance.now() - startBypass;
+
+        const speedup = fullTime / (bypassTime || 0.01);
+        const expectedZoneCells = zones.reduce(
+            (sum, z) => sum + (z.azMax - z.azMin + 1) * (z.edMax - z.edMin + 1),
+            0
+        );
+
+        console.log('| Mode           | Time (ms) | Cells     | Speedup |');
+        console.log('|----------------|-----------|-----------|---------|');
+        console.log(
+            `| Full scan      | ${fullTime.toFixed(2).padStart(9)} | ${fullCount.toString().padStart(9)} |    -    |`
+        );
+        console.log(
+            `| Bypass (zones) | ${bypassTime.toFixed(2).padStart(9)} | ${bypassCount.toString().padStart(9)} | ${speedup.toFixed(1).padStart(5)}x  |`
+        );
+        console.log(`\n3 zones, ${expectedZoneCells} expected cells vs ${azTotal * edgeTotal} total`);
+
+        expect(bypassCount).to.eq(expectedZoneCells);
+        expect(bypassCount).to.be.lessThan(fullCount);
+        expect(bypassTime).to.be.lessThan(fullTime);
+
+        // Verify metadata is preserved
+        expect(map2.buildPolarFilter.zones[0].metadata.lat).to.eq(48.0);
+        expect(map2.buildPolarFilter.zones[2].metadata.lng).to.eq(2.2);
+    });
+
+    it('should deduplicate overlapping zones in bypass mode', function () {
+        this.timeout(10000);
+
+        const polar = createFullPolarData();
+        // Two overlapping zones: overlap on [15-20] x [55-60]
+        const zones = [
+            {azMin: 10, azMax: 20, edMin: 50, edMax: 60},
+            {azMin: 15, azMax: 25, edMin: 55, edMax: 65},
+        ];
+
+        const map = new PolarMeasureValueMap(polar, new PolarFilter({zones}));
+        const visited: string[] = [];
+        map.iterate(
+            (pv, az, ed, setter) => {
+                visited.push(`${az},${ed}`);
+            },
+            {bypass: true}
+        );
+
+        // No duplicates
+        const unique = new Set(visited);
+        expect(unique.size).to.eq(visited.length, 'duplicates detected');
+
+        // Total = union = zone1 + zone2 - overlap
+        // zone1: [10..20] x [50..60] = 11 * 11 = 121
+        // zone2: [15..25] x [55..65] = 11 * 11 = 121
+        // overlap: [15..20] x [55..60] = 6 * 6 = 36
+        expect(visited.length).to.eq(121 + 121 - 36);
+    });
+
+    it('should throw when combining bypass and iterateOnEachEdge', function () {
+        const polar = createFullPolarData();
+        const zones = [{azMin: 0, azMax: 5, edMin: 0, edMax: 5}];
+        const map = new PolarMeasureValueMap(polar, new PolarFilter({zones}));
+
+        expect(() => {
+            map.iterate(() => {}, {bypass: true, iterateOnEachEdge: true});
+        }).to.throw('Cannot combine bypass and iterateOnEachEdge options');
     });
 });
