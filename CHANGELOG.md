@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [3.2.6] - 2026-03-10
+
 ### Added
 
 - `getFastHash()` method on `PolarMeasureValue`: hashes directly from numeric arrays (~30x faster than `getHash()` which
