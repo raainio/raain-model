@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [3.2.3] - 2026-03-09
+
 ### Changed
 
 - **PolarFilter**: unified `azimuthMin/Max, edgeMin/Max` fields into `zones: PolarFilterZone[]` with free-form `metadata` per zone. Backward-compatible constructor. Bounding box exposed via getters. `merging()` uses intersection semantics.

@@ -1,5 +1,10 @@
 import {expect} from 'chai';
-import {MeasureValuePolarContainer, PolarFilter, PolarMeasureValue, PolarMeasureValueMap} from '../../src';
+import {
+    MeasureValuePolarContainer,
+    PolarFilter,
+    PolarMeasureValue,
+    PolarMeasureValueMap,
+} from '../../src';
 
 describe('PolarMeasureValueMap Performance', () => {
     // Use smaller dataset for CI to avoid timeouts (still meaningful for relative performance)
@@ -85,7 +90,7 @@ describe('PolarMeasureValueMap Performance', () => {
         return {timeMs: end - start, count};
     }
 
-    it('should compare iteration performance: full vs sparse data', function () {
+    it('should compare azimuth-first iteration performance: full vs sparse data', function () {
         this.timeout(60000);
         console.log('\n=== PolarMeasureValueMap Iteration Performance Comparison ===');
         if (isCI) {
@@ -204,7 +209,7 @@ describe('PolarMeasureValueMap Performance', () => {
         expect(sparseTime).to.be.lessThan(fullTime);
     });
 
-    it('should compare callback optimization: original vs optimized', function () {
+    it('should compare azimuth-first callback optimization: original vs optimized', function () {
         this.timeout(60000);
         console.log('\n=== Callback Optimization Comparison ===');
         if (isCI) {
@@ -302,7 +307,7 @@ describe('PolarMeasureValueMap Performance', () => {
         expect(directTime).to.be.lessThan(optimizedTime);
     });
 
-    it('should skip zeros with minExcludedValue option', function () {
+    it('should skip zeros with minExcludedValue option (azimuth-first)', function () {
         this.timeout(60000);
         console.log('\n=== minExcludedValue Option Test ===');
         if (isCI) {
@@ -379,7 +384,7 @@ describe('PolarMeasureValueMap Performance', () => {
         // The real benefit is visible with large datasets (720x1832) in local runs
     });
 
-    it('should iterate faster with bypass on zones vs full scan', function () {
+    it('should iterate faster with bypass-zones vs azimuth-first full scan', function () {
         this.timeout(60000);
         console.log('\n=== Bypass Zones Performance ===');
         if (isCI) {
@@ -432,7 +437,9 @@ describe('PolarMeasureValueMap Performance', () => {
         console.log(
             `| Bypass (zones) | ${bypassTime.toFixed(2).padStart(9)} | ${bypassCount.toString().padStart(9)} | ${speedup.toFixed(1).padStart(5)}x  |`
         );
-        console.log(`\n3 zones, ${expectedZoneCells} expected cells vs ${azTotal * edgeTotal} total`);
+        console.log(
+            `\n3 zones, ${expectedZoneCells} expected cells vs ${azTotal * edgeTotal} total`
+        );
 
         expect(bypassCount).to.eq(expectedZoneCells);
         expect(bypassCount).to.be.lessThan(fullCount);
@@ -443,7 +450,7 @@ describe('PolarMeasureValueMap Performance', () => {
         expect(map2.buildPolarFilter.zones[2].metadata.lng).to.eq(2.2);
     });
 
-    it('should deduplicate overlapping zones in bypass mode', function () {
+    it('should deduplicate overlapping zones in bypass-zones mode', function () {
         this.timeout(10000);
 
         const polar = createFullPolarData();
@@ -473,13 +480,217 @@ describe('PolarMeasureValueMap Performance', () => {
         expect(visited.length).to.eq(121 + 121 - 36);
     });
 
-    it('should throw when combining bypass and iterateOnEachEdge', function () {
+    it('should compare iterateOnEachEdge vs azimuth-first performance', function () {
+        this.timeout(60000);
+        console.log('\n=== iterateOnEachEdge vs Azimuth-first ===');
+        if (isCI) {
+            console.log('(Running with reduced dataset for CI)');
+        }
+        console.log('');
+
         const polar = createFullPolarData();
-        const zones = [{azMin: 0, azMax: 5, edMin: 0, edMax: 5}];
+        const filter = new PolarFilter({azimuthMin: 10, azimuthMax: 50, edgeMin: 20, edgeMax: 80});
+        const map1 = new PolarMeasureValueMap(polar, filter);
+        const map2 = new PolarMeasureValueMap(polar, filter);
+
+        // Azimuth-first
+        let azCount = 0;
+        const azValues: number[] = [];
+        const startAz = performance.now();
+        map1.iterate(
+            (pv, az, ed, setter) => {
+                azCount++;
+                azValues.push(pv.value);
+            },
+            {polarFilter: filter}
+        );
+        const azTime = performance.now() - startAz;
+
+        // Edge-first
+        let edCount = 0;
+        const edValues: number[] = [];
+        const startEd = performance.now();
+        map2.iterate(
+            (pv, az, ed, setter) => {
+                edCount++;
+                edValues.push(pv.value);
+            },
+            {iterateOnEachEdge: true, polarFilter: filter}
+        );
+        const edTime = performance.now() - startEd;
+
+        console.log('| Mode           | Time (ms) | Cells     |');
+        console.log('|----------------|-----------|-----------|');
+        console.log(
+            `| Azimuth-first  | ${azTime.toFixed(2).padStart(9)} | ${azCount.toString().padStart(9)} |`
+        );
+        console.log(
+            `| Edge-first     | ${edTime.toFixed(2).padStart(9)} | ${edCount.toString().padStart(9)} |`
+        );
+        console.log(`| Ratio (ed/az)  | ${(edTime / azTime).toFixed(1).padStart(9)}x |           |`);
+
+        // Same cell count
+        expect(edCount).to.eq(azCount);
+
+        // Same values (just different order) — sort and compare
+        azValues.sort((a, b) => a - b);
+        edValues.sort((a, b) => a - b);
+        expect(azValues).to.deep.eq(edValues);
+    });
+
+    it('should apply minExcludedValue in edge-first mode', function () {
+        this.timeout(60000);
+
+        // ~7% non-zero values
+        const containers: MeasureValuePolarContainer[] = [];
+        for (let i = 0; i < azTotal; i++) {
+            const azimuth = (i * 360) / azTotal;
+            const polarEdges = new Array(edgeTotal)
+                .fill(0)
+                .map((_, j) => (Math.random() < 0.07 ? 20 + Math.random() * 30 : 0));
+            containers.push(new MeasureValuePolarContainer({azimuth, distance, polarEdges}));
+        }
+        const polar = new PolarMeasureValue({
+            measureValuePolarContainers: containers,
+            azimuthsCount: azTotal,
+            polarEdgesCount: edgeTotal,
+        });
+
+        const map1 = new PolarMeasureValueMap(polar);
+        const map2 = new PolarMeasureValueMap(polar);
+
+        // Without filter
+        let countAll = 0;
+        map1.iterate(
+            (pv) => {
+                countAll++;
+            },
+            {iterateOnEachEdge: true}
+        );
+
+        // With minExcludedValue
+        let countFiltered = 0;
+        map2.iterate(
+            (pv) => {
+                countFiltered++;
+            },
+            {iterateOnEachEdge: true, minExcludedValue: 0}
+        );
+
+        console.log(
+            `\nEdge-first minExcludedValue: ${countAll} total → ${countFiltered} non-zero (${((countFiltered / countAll) * 100).toFixed(1)}%)`
+        );
+
+        expect(countFiltered).to.be.lessThan(countAll);
+        expect(countFiltered).to.be.greaterThan(0);
+    });
+
+    it('should modify values correctly via valueSetter in edge-first mode', function () {
+        // Small grid: 10 az x 10 edges
+        const containers: MeasureValuePolarContainer[] = [];
+        for (let i = 0; i < 10; i++) {
+            const polarEdges = new Array(10).fill(0).map((_, j) => i * 10 + j);
+            containers.push(
+                new MeasureValuePolarContainer({azimuth: i * 36, distance: 1000, polarEdges})
+            );
+        }
+        const polar = new PolarMeasureValue({
+            measureValuePolarContainers: containers,
+            azimuthsCount: 10,
+            polarEdgesCount: 10,
+        });
+        const map = new PolarMeasureValueMap(polar);
+
+        // Double all values via edge-first iteration
+        map.iterate(
+            (pv, az, ed, setter) => {
+                setter(pv.value * 2);
+            },
+            {iterateOnEachEdge: true}
+        );
+
+        // Verify with azimuth-first
+        const values: number[] = [];
+        map.iterate((pv) => {
+            values.push(pv.value);
+        });
+
+        // All values should be doubled: [0,2,4,...,198]
+        expect(values.length).to.eq(100);
+        for (let i = 0; i < 100; i++) {
+            const az = Math.floor(i / 10);
+            const ed = i % 10;
+            const original = az * 10 + ed;
+            expect(values[i]).to.eq(original * 2, `value at az=${az} ed=${ed}`);
+        }
+    });
+
+    it('should iterate bypass-zones in edge-first order', function () {
+        this.timeout(10000);
+
+        const polar = createFullPolarData();
+        const zones = [
+            {azMin: 10, azMax: 12, edMin: 50, edMax: 52},
+        ];
         const map = new PolarMeasureValueMap(polar, new PolarFilter({zones}));
 
-        expect(() => {
-            map.iterate(() => {}, {bypass: true, iterateOnEachEdge: true});
-        }).to.throw('Cannot combine bypass and iterateOnEachEdge options');
+        // Bypass azimuth-first
+        const azFirstOrder: string[] = [];
+        map.iterate(
+            (pv, az, ed) => {
+                azFirstOrder.push(`${az},${ed}`);
+            },
+            {bypass: true}
+        );
+
+        // Bypass edge-first
+        const edFirstOrder: string[] = [];
+        map.iterate(
+            (pv, az, ed) => {
+                edFirstOrder.push(`${az},${ed}`);
+            },
+            {bypass: true, iterateOnEachEdge: true}
+        );
+
+        // Same count
+        expect(edFirstOrder.length).to.eq(azFirstOrder.length);
+        expect(edFirstOrder.length).to.eq(9); // 3 az * 3 ed
+
+        // Same cells (as sets)
+        expect([...new Set(edFirstOrder)].sort()).to.deep.eq([...new Set(azFirstOrder)].sort());
+
+        // Different order: azimuth-first starts with [10,50],[10,51],[10,52]
+        expect(azFirstOrder[0]).to.eq('10,50');
+        expect(azFirstOrder[1]).to.eq('10,51');
+        expect(azFirstOrder[2]).to.eq('10,52');
+
+        // Edge-first starts with [10,50],[11,50],[12,50]
+        expect(edFirstOrder[0]).to.eq('10,50');
+        expect(edFirstOrder[1]).to.eq('11,50');
+        expect(edFirstOrder[2]).to.eq('12,50');
+    });
+
+    it('should deduplicate bypass-zones edge-first with overlapping zones', function () {
+        const polar = createFullPolarData();
+        const zones = [
+            {azMin: 10, azMax: 15, edMin: 50, edMax: 55},
+            {azMin: 13, azMax: 18, edMin: 53, edMax: 58},
+        ];
+        const map = new PolarMeasureValueMap(polar, new PolarFilter({zones}));
+
+        const visited: string[] = [];
+        map.iterate(
+            (pv, az, ed) => {
+                visited.push(`${az},${ed}`);
+            },
+            {bypass: true, iterateOnEachEdge: true}
+        );
+
+        // No duplicates
+        const unique = new Set(visited);
+        expect(unique.size).to.eq(visited.length, 'duplicates in edge-first bypass');
+
+        // zone1: 6*6=36, zone2: 6*6=36, overlap [13-15]*[53-55] = 3*3=9
+        expect(visited.length).to.eq(36 + 36 - 9);
     });
 });
