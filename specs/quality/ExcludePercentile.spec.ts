@@ -2,7 +2,11 @@ import {expect} from 'chai';
 import {CartesianValue, QualityIndicatorMethod, QualityPoint, SpeedMatrix} from '../../src';
 
 describe('ExcludePercentile', () => {
-    const createPoint = (gaugeValue: number, rainValue: number, gaugeId = 'gauge1'): QualityPoint => {
+    const createPoint = (
+        gaugeValue: number,
+        rainValue: number,
+        gaugeId = 'gauge1'
+    ): QualityPoint => {
         return new QualityPoint({
             gaugeId,
             gaugeLabel: 'test',

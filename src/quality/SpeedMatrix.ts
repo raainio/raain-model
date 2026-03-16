@@ -253,11 +253,15 @@ export class SpeedMatrix {
     }
 
     // Remove top excludePercentile% outlier points sorted by delta (distance from diagonal)
+    // Challenge gauge points (gaugeId contains "challenge_") are always kept
     private static excludeOutliersByPercentile(
         points: QualityPoint[],
         excludePercentile: number
     ): QualityPoint[] {
-        const withDelta = points
+        const challengePoints = points.filter((p) => p.gaugeId?.includes('challenge_'));
+        const regularPoints = points.filter((p) => !p.gaugeId?.includes('challenge_'));
+
+        const withDelta = regularPoints
             .map((p) => ({point: p, delta: p.getDelta()}))
             .filter((item) => typeof item.delta !== 'undefined');
 
@@ -267,7 +271,7 @@ export class SpeedMatrix {
 
         withDelta.sort((a, b) => a.delta - b.delta);
         const keepCount = Math.max(1, Math.ceil(withDelta.length * (1 - excludePercentile / 100)));
-        return withDelta.slice(0, keepCount).map((item) => item.point);
+        return [...withDelta.slice(0, keepCount).map((item) => item.point), ...challengePoints];
     }
 
     // Average absolute difference between rain and gauge
