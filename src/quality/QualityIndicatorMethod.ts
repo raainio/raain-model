@@ -114,6 +114,8 @@ export interface QualityIndicatorOptions {
     normalize?: boolean;
     /** Options for normalization (reference max values, clamping, scale) */
     normalizationOptions?: QualityNormalizationOptions;
+    // Exclude top X% outlier points by delta before computing quality (0-100, default: 0 = no exclusion)
+    excludePercentile?: number;
 }
 
 /**

@@ -7,6 +7,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [3.2.7] - 2026-03-16
+
+### Added
+
+- `excludePercentile` option on `ComputeQualityIndicator`: removes top X% outlier points by delta before computing any
+  quality metric (0-100, default: 0 = no exclusion). Keeps at least 1 point.
+
+### Fixed
+
+- `computeSuccessRate`: use strict `>` threshold instead of `>=`, so points exactly at the boundary are not counted as
+  successes.
+
+## [3.2.6] - 2026-03-10
+
 ### Added
 
 - `getFastHash()` method on `PolarMeasureValue`: hashes directly from numeric arrays (~30x faster than `getHash()` which

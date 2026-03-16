@@ -740,6 +740,9 @@ describe('PolarMeasureValueMap Performance', () => {
 
         // Sanity: hash should complete in reasonable time
         expect(simpleTimeMs).to.be.lessThan(5000, 'getHash took too long');
-        expect(fastTimeMs).to.be.lessThan(simpleTimeMs, 'FastHash should be faster than SimpleHash');
+        expect(fastTimeMs).to.be.lessThan(
+            simpleTimeMs,
+            'FastHash should be faster than SimpleHash'
+        );
     });
 });

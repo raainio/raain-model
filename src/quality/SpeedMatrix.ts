@@ -65,32 +65,38 @@ export class SpeedMatrix {
         const method = options.method ?? QualityIndicatorMethod.KLING_GUPTA;
         const normalize = options.normalize ?? true;
         const successThreshold = options.successThreshold ?? 0.8;
+        const excludePercentile = options.excludePercentile ?? 0;
+
+        let filteredPoints = points;
+        if (excludePercentile > 0 && excludePercentile < 100 && points.length > 0) {
+            filteredPoints = SpeedMatrix.excludeOutliersByPercentile(points, excludePercentile);
+        }
 
         let rawValue: number;
         switch (method) {
             case QualityIndicatorMethod.DELTA:
-                rawValue = SpeedMatrix.computeDelta(points);
+                rawValue = SpeedMatrix.computeDelta(filteredPoints);
                 break;
             case QualityIndicatorMethod.RATIO:
-                rawValue = SpeedMatrix.computeRatio(points);
+                rawValue = SpeedMatrix.computeRatio(filteredPoints);
                 break;
             case QualityIndicatorMethod.SUCCESS_RATE:
-                rawValue = SpeedMatrix.computeSuccessRate(points, successThreshold);
+                rawValue = SpeedMatrix.computeSuccessRate(filteredPoints, successThreshold);
                 break;
             case QualityIndicatorMethod.RMSE:
-                rawValue = SpeedMatrix.computeRMSE(points);
+                rawValue = SpeedMatrix.computeRMSE(filteredPoints);
                 break;
             case QualityIndicatorMethod.MAPE:
-                rawValue = SpeedMatrix.computeMAPE(points);
+                rawValue = SpeedMatrix.computeMAPE(filteredPoints);
                 break;
             case QualityIndicatorMethod.NASH_SUTCLIFFE:
-                rawValue = SpeedMatrix.computeNashSutcliffe(points);
+                rawValue = SpeedMatrix.computeNashSutcliffe(filteredPoints);
                 break;
             case QualityIndicatorMethod.KLING_GUPTA:
-                rawValue = SpeedMatrix.computeKlingGupta(points);
+                rawValue = SpeedMatrix.computeKlingGupta(filteredPoints);
                 break;
             default:
-                rawValue = SpeedMatrix.computeDelta(points);
+                rawValue = SpeedMatrix.computeDelta(filteredPoints);
         }
 
         if (normalize) {
@@ -246,6 +252,24 @@ export class SpeedMatrix {
         return built;
     }
 
+    // Remove top excludePercentile% outlier points sorted by delta (distance from diagonal)
+    private static excludeOutliersByPercentile(
+        points: QualityPoint[],
+        excludePercentile: number
+    ): QualityPoint[] {
+        const withDelta = points
+            .map((p) => ({point: p, delta: p.getDelta()}))
+            .filter((item) => typeof item.delta !== 'undefined');
+
+        if (withDelta.length === 0) {
+            return points;
+        }
+
+        withDelta.sort((a, b) => a.delta - b.delta);
+        const keepCount = Math.max(1, Math.ceil(withDelta.length * (1 - excludePercentile / 100)));
+        return withDelta.slice(0, keepCount).map((item) => item.point);
+    }
+
     // Average absolute difference between rain and gauge
     // Range: 0 to ∞, Perfect: 0
     private static computeDelta(points: QualityPoint[]): number {
@@ -306,7 +330,7 @@ export class SpeedMatrix {
                 continue;
             }
             totalCount++;
-            if (point.getRatio() >= threshold) {
+            if (point.getRatio() > threshold) {
                 successCount++;
             }
         }
